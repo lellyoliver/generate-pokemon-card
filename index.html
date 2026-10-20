@@ -1,0 +1,181 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Âncora Tech · Carta de Tecnologia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Outfit:wght@400;500;600;700&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="wrap">
+    <div class="scene-floaters" id="scene-floaters" aria-hidden="true"></div>
+
+    <header class="brand">
+      <div class="brand-badge"></div>
+      <h1></h1>
+      <p class="brand-sub"></p>
+      <div class="brand-jokes" aria-hidden="true"></div>
+    </header>
+
+    <div class="layout">
+      <section class="panel" aria-labelledby="form-title" data-wizard>
+        <h2 id="form-title"></h2>
+        <div class="wizard-progress" id="wizard-progress" aria-hidden="true">
+          <div class="wizard-dot active" data-dot="0"></div>
+          <div class="wizard-dot" data-dot="1"></div>
+          <div class="wizard-dot" data-dot="2"></div>
+          <div class="wizard-dot" data-dot="3"></div>
+          <div class="wizard-dot" data-dot="4"></div>
+        </div>
+
+        <div class="wizard-step active" data-step="0">
+          <p class="step-title"></p>
+          <div class="field" id="field-name">
+            <label for="name"></label>
+            <input type="text" id="name" maxlength="28" autocomplete="name" required />
+            <p class="error" id="name-error"></p>
+          </div>
+          <div class="field" id="field-age">
+            <label for="age"></label>
+            <input type="number" id="age" min="18" max="90" required />
+            <p class="hint"></p>
+            <p class="error" id="age-error"></p>
+          </div>
+          <div class="field" id="field-profession">
+            <label for="profession"></label>
+            <select id="profession" required></select>
+            <p class="hint"></p>
+            <p class="error" id="profession-error"></p>
+          </div>
+          <div class="field" id="field-email" hidden>
+            <label for="email"></label>
+            <input type="email" id="email" autocomplete="email" maxlength="120" required />
+            <p class="hint"></p>
+            <p class="error" id="email-error"></p>
+          </div>
+        </div>
+
+        <div class="wizard-step" data-step="1">
+          <p class="step-title"></p>
+          <div class="field">
+            <label></label>
+            <div class="temp-grid" id="dominant-grid" role="group" aria-label="Temperamento dominante"></div>
+          </div>
+          <div class="field">
+            <label></label>
+            <div class="temp-grid" id="secondary-grid" role="group" aria-label="Temperamento secundário"></div>
+            <p class="hint"></p>
+          </div>
+        </div>
+
+        <div class="wizard-step" data-step="2">
+          <p class="step-title"></p>
+          <div class="roll-row">
+            <button type="button" class="btn btn-gold" id="btn-hp"></button>
+            <button type="button" class="btn btn-teal" id="btn-retreat"></button>
+          </div>
+          <div class="stat-chips">
+            <span class="chip"><strong id="chip-hp">—</strong></span>
+            <span class="chip"><strong id="chip-hp-class">—</strong></span>
+            <span class="chip"><strong id="chip-retreat">—</strong></span>
+          </div>
+        </div>
+
+        <div class="wizard-step" data-step="3">
+          <p class="step-title"></p>
+          <div class="field photo-field">
+            <label for="photo-input"></label>
+            <input type="file" id="photo-input" accept="image/*" />
+            <img id="photo-preview" class="photo-preview" alt="" hidden />
+            <div class="roll-row photo-actions">
+              <button type="button" class="btn btn-teal" id="btn-stylize" disabled></button>
+              <button type="button" class="btn btn-ghost" id="btn-clear-photo"></button>
+            </div>
+            <p class="stylize-status" id="stylize-status" aria-live="polite"></p>
+          </div>
+        </div>
+
+        <div class="wizard-step" data-step="4">
+          <p class="step-title"></p>
+          <p class="hint" style="margin-bottom:1rem;color:rgba(255,252,232,0.75)"></p>
+          <button type="button" class="btn btn-download" id="btn-download"></button>
+          <button type="button" class="btn btn-ghost" id="btn-reset"></button>
+        </div>
+
+        <div class="wizard-nav">
+          <button type="button" class="btn btn-ghost" id="btn-wizard-back" disabled></button>
+          <button type="button" class="btn btn-next" id="btn-wizard-next"></button>
+        </div>
+      </section>
+
+      <div class="card-stage">
+        <article class="card empty" id="card" aria-live="polite">
+          <div class="card-inner">
+            <header class="card-header">
+              <div class="card-stage-label" id="card-stage"></div>
+              <h3 class="card-name" id="card-name"></h3>
+              <div class="card-hp-block">
+                <div class="card-hp"><span>HP</span><span id="card-hp">??</span></div>
+                <div class="card-energy" id="card-energy" title="">☀️</div>
+              </div>
+            </header>
+
+            <div class="card-art-frame">
+              <div class="card-art" id="card-art">
+                <img id="card-portrait" class="card-portrait" alt="" hidden />
+                <div class="card-art-icon" id="card-icon">❓</div>
+              </div>
+            </div>
+
+            <div class="card-info-bar" id="card-info-bar"></div>
+
+            <div class="card-ability">
+              <div class="card-ability-row">
+                <span class="card-ability-cost" id="card-ability-cost" aria-hidden="true">❓</span>
+                <span class="card-ability-name" id="card-combo-name">—</span>
+              </div>
+              <div class="card-desc" id="card-desc"></div>
+            </div>
+
+            <div class="card-stats-bar">
+              <div class="item">
+                <span></span>
+                <strong id="card-age">—</strong>
+              </div>
+              <div class="item">
+                <span></span>
+                <strong id="card-health">—</strong>
+              </div>
+              <div class="item">
+                <span></span>
+                <strong id="card-retreat">—</strong>
+              </div>
+            </div>
+
+            <footer class="card-footer">
+              <div class="card-energy-label" id="card-energy-label">—</div>
+              <div class="card-rarity">
+                <span id="card-rarity-symbol">●</span>
+                <span class="rarity-name" id="card-rarity-name"></span>
+              </div>
+            </footer>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track"></div>
+  </div>
+
+  <script src="content.js"></script>
+  <script src="script.js"></script>
+  <script src="modern-screenshot.js"></script>
+  <script src="download-card.js"></script>
+  <script src="huggingface-stylize.js"></script>
+</body>
+</html>

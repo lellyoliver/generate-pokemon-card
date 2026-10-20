@@ -1,0 +1,231 @@
+(() => {
+  "use strict";
+
+  function setText(el, value) {
+    if (!el || value == null) return;
+    el.textContent = value;
+  }
+
+  function applyBrand(C) {
+    const badge = document.querySelector(".brand-badge");
+    const title = document.querySelector(".brand h1");
+    const sub = document.querySelector(".brand-sub");
+    const jokes = document.querySelector(".brand-jokes");
+    setText(badge, C.brand && C.brand.badge);
+    setText(title, C.brand && C.brand.title);
+    setText(sub, C.brand && C.brand.subtitle);
+    if (jokes && C.brand && Array.isArray(C.brand.jokes)) {
+      jokes.innerHTML = "";
+      C.brand.jokes.forEach((joke) => {
+        const span = document.createElement("span");
+        if (joke.warn) span.className = "warn";
+        span.textContent = joke.text;
+        jokes.appendChild(span);
+      });
+    }
+  }
+
+  function applyTicker(C) {
+    const track = document.querySelector(".ticker-track");
+    if (!track || !Array.isArray(C.ticker) || !C.ticker.length) return;
+    const items = C.ticker;
+    const repeat = 4;
+    track.innerHTML = "";
+    for (let r = 0; r < repeat; r += 1) {
+      items.forEach((item) => {
+        const span = document.createElement("span");
+        const tag = document.createElement("i");
+        tag.className = "tag";
+        tag.textContent = item.tag || "";
+        span.appendChild(tag);
+        span.appendChild(document.createTextNode(" " + (item.text || "")));
+        track.appendChild(span);
+      });
+    }
+  }
+
+  function applyFloaters(C) {
+    const host = document.getElementById("scene-floaters");
+    if (!host || !Array.isArray(C.floaters)) return;
+    host.innerHTML = "";
+    C.floaters.forEach((item) => {
+      if (!item || !item.src) return;
+      const img = document.createElement("img");
+      img.src = item.src;
+      img.alt = item.alt || "";
+      img.className = "floater" + (item.class ? " " + item.class : "");
+      img.draggable = false;
+      host.appendChild(img);
+    });
+  }
+
+  function applyForm(C) {
+    const F = C.form || {};
+    setText(document.getElementById("form-title"), F.title);
+
+    document.querySelectorAll(".wizard-step .step-title").forEach((el, i) => {
+      if (F.steps && F.steps[i]) el.textContent = F.steps[i];
+    });
+
+    const labels = F.labels || {};
+    const labelFor = (id, key) => {
+      const input = document.getElementById(id);
+      if (!input || !labels[key]) return;
+      const lab = document.querySelector(`label[for="${id}"]`);
+      setText(lab, labels[key]);
+    };
+    labelFor("name", "name");
+    labelFor("age", "age");
+    labelFor("profession", "profession");
+    labelFor("email", "email");
+    labelFor("photo-input", "photo");
+
+    const dominantLabel = document.querySelector('#dominant-grid')?.closest(".field")?.querySelector("label");
+    setText(dominantLabel, labels.dominant);
+    const secondaryField = document.querySelector("#secondary-grid")?.closest(".field");
+    if (secondaryField && labels.secondary) {
+      const lab = secondaryField.querySelector("label");
+      if (lab) {
+        lab.innerHTML = "";
+        lab.appendChild(document.createTextNode(labels.secondary + " "));
+        if (labels.secondaryOptional) {
+          const opt = document.createElement("span");
+          opt.style.fontWeight = "400";
+          opt.style.textTransform = "none";
+          opt.style.letterSpacing = "0";
+          opt.textContent = labels.secondaryOptional;
+          lab.appendChild(opt);
+        }
+      }
+    }
+
+    const placeholders = F.placeholders || {};
+    const name = document.getElementById("name");
+    const age = document.getElementById("age");
+    const email = document.getElementById("email");
+    if (name && placeholders.name) name.placeholder = placeholders.name;
+    if (age && placeholders.age) age.placeholder = placeholders.age;
+    if (email && placeholders.email) email.placeholder = placeholders.email;
+
+    const hints = F.hints || {};
+    const ageHint = document.querySelector("#field-age .hint");
+    const professionHint = document.querySelector("#field-profession .hint");
+    const emailHint = document.querySelector("#field-email .hint");
+    const secondaryHint = secondaryField && secondaryField.querySelector(".hint");
+    const downloadHint = document.querySelector('.wizard-step[data-step="4"] .hint');
+    setText(ageHint, hints.age);
+    setText(professionHint, hints.profession);
+    setText(emailHint, hints.email);
+    setText(secondaryHint, hints.secondary);
+    setText(downloadHint, hints.download);
+
+    const errors = F.errors || {};
+    setText(document.getElementById("name-error"), errors.name);
+    setText(document.getElementById("age-error"), errors.age);
+    setText(document.getElementById("profession-error"), errors.profession);
+    setText(document.getElementById("email-error"), errors.email);
+
+    const buttons = F.buttons || {};
+    const btnMap = [
+      ["btn-hp", "rollHp"],
+      ["btn-retreat", "rollRetreat"],
+      ["btn-stylize", "stylize"],
+      ["btn-clear-photo", "clearPhoto"],
+      ["btn-download", "download"],
+      ["btn-reset", "reset"],
+      ["btn-wizard-back", "back"],
+      ["btn-wizard-next", "next"],
+    ];
+    btnMap.forEach(([id, key]) => {
+      const el = document.getElementById(id);
+      if (el && buttons[key]) el.textContent = buttons[key];
+    });
+
+    const chips = F.chips || {};
+    document.querySelectorAll(".stat-chips .chip").forEach((chip, i) => {
+      const strong = chip.querySelector("strong");
+      if (!strong) return;
+      const prefix =
+        i === 0 ? chips.hp : i === 1 ? chips.hpClass : i === 2 ? chips.retreat : null;
+      if (!prefix) return;
+      chip.childNodes.forEach((node) => {
+        if (node.nodeType === Node.TEXT_NODE) node.remove();
+      });
+      chip.insertBefore(document.createTextNode(prefix + " "), strong);
+    });
+
+    const preview = document.getElementById("photo-preview");
+    if (preview && F.photoAlt) preview.alt = F.photoAlt;
+  }
+
+  function applyProfessions(C) {
+    const select = document.getElementById("profession");
+    if (!select || !Array.isArray(C.professions)) return;
+    const current = select.value;
+    const placeholder =
+      (C.form && C.form.placeholders && C.form.placeholders.profession) || "Selecione…";
+    select.innerHTML = "";
+    const empty = document.createElement("option");
+    empty.value = "";
+    empty.textContent = placeholder;
+    select.appendChild(empty);
+    C.professions.forEach((p) => {
+      const opt = document.createElement("option");
+      opt.value = p.value;
+      opt.textContent = p.label;
+      select.appendChild(opt);
+    });
+    if (current) select.value = current;
+  }
+
+  function applyCard(C) {
+    const card = C.card || {};
+    setText(document.getElementById("card-name"), card.emptyName);
+    setText(document.getElementById("card-stage"), card.emptyStage);
+    setText(document.getElementById("card-desc"), card.emptyDesc);
+    setText(document.getElementById("card-info-bar"), card.infoFallback);
+    setText(document.getElementById("card-rarity-name"), card.defaultRarity);
+    const energy = document.getElementById("card-energy");
+    if (energy && card.energyTitle) energy.title = card.energyTitle;
+
+    const stats = card.stats || {};
+    const items = document.querySelectorAll(".card-stats-bar .item");
+    const keys = ["age", "health", "retreat"];
+    items.forEach((item, i) => {
+      const span = item.querySelector("span");
+      if (span && stats[keys[i]]) span.textContent = stats[keys[i]];
+    });
+  }
+
+  function applyContent(C) {
+    if (!C) return;
+    if (C.meta && C.meta.title) document.title = C.meta.title;
+    if (C.meta && C.meta.lang) document.documentElement.lang = C.meta.lang;
+    applyBrand(C);
+    applyTicker(C);
+    applyFloaters(C);
+    applyForm(C);
+    applyProfessions(C);
+    applyCard(C);
+  }
+
+  async function loadContent() {
+    const res = await fetch("/content.json", { cache: "no-cache" });
+    if (!res.ok) throw new Error("Não foi possível carregar content.json");
+    return res.json();
+  }
+
+  window.applyAppContent = applyContent;
+
+  loadContent()
+    .then((content) => {
+      window.APP_CONTENT = content;
+      applyContent(content);
+      window.dispatchEvent(new Event("app-content-ready"));
+    })
+    .catch((err) => {
+      console.error(err);
+      window.APP_CONTENT = window.APP_CONTENT || {};
+      window.dispatchEvent(new Event("app-content-ready"));
+    });
+})();

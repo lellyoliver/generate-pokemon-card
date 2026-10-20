@@ -1,0 +1,242 @@
+{
+  "meta": {
+    "title": "Âncora Tech · Carta de Tecnologia",
+    "lang": "pt-BR"
+  },
+  "brand": {
+    "badge": "Âncora · Tech Squad",
+    "title": "Carta de Tecnologia",
+    "subtitle": "A equipe de tecnologia da Âncora — Agradece seu chamado.",
+    "jokes": [
+      { "text": "Erro no Mercado Livre", "warn": true },
+      { "text": "ecommerce não lança", "warn": false },
+      { "text": "Kenit", "warn": false }
+    ]
+  },
+  "ticker": [
+    { "tag": "ML", "text": "Erro no Mercado Livre" },
+    { "tag": "ECOM", "text": "ecommerce não laça" },
+    { "tag": "???", "text": "Kenit" }
+  ],
+  "floaters": [
+    { "src": "/img/pc.png", "alt": "PC pixel", "class": "f1" },
+    { "src": "/img/maquina-cafe.png", "alt": "Máquina de café", "class": "f2" }
+  ],
+  "form": {
+    "title": "Montar carta",
+    "steps": [
+      "1/5 · Dados da pessoa",
+      "2/5 · Temperamentos",
+      "3/5 · HP e recuo",
+      "4/5 · Foto → pixel art",
+      "5/5 · Baixar PDF"
+    ],
+    "labels": {
+      "name": "Nome da pessoa",
+      "age": "Idade (18–100)",
+      "profession": "Profissão",
+      "email": "E-mail corporativo",
+      "dominant": "Temperamento dominante",
+      "secondary": "Temperamento secundário",
+      "photo": "Foto → pixel art"
+    },
+    "placeholders": {
+      "name": "Ex.: Mario",
+      "age": "Ex.: 28",
+      "profession": "Selecione…",
+      "email": "nome@ancora.com.br"
+    },
+    "hints": {
+      "age": "Obrigatório — define evolução e raridade",
+      "profession": "Obrigatório — entra no pixel art (ambiente da área)",
+      "email": "Obrigatório @ancora.com.br — 1 geração por e-mail",
+      "secondary": "Obrigatório — toque de novo para trocar",
+      "download": "Conferiu a cartinha ao lado? Baixe em 7×9,7 cm ou limpe e comece de novo."
+    },
+    "errors": {
+      "name": "Informe o nome da pessoa.",
+      "age": "Idade obrigatória entre 18 e 90 anos.",
+      "profession": "Selecione uma profissão.",
+      "email": "Informe um e-mail @ancora.com.br válido."
+    },
+    "buttons": {
+      "rollHp": "🎲 Sortear HP",
+      "rollRetreat": "★ Custo de recuo",
+      "stylize": "✨ Transformar em pixel art",
+      "clearPhoto": "Remover foto",
+      "download": "⬇️ Baixar carta (PDF)",
+      "reset": "Limpar carta",
+      "back": "← Voltar",
+      "next": "Próximo →"
+    },
+    "chips": {
+      "hp": "HP:",
+      "hpClass": "Classificação:",
+      "retreat": "Recuo:"
+    },
+    "photoAlt": "Prévia da foto"
+  },
+  "wizard": {
+    "needDominant": "Selecione o temperamento dominante.",
+    "needSecondary": "Selecione o temperamento secundário.",
+    "needStats": "Sorteie o HP e o custo de recuo para continuar.",
+    "needPortrait": "Envie a foto e gere o pixel art para continuar."
+  },
+  "card": {
+    "emptyName": "???",
+    "emptyStage": "Basic",
+    "emptyDesc": "Selecione um temperamento dominante para revelar a descrição.",
+    "infoFallback": "Carta de Tecnologia · personalizada",
+    "infoSuffix": "Carta de Tecnologia",
+    "temperamentWord": "Temperamento",
+    "stats": {
+      "age": "Evolução",
+      "health": "Vitalidade",
+      "retreat": "Recuo"
+    },
+    "defaultRarity": "Comum",
+    "energyTitle": "Energia"
+  },
+  "evolution": {
+    "basic": "Basic",
+    "stage1": "Stage 1",
+    "stage2": "Stage 2"
+  },
+  "hpClasses": {
+    "veryLow": "Muito baixo",
+    "low": "Baixo",
+    "medium": "Médio",
+    "high": "Alto",
+    "veryHigh": "Muito alto",
+    "extreme": "Extremamente alto"
+  },
+  "retreat": {
+    "none": "Nenhum"
+  },
+  "professions": [
+    { "value": "Fullstack Web Developer", "label": "Desenvolvedor Web Fullstack" },
+    { "value": "ADVPL Developer", "label": "Desenvolvedor ADVPL" },
+    { "value": "Systems Analyst", "label": "Analista de Sistemas" },
+    { "value": "Systems Coordinator", "label": "Coordenador de Sistemas" },
+    { "value": "Systems Manager", "label": "Gerente de Sistemas" },
+    { "value": "Process Analyst", "label": "Analista de Processos" },
+    { "value": "Infrastructure Assistant", "label": "Assistente de Infraestrutura" },
+    { "value": "Infrastructure Analyst", "label": "Analista de Infraestrutura" }
+  ],
+  "temperaments": {
+    "sanguineo": {
+      "label": "Sanguíneo",
+      "icon": "☀️",
+      "name": "Já vou aí!",
+      "summary": "Atende o chamado sorrindo — impressora, microondas ou o Mercado Livre travado.",
+      "attention": "Abre cinco chamados e esquece o primeiro."
+    },
+    "colerico": {
+      "label": "Colérico",
+      "icon": "⚡",
+      "name": "Prioridade máxima",
+      "summary": "Resolve na hora: tela quebrada, cabo solto, sistema parado.",
+      "attention": "“Só uma duvidinha” esgota a paciência."
+    },
+    "melancholico": {
+      "label": "Melancólico",
+      "icon": "🍂",
+      "name": "Diagnóstico total",
+      "summary": "Vasculha o chamado até achar a causa — até no microondas da cozinha.",
+      "attention": "O pedido simples vira laudo de três páginas."
+    },
+    "fleumatico": {
+      "label": "Fleumático",
+      "icon": "🌊",
+      "name": "Fila tranquila",
+      "summary": "Recebe qualquer chamado com calma: trocar tela, ligar monitor, nota fiscal travada.",
+      "attention": "Aceita mais um “minutinho” e a fila não acaba."
+    }
+  },
+  "combos": {
+    "sanguineo-colerico": {
+      "icon": "📣",
+      "name": "SOS corporativo",
+      "desc": "Chega falando alto e já resolvendo — microondas, tela ou Kenit."
+    },
+    "sanguineo-fleumatico": {
+      "icon": "☕",
+      "name": "Chamado com café",
+      "desc": "Explica com paciência e ainda deixa o clima leve. Vira ímã de trabalhinho."
+    },
+    "sanguineo-melancholico": {
+      "icon": "🌙",
+      "name": "Plantão surpresa",
+      "desc": "Anima quem pediu ajuda e, no fundo, investiga até o fim."
+    },
+    "colerico-sanguineo": {
+      "icon": "🚀",
+      "name": "Chamado express",
+      "desc": "Abre, resolve e fecha antes do café esfriar — Mas zero paciência para novos chamados."
+    },
+    "colerico-melancholico": {
+      "icon": "🔍",
+      "name": "Caçador de chamado",
+      "desc": "Não para até o Mercado Livre voltar e a tela nova funcionar."
+    },
+    "colerico-fleumatico": {
+      "icon": "📐",
+      "name": "Fila blindada",
+      "desc": "Organiza a urgência e entrega sem drama — até se for o microondas."
+    },
+    "melancholico-sanguineo": {
+      "icon": "🎧",
+      "name": "Suporte com fone",
+      "desc": "Escuta o relato, testa de tudo e acalma quem está em pânico."
+    },
+    "melancholico-colerico": {
+      "icon": "🧹",
+      "name": "Chamado impecável",
+      "desc": "Troca a tela, testa o cabo, confere o sistema — nada pela metade."
+    },
+    "melancholico-fleumatico": {
+      "icon": "🖥️",
+      "name": "Herói invisível",
+      "desc": "Resolve nos bastidores: ML travou, monitor morto, “não era TI, mas…”."
+    },
+    "fleumatico-sanguineo": {
+      "icon": "🤝",
+      "name": "Pode chamar de novo",
+      "desc": "Aceita de tudo — do sistema ao microondas — sem julgamento."
+    },
+    "fleumatico-colerico": {
+      "icon": "📌",
+      "name": "Prazo do chamado",
+      "desc": "Fecha o ticket no horário, com calma e firmeza."
+    },
+    "fleumatico-melancholico": {
+      "icon": "⏰",
+      "name": "Plantão de ferro",
+      "desc": "Mesmo ritmo todo dia: fila, jeito, entrega — nem o Kenit fora abala."
+    }
+  },
+  "rarities": [
+    { "symbol": "●", "name": "Comum" },
+    { "symbol": "◆", "name": "Incomum" },
+    { "symbol": "★", "name": "Rara" },
+    { "symbol": "★★", "name": "Rara Ultra" },
+    { "symbol": "★★★", "name": "Rara Ilustração Especial" }
+  ],
+  "stylize": {
+    "apiOff": "Geração de imagem desligada (HF_IMAGE_API=0).",
+    "apiOffHint": "Geração de imagem desligada (HF_IMAGE_API=0). Ative no .env e reinicie.",
+    "needToken": "Configure HF_TOKEN no .env e reinicie o servidor. Veja o README.",
+    "needPhoto": "Escolha uma foto primeiro.",
+    "needProfession": "Selecione a profissão antes de gerar o pixel art.",
+    "needEmail": "Informe o e-mail @ancora.com.br antes de gerar.",
+    "emailUsed": "Este e-mail já gerou um pixel art.",
+    "cached": "Este e-mail já tinha arte gerada — carregamos a imagem salva.",
+    "pending": "Gerando pixel art… isso pode levar até 2 minutos.",
+    "ready": "Pixel art pronto! A arte da carta foi atualizada.",
+    "error": "Erro ao estilizar.",
+    "badFile": "Selecione um arquivo de imagem.",
+    "preparing": "Preparando foto…",
+    "photoReady": "Foto pronta. Clique em “Transformar em pixel art”.",
+    "loadError": "Erro ao carregar foto."
+  }
+}
