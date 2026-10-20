@@ -1,6 +1,6 @@
 # Carta de Tecnologia — CI (Node). Não use o template Jekyll/GitHub Pages:
 # este app precisa de servidor Node + HF_TOKEN; Pages só serve HTML estático.
-name: CI
+name: Carta de Tecnologia
 
 on:
   push:
@@ -15,13 +15,14 @@ concurrency:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    # Pin image: ubuntu-latest moves to Ubuntu 26 from Oct 2026.
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "22"
           cache: npm
