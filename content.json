@@ -19,8 +19,8 @@
     { "tag": "???", "text": "Kenit" }
   ],
   "floaters": [
-    { "src": "/img/pc.png", "alt": "PC pixel", "class": "f1" },
-    { "src": "/img/maquina-cafe.png", "alt": "Máquina de café", "class": "f2" }
+    { "src": "img/pc.png", "alt": "PC pixel", "class": "f1" },
+    { "src": "img/maquina-cafe.png", "alt": "Máquina de café", "class": "f2" }
   ],
   "form": {
     "title": "Montar carta",

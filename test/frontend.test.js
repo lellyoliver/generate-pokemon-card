@@ -47,6 +47,7 @@ async function setup(configured) {
     },
     document: {
       readyState: "complete",
+      baseURI: "http://localhost/",
       getElementById: id => elements.get(id),
       addEventListener() {},
       createElement(tag) {
@@ -66,8 +67,10 @@ async function setup(configured) {
       constructor() { this.width = 1200; this.height = 800; }
       set src(_) { this.onload(); }
     },
+    URL,
     fetch: async (url, options) => {
-      if (url === "/api/health") {
+      const href = String(url);
+      if (href === "http://localhost/api/health") {
         return {
           ok: true,
           json: async () => ({
@@ -78,7 +81,7 @@ async function setup(configured) {
           }),
         };
       }
-      assert.equal(url, "/api/stylize");
+      assert.equal(href, "http://localhost/api/stylize");
       requests.push(JSON.parse(options.body));
       return new Promise(resolve => {
         finish = (ok = true) => resolve({

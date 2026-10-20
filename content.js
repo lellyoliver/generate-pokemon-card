@@ -210,7 +210,8 @@
   }
 
   async function loadContent() {
-    const res = await fetch("/content.json", { cache: "no-cache" });
+    // Relative path: works under / and under GitHub Pages project URLs (/repo/).
+    const res = await fetch(new URL("content.json", document.baseURI), { cache: "no-cache" });
     if (!res.ok) throw new Error("Não foi possível carregar content.json");
     return res.json();
   }

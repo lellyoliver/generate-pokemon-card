@@ -117,7 +117,7 @@
 
   async function checkHealth() {
     try {
-      const res = await fetch("/api/health");
+      const res = await fetch(new URL("api/health", document.baseURI));
       if (!res.ok) throw new Error("Servidor indisponível.");
       const data = await res.json();
       imageApiEnabled = data.imageApiEnabled !== false;
@@ -183,7 +183,7 @@
       const payload = { image: originalDataUrl, profession };
       if (emailGateEnabled) payload.email = email.toLowerCase();
 
-      const res = await fetch("/api/stylize", {
+      const res = await fetch(new URL("api/stylize", document.baseURI), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
