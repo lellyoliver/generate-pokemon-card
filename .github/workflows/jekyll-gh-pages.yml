@@ -1,5 +1,8 @@
-# Carta de Tecnologia — CI (Node). Não use o template Jekyll/GitHub Pages:
-# este app precisa de servidor Node + HF_TOKEN; Pages só serve HTML estático.
+# Carta de Tecnologia — CI com env de produção (Secrets + Variables).
+# Cadastre no GitHub:
+#   Secret:  HF_TOKEN
+#   Vars:    HF_MODEL, HF_PROVIDER, EMAIL_GATE, EMAIL_DOMAIN
+# Pages não roda o server.js; este job sobe o Node só no runner do Actions.
 name: Carta de Tecnologia
 
 on:
@@ -14,9 +17,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
-    # Pin image: ubuntu-latest moves to Ubuntu 26 from Oct 2026.
+  prod:
     runs-on: ubuntu-24.04
+    env:
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      HF_MODEL: ${{ vars.HF_MODEL || 'black-forest-labs/FLUX.1-Kontext-dev' }}
+      HF_PROVIDER: ${{ vars.HF_PROVIDER || 'fal-ai' }}
+      EMAIL_GATE: ${{ vars.EMAIL_GATE || '1' }}
+      EMAIL_DOMAIN: ${{ vars.EMAIL_DOMAIN || 'ancora.com.br' }}
+      HF_IMAGE_API: "1"
+      PORT: "3000"
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -32,8 +42,30 @@ jobs:
 
       - name: Run tests
         run: npm test
-        env:
-          # Sem token real nos testes — o suite usa mocks offline.
-          HF_TOKEN: ""
-          HF_IMAGE_API: "0"
-          EMAIL_GATE: "0"
+
+      - name: Smoke server (prod env)
+        run: |
+          set -e
+          node server.js &
+          pid=$!
+          cleanup() { kill "$pid" 2>/dev/null || true; }
+          trap cleanup EXIT
+          for i in $(seq 1 30); do
+            if curl -sf "http://127.0.0.1:${PORT}/api/health" -o /tmp/health.json; then
+              break
+            fi
+            sleep 1
+          done
+          echo "Health:"
+          cat /tmp/health.json
+          echo
+          node -e '
+            const h = require("/tmp/health.json");
+            if (!h.ok) { console.error("health.ok false"); process.exit(1); }
+            if (!h.hfConfigured) {
+              console.error("HF_TOKEN não identificado (hfConfigured=false). Confira Secrets → HF_TOKEN.");
+              process.exit(1);
+            }
+            console.log("Prod OK — provider=%s model=%s emailGate=%s domain=%s",
+              h.provider, h.model, h.emailGateEnabled, h.emailDomain);
+          '
