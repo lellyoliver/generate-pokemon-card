@@ -33,7 +33,7 @@ HF_PROVIDER=fal-ai
 PORT=3000
 HF_IMAGE_API=1
 EMAIL_GATE=1
-EMAIL_DOMAIN=ancora.com.br
+EMAIL_DOMAIN=seu email
 # Só se a rede corporativa bloquear TLS (desenvolvimento local):
 # HF_INSECURE_TLS=1
 ```
