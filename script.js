@@ -2,7 +2,6 @@
   "use strict";
 
   const STORAGE_HP = "carta-tecnologia-hp";
-  const STORAGE_RETREAT = "carta-tecnologia-retreat";
 
   function content() {
     return window.APP_CONTENT || {};
@@ -163,40 +162,35 @@
 
   const RARITIES = [
     {
-      symbol: "●",
-      name: "Comum (Common)",
+      name: "Comum",
       border: "#448ecb",
       borderAlt: "#b0c8e8",
       glow: "rgba(68, 142, 203, 0.4)",
       holo: false,
     },
     {
-      symbol: "◆",
-      name: "Incomum (Uncommon)",
+      name: "Incomum",
       border: "#1060b0",
       borderAlt: "#20c2f1",
       glow: "rgba(16, 96, 176, 0.45)",
       holo: false,
     },
     {
-      symbol: "★",
-      name: "Rara (Rare)",
+      name: "Rara",
       border: "#0050a0",
       borderAlt: "#0f9bd6",
       glow: "rgba(0, 80, 160, 0.45)",
       holo: false,
     },
     {
-      symbol: "★★",
-      name: "Rara Ultra (Ultra Rare)",
+      name: "Rara Ultra",
       border: "#6259a8",
       borderAlt: "#6561ab",
       glow: "rgba(98, 89, 168, 0.5)",
       holo: true,
     },
     {
-      symbol: "★★★",
-      name: "Rara Ilustração Especial (Special Illustration Rare)",
+      name: "Rara Ilustração Especial",
       border: "#004090",
       borderAlt: "#20c2f1",
       glow: "rgba(0, 64, 144, 0.5)",
@@ -211,6 +205,7 @@
       const src = temps[id];
       if (!src) return;
       if (src.label) TEMPERAMENTS[id].label = src.label;
+      if (src.labelSecondary) TEMPERAMENTS[id].labelSecondary = src.labelSecondary;
       if (src.icon) TEMPERAMENTS[id].icon = src.icon;
       if (src.name) TEMPERAMENTS[id].name = src.name;
       if (src.summary) TEMPERAMENTS[id].summary = src.summary;
@@ -224,13 +219,13 @@
       if (src.icon) COMBOS[key].icon = src.icon;
       if (src.name) COMBOS[key].name = src.name;
       if (src.desc) COMBOS[key].desc = src.desc;
+      if (src.attention) COMBOS[key].attention = src.attention;
     });
 
     const rarities = content().rarities;
     if (Array.isArray(rarities)) {
       rarities.forEach((src, i) => {
         if (!RARITIES[i] || !src) return;
-        if (src.symbol) RARITIES[i].symbol = src.symbol;
         if (src.name) RARITIES[i].name = src.name;
       });
     }
@@ -258,8 +253,12 @@
     dominant: null,
     secondary: null,
     hp: null,
-    retreat: null,
     portraitUrl: null,
+  };
+
+  const quizState = {
+    index: 0,
+    answers: [],
   };
 
   const els = {
@@ -268,14 +267,13 @@
     ageField: document.getElementById("field-age"),
     ageError: document.getElementById("age-error"),
     profession: document.getElementById("profession"),
-    dominantGrid: document.getElementById("dominant-grid"),
-    secondaryGrid: document.getElementById("secondary-grid"),
-    btnHp: document.getElementById("btn-hp"),
-    btnRetreat: document.getElementById("btn-retreat"),
+    quizPanel: document.getElementById("quiz-panel"),
+    quizResult: document.getElementById("quiz-result"),
+    quizProgress: document.getElementById("quiz-progress"),
+    quizQuestion: document.getElementById("quiz-question"),
+    quizOptions: document.getElementById("quiz-options"),
+    quizResultText: document.getElementById("quiz-result-text"),
     btnReset: document.getElementById("btn-reset"),
-    chipHp: document.getElementById("chip-hp"),
-    chipHpClass: document.getElementById("chip-hp-class"),
-    chipRetreat: document.getElementById("chip-retreat"),
     card: document.getElementById("card"),
     cardStage: document.getElementById("card-stage"),
     cardName: document.getElementById("card-name"),
@@ -290,11 +288,57 @@
     cardDesc: document.getElementById("card-desc"),
     cardAge: document.getElementById("card-age"),
     cardHealth: document.getElementById("card-health"),
-    cardRetreat: document.getElementById("card-retreat"),
+    cardRarityStat: document.getElementById("card-rarity-stat"),
+    cardAttrsBar: document.getElementById("card-attrs-bar"),
+    cardAttrsPower: document.getElementById("card-attrs-power"),
+    attrPaciencia: document.getElementById("attr-paciencia"),
+    attrHumor: document.getElementById("attr-humor"),
+    attrCafe: document.getElementById("attr-cafe"),
+    attrNerdisse: document.getElementById("attr-nerdisse"),
     cardEnergyLabel: document.getElementById("card-energy-label"),
-    cardRaritySymbol: document.getElementById("card-rarity-symbol"),
-    cardRarityName: document.getElementById("card-rarity-name"),
   };
+
+  /** Atributos-base por temperamento (junção de poder). Escala 0–10, Nerdisse 0–50. */
+  const ATTR_BASE = {
+    colerico: { paciencia: 0, humor: 3, cafe: 10, nerdisse: 25 },
+    melancholico: { paciencia: 4, humor: 2, cafe: 8, nerdisse: 50 },
+    sanguineo: { paciencia: 5, humor: 10, cafe: 6, nerdisse: 20 },
+    fleumatico: { paciencia: 10, humor: 6, cafe: 7, nerdisse: 15 },
+  };
+
+  /** Dano médio típico do poder → usado no score /10 (÷ 6, máx 10). */
+  const ATTR_DAMAGE_MID = {
+    colerico: 47,
+    melancholico: 25,
+    sanguineo: 33,
+    fleumatico: 15,
+  };
+
+  function resolveAttributes(dominant, secondary) {
+    if (!dominant || !ATTR_BASE[dominant]) return null;
+    const a = ATTR_BASE[dominant];
+    if (!secondary || secondary === dominant || !ATTR_BASE[secondary]) {
+      return { ...a };
+    }
+    const b = ATTR_BASE[secondary];
+    const mix = (x, y) => Math.round(x * 0.7 + y * 0.3);
+    return {
+      paciencia: mix(a.paciencia, b.paciencia),
+      humor: mix(a.humor, b.humor),
+      cafe: mix(a.cafe, b.cafe),
+      nerdisse: mix(a.nerdisse, b.nerdisse),
+    };
+  }
+
+  /** Poder de junção 1–10: média de attrs normalizados + dano típico. */
+  function computePowerScore(attrs, dominant) {
+    if (!attrs) return null;
+    const danoMid = ATTR_DAMAGE_MID[dominant] != null ? ATTR_DAMAGE_MID[dominant] : 30;
+    const danoN = Math.min(10, danoMid / 6);
+    const avg =
+      (attrs.paciencia + attrs.humor + attrs.cafe + attrs.nerdisse / 5 + danoN) / 5;
+    return Math.max(1, Math.min(10, Math.round(avg)));
+  }
 
   function getEvolution(age) {
     if (age == null || age < 18 || age > 90) return null;
@@ -325,7 +369,185 @@
     return `#${[r, g, bl].map((v) => v.toString(16).padStart(2, "0")).join("")}`;
   }
 
+  function selectedProfessionValue() {
+    return els.profession && els.profession.value ? els.profession.value.trim() : "";
+  }
+
+  function professionPack() {
+    const value = selectedProfessionValue();
+    if (!value) return null;
+    const list = content().professions || [];
+    return list.find((p) => p && p.value === value) || null;
+  }
+
+  /** Rótulo de ação na UI; role = dominant | secondary (nomes diferentes). */
+  function actionLabel(tempId, role) {
+    const base = TEMPERAMENTS[tempId];
+    if (!base) return "";
+    const pack = professionPack();
+    const override = pack && pack.temperaments && pack.temperaments[tempId];
+    const isSecondary = role === "secondary";
+
+    if (override) {
+      if (isSecondary) {
+        return (
+          override.actionSecondary ||
+          override.labelSecondary ||
+          override.action ||
+          override.label ||
+          override.name ||
+          base.labelSecondary ||
+          base.label
+        );
+      }
+      return override.action || override.label || override.name || base.label;
+    }
+
+    if (isSecondary) return base.labelSecondary || base.label;
+    return base.label;
+  }
+
+  /** Quiz da profissão selecionada; senão, o quiz geral. */
+  function getQuizConfig() {
+    const global = content().quiz || {};
+    const pack = professionPack();
+    const local = pack && pack.quiz ? pack.quiz : null;
+    const questions =
+      local && Array.isArray(local.questions) && local.questions.length
+        ? local.questions
+        : Array.isArray(global.questions)
+          ? global.questions
+          : [];
+    return {
+      intro: (local && local.intro) || global.intro,
+      progress: global.progress || "Pergunta {current} de {total}",
+      resultTitle: (local && local.resultTitle) || global.resultTitle,
+      resultText:
+        (local && local.resultText) ||
+        global.resultText ||
+        "Dominante: {dominant} · Secundário: {secondary}",
+      questions,
+    };
+  }
+
+  function getQuiz() {
+    return getQuizConfig().questions;
+  }
+
+  function resetQuiz() {
+    quizState.index = 0;
+    quizState.answers = [];
+    state.dominant = null;
+    state.secondary = null;
+    const quizIntro = document.getElementById("quiz-intro");
+    if (quizIntro) {
+      quizIntro.hidden = false;
+      const intro = getQuizConfig().intro;
+      if (intro) quizIntro.textContent = intro;
+    }
+    if (els.quizPanel) els.quizPanel.hidden = false;
+    if (els.quizResult) els.quizResult.hidden = true;
+    renderQuizQuestion();
+    render();
+  }
+
+  function scoreQuiz(answers) {
+    const scores = {
+      sanguineo: 0,
+      colerico: 0,
+      melancholico: 0,
+      fleumatico: 0,
+    };
+    answers.forEach((id) => {
+      if (scores[id] != null) scores[id] += 1;
+    });
+    const order = ["sanguineo", "colerico", "melancholico", "fleumatico"];
+    const ranked = order.slice().sort((a, b) => {
+      if (scores[b] !== scores[a]) return scores[b] - scores[a];
+      return order.indexOf(a) - order.indexOf(b);
+    });
+    const dominant = ranked[0];
+    const secondary = ranked.find((id) => id !== dominant) || ranked[1];
+    return { dominant, secondary, scores };
+  }
+
+  function showQuizResult() {
+    const quiz = getQuizConfig();
+    const { dominant, secondary } = scoreQuiz(quizState.answers);
+    state.dominant = dominant;
+    state.secondary = secondary;
+    saveHp(rollHp());
+    const quizIntro = document.getElementById("quiz-intro");
+    if (quizIntro) quizIntro.hidden = true;
+    if (els.quizPanel) {
+      els.quizPanel.hidden = true;
+      els.quizOptions.innerHTML = "";
+    }
+    if (els.quizResult) els.quizResult.hidden = false;
+    const resultTitle = document.getElementById("quiz-result-title");
+    if (resultTitle && quiz.resultTitle) resultTitle.textContent = quiz.resultTitle;
+    if (els.quizResultText) {
+      els.quizResultText.textContent = quiz.resultText
+        .replace("{dominant}", actionLabel(dominant, "dominant"))
+        .replace("{secondary}", actionLabel(secondary, "secondary"));
+    }
+    render();
+  }
+
+  function renderQuizQuestion() {
+    const quiz = getQuizConfig();
+    const questions = quiz.questions;
+    if (!els.quizOptions || !questions.length) return;
+
+    if (quizState.index >= questions.length) {
+      showQuizResult();
+      return;
+    }
+
+    const quizIntro = document.getElementById("quiz-intro");
+    if (quizIntro && !quizIntro.hidden && quiz.intro) {
+      quizIntro.textContent = quiz.intro;
+    }
+
+    const q = questions[quizState.index];
+    if (els.quizProgress) {
+      els.quizProgress.textContent = quiz.progress
+        .replace("{current}", String(quizState.index + 1))
+        .replace("{total}", String(questions.length));
+    }
+    if (els.quizQuestion) els.quizQuestion.textContent = q.text || "";
+
+    els.quizOptions.innerHTML = "";
+    (q.options || []).forEach((opt) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "quiz-option";
+      btn.textContent = opt.label || "";
+      btn.addEventListener("click", () => {
+        quizState.answers.push(opt.id);
+        quizState.index += 1;
+        renderQuizQuestion();
+      });
+      els.quizOptions.appendChild(btn);
+    });
+  }
+
+  function setupQuiz() {
+    renderQuizQuestion();
+  }
+
   function resolveTheme() {
+    const pack = professionPack();
+    if (pack && pack.theme) {
+      return {
+        primary: pack.theme.primary,
+        bodyFrom: pack.theme.bodyFrom,
+        bodyMid: pack.theme.bodyMid,
+        bodyTo: pack.theme.bodyTo,
+        glow: pack.theme.glow,
+      };
+    }
+
     const dominant = state.dominant ? TEMPERAMENTS[state.dominant] : null;
     if (!dominant) return { ...DEFAULT_THEME };
 
@@ -360,6 +582,31 @@
     card.classList.toggle("rarity-rainbow", Boolean(rarityStyle.rainbow));
   }
 
+  /** Ordem do mais estressado (0) ao mais calmo (3). */
+  const TEMPERAMENT_CALMNESS = {
+    colerico: 0,
+    melancholico: 1,
+    sanguineo: 2,
+    fleumatico: 3,
+  };
+
+  /** Índice da faixa base do dominante (pula Médio e Muito alto — esses vêm do secundário). */
+  const HP_BAND_INDEX = {
+    colerico: 0,
+    melancholico: 1,
+    sanguineo: 3,
+    fleumatico: 5,
+  };
+
+  const HP_BANDS = [
+    { min: 30, max: 60 },
+    { min: 70, max: 100 },
+    { min: 110, max: 180 },
+    { min: 190, max: 250 },
+    { min: 260, max: 330 },
+    { min: 340, max: 380 },
+  ];
+
   function getHpClass(hp) {
     if (hp == null) return null;
     if (hp <= 60) return txt("hpClasses.veryLow", "Muito baixo");
@@ -370,21 +617,25 @@
     return txt("hpClasses.extreme", "Extremamente alto");
   }
 
+  function hpRangeForTemperaments(dominant, secondary) {
+    let index = HP_BAND_INDEX[dominant];
+    if (index == null) index = 2;
+    if (secondary && secondary !== dominant) {
+      const d = TEMPERAMENT_CALMNESS[dominant];
+      const s = TEMPERAMENT_CALMNESS[secondary];
+      if (d != null && s != null) {
+        if (s > d) index = Math.min(HP_BANDS.length - 1, index + 1);
+        else if (s < d) index = Math.max(0, index - 1);
+      }
+    }
+    return HP_BANDS[index];
+  }
+
   function rollHp() {
-    // múltiplos de 10, de 30 a 380 → 36 valores possíveis
-    const steps = Math.floor(Math.random() * 36);
-    return 30 + steps * 10;
-  }
-
-  function rollRetreat() {
-    return Math.floor(Math.random() * 6); // 0–5
-  }
-
-  function retreatSymbol(cost) {
-    if (cost == null) return "—";
-    if (cost === 0) return txt("retreat.none", "Nenhum");
-    // Estrela estreita para caber 1–5 na coluna de recuo (visual e download).
-    return "★".repeat(cost);
+    const range = hpRangeForTemperaments(state.dominant, state.secondary);
+    const steps = Math.floor((range.max - range.min) / 10) + 1;
+    const pick = Math.floor(Math.random() * steps);
+    return range.min + pick * 10;
   }
 
   function validateAge(raw) {
@@ -405,32 +656,47 @@
     const dominant = state.dominant ? TEMPERAMENTS[state.dominant] : null;
     if (!dominant) return null;
 
+    const pack = professionPack();
+    const packArtBg = pack && pack.theme && pack.theme.artBg ? pack.theme.artBg : null;
+    const packTemps = (pack && pack.temperaments) || {};
+    const packCombos = (pack && pack.combos) || {};
+
     if (state.secondary && state.secondary !== state.dominant) {
       const key = `${state.dominant}-${state.secondary}`;
       const combo = COMBOS[key];
       if (combo) {
+        const secondary = TEMPERAMENTS[state.secondary];
+        const override = packCombos[key] || {};
+        const artBg = packArtBg || combo.artBg;
         return {
-          icon: combo.icon,
+          icon: override.icon || combo.icon,
           energyIcon: dominant.icon,
-          energyLabel: `${dominant.label} + ${TEMPERAMENTS[state.secondary].label}`,
-          comboName: combo.name,
-          desc: combo.desc,
-          attention: null,
-          artBg: combo.artBg,
-          artColors: parseGradientColors(combo.artBg),
+          energyLabel: `${actionLabel(state.dominant, "dominant")} + ${actionLabel(state.secondary, "secondary")}`,
+          comboName: override.name || combo.name,
+          desc: override.desc || combo.desc,
+          attention:
+            override.attention ||
+            combo.attention ||
+            (packTemps[state.secondary] && packTemps[state.secondary].attention) ||
+            secondary.attention ||
+            null,
+          artBg,
+          artColors: parseGradientColors(artBg),
         };
       }
     }
 
+    const tOverride = packTemps[state.dominant] || {};
+    const artBg = packArtBg || dominant.artBg;
     return {
       icon: dominant.icon,
       energyIcon: dominant.icon,
-      energyLabel: dominant.label,
-      comboName: dominant.name || dominant.label,
-      desc: dominant.summary,
-      attention: dominant.attention,
-      artBg: dominant.artBg,
-      artColors: parseGradientColors(dominant.artBg),
+      energyLabel: actionLabel(state.dominant, "dominant"),
+      comboName: tOverride.name || dominant.name || dominant.label,
+      desc: tOverride.summary || dominant.summary,
+      attention: tOverride.attention || dominant.attention,
+      artBg,
+      artColors: parseGradientColors(artBg),
     };
   }
 
@@ -447,9 +713,11 @@
       evolution: getEvolution(age) || "—",
       hp: state.hp,
       hpClass: getHpClass(state.hp),
-      retreat: state.retreat,
-      retreatLabel: retreatSymbol(state.retreat),
-      raritySymbol: rarity ? rarity.symbol : "●",
+      attrs: (() => {
+        const a = resolveAttributes(state.dominant, state.secondary);
+        if (!a) return null;
+        return { ...a, power: computePowerScore(a, state.dominant) };
+      })(),
       rarityName: rarity ? rarity.name : "—",
       rarityStyle: rarity
         ? {
@@ -469,54 +737,11 @@
         energyIcon: "❓",
         energyLabel: "—",
         comboName: "",
-        desc: txt("card.emptyDesc", "Selecione um temperamento dominante para revelar a descrição."),
+        desc: txt("card.emptyDesc", "Selecione uma ação dominante para revelar a descrição."),
         attention: null,
         artColors: ["#6c757d", "#495057"],
       },
     };
-  }
-
-  function buildTempButtons(container, mode) {
-    container.innerHTML = "";
-    Object.values(TEMPERAMENTS).forEach((t) => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "temp-btn";
-      btn.dataset.id = t.id;
-      btn.style.setProperty("--temp-color", t.theme.primary);
-      btn.innerHTML = `<span class="ico" aria-hidden="true">${t.icon}</span>${t.label}`;
-      btn.addEventListener("click", () => {
-        if (mode === "dominant") {
-          if (state.dominant === t.id) {
-            state.dominant = null;
-          } else {
-            state.dominant = t.id;
-            if (state.secondary === t.id) state.secondary = null;
-          }
-        } else {
-          if (state.secondary === t.id) {
-            state.secondary = null;
-          } else if (t.id !== state.dominant) {
-            state.secondary = t.id;
-          }
-        }
-        syncTempButtons();
-        render();
-      });
-      container.appendChild(btn);
-    });
-  }
-
-  function syncTempButtons() {
-    els.dominantGrid.querySelectorAll(".temp-btn").forEach((btn) => {
-      btn.classList.toggle("active", btn.dataset.id === state.dominant);
-    });
-    els.secondaryGrid.querySelectorAll(".temp-btn").forEach((btn) => {
-      const id = btn.dataset.id;
-      btn.classList.toggle("secondary-active", id === state.secondary);
-      btn.disabled = id === state.dominant;
-      btn.style.opacity = id === state.dominant ? "0.4" : "1";
-    });
   }
 
   function render() {
@@ -538,29 +763,30 @@
     els.cardHp.textContent = state.hp != null ? state.hp : "??";
     els.cardAge.textContent = state.age != null ? state.age : "—";
     els.cardHealth.textContent = hpClass || "—";
-    els.cardRetreat.textContent = retreatSymbol(state.retreat);
+    if (els.cardRarityStat) {
+      els.cardRarityStat.textContent = rarity ? rarity.name : "—";
+    }
 
-    if (rarity) {
-      els.cardRaritySymbol.textContent = rarity.symbol;
-      els.cardRarityName.textContent = rarity.name;
-      els.cardRaritySymbol.style.color = rarity.border;
-    } else {
-      els.cardRaritySymbol.textContent = "●";
-      els.cardRarityName.textContent = "—";
-      els.cardRaritySymbol.style.color = "";
+    const attrs = resolveAttributes(state.dominant, state.secondary);
+    if (els.cardAttrsBar) {
+      els.cardAttrsBar.hidden = !attrs;
+      if (attrs) {
+        if (els.attrPaciencia) els.attrPaciencia.textContent = `${attrs.paciencia}/10`;
+        if (els.attrHumor) els.attrHumor.textContent = `${attrs.humor}/10`;
+        if (els.attrCafe) els.attrCafe.textContent = `${attrs.cafe}/10`;
+        if (els.attrNerdisse) els.attrNerdisse.textContent = `${attrs.nerdisse}/50`;
+        const power = computePowerScore(attrs, state.dominant);
+        if (els.cardAttrsPower) {
+          const label = txt("card.attrsPowerLabel", "Poder");
+          els.cardAttrsPower.textContent = `${label} ${power}/10`;
+        }
+      }
     }
 
     if (els.cardInfoBar) {
-      const ageBit = state.age != null ? `IDADE ${state.age}` : "IDADE —";
-      const temperBit = profile
-        ? profile.energyLabel
-        : txt("card.temperamentWord", "Temperamento");
-      const professionBit = els.profession && els.profession.value
-        ? els.profession.value
-        : null;
-      els.cardInfoBar.textContent = professionBit
-        ? `${ageBit} · ${professionBit} · ${temperBit}`
-        : `${ageBit} · ${temperBit} · ${txt("card.infoSuffix", "Carta de Tecnologia")}`;
+      const pack = professionPack();
+      els.cardInfoBar.textContent =
+        (pack && pack.label) || txt("card.infoSuffix", "Carta de Tecnologia");
     }
 
     if (profile) {
@@ -588,15 +814,11 @@
         "linear-gradient(160deg, #6c757d 0%, #495057 100%)";
       els.cardDesc.textContent = txt(
         "card.emptyDesc",
-        "Selecione um temperamento dominante para revelar a descrição."
+        "Selecione uma ação dominante para revelar a descrição."
       );
     }
 
     syncPortrait();
-
-    els.chipHp.textContent = state.hp != null ? state.hp : "—";
-    els.chipHpClass.textContent = hpClass || "—";
-    els.chipRetreat.textContent = retreatSymbol(state.retreat);
   }
 
   function syncPortrait() {
@@ -623,11 +845,6 @@
     localStorage.setItem(STORAGE_HP, String(hp));
   }
 
-  function saveRetreat(cost) {
-    state.retreat = cost;
-    localStorage.setItem(STORAGE_RETREAT, String(cost));
-  }
-
   function loadStored() {
     const hpRaw = localStorage.getItem(STORAGE_HP);
     if (hpRaw != null) {
@@ -636,13 +853,7 @@
         state.hp = hp;
       }
     }
-    const retreatRaw = localStorage.getItem(STORAGE_RETREAT);
-    if (retreatRaw != null) {
-      const r = Number(retreatRaw);
-      if (Number.isInteger(r) && r >= 0 && r <= 5) {
-        state.retreat = r;
-      }
-    }
+    localStorage.removeItem("carta-tecnologia-retreat");
   }
 
   function setupCardTilt() {
@@ -662,7 +873,7 @@
     });
   }
 
-  const WIZARD_LAST = 4;
+  const WIZARD_LAST = 3;
   let wizardStep = 0;
 
   function setWizardStep(step) {
@@ -720,24 +931,13 @@
       return nameOk && ageOk && professionOk && emailOk;
     }
     if (step === 1) {
-      if (!state.dominant) {
-        alert(txt("wizard.needDominant", "Selecione o temperamento dominante."));
-        return false;
-      }
-      if (!state.secondary) {
-        alert(txt("wizard.needSecondary", "Selecione o temperamento secundário."));
+      if (!state.dominant || !state.secondary) {
+        alert(txt("wizard.needQuiz", "Responda todas as perguntas para gerar seu temperamento."));
         return false;
       }
       return true;
     }
     if (step === 2) {
-      if (state.hp == null || state.retreat == null) {
-        alert(txt("wizard.needStats", "Sorteie o HP e o custo de recuo para continuar."));
-        return false;
-      }
-      return true;
-    }
-    if (step === 3) {
       if (!state.portraitUrl) {
         alert(txt("wizard.needPortrait", "Envie a foto e gere o pixel art para continuar."));
         return false;
@@ -761,10 +961,8 @@
 
   function init() {
     applyContentTexts();
-    buildTempButtons(els.dominantGrid, "dominant");
-    buildTempButtons(els.secondaryGrid, "secondary");
     loadStored();
-    syncTempButtons();
+    setupQuiz();
     setupCardTilt();
     setupWizard();
 
@@ -774,25 +972,12 @@
     });
 
     els.age.addEventListener("input", () => render());
-    if (els.profession) els.profession.addEventListener("change", () => render());
-
-    els.btnHp.addEventListener("click", () => {
-      saveHp(rollHp());
-      render();
-      els.btnHp.animate(
-        [{ transform: "scale(1)" }, { transform: "scale(0.94)" }, { transform: "scale(1)" }],
-        { duration: 220 }
-      );
-    });
-
-    els.btnRetreat.addEventListener("click", () => {
-      saveRetreat(rollRetreat());
-      render();
-      els.btnRetreat.animate(
-        [{ transform: "scale(1)" }, { transform: "scale(0.94)" }, { transform: "scale(1)" }],
-        { duration: 220 }
-      );
-    });
+    if (els.profession) {
+      els.profession.addEventListener("change", () => {
+        // Trocar profissão = questionário diferente; recomeça o quiz.
+        resetQuiz();
+      });
+    }
 
     els.btnReset.addEventListener("click", () => {
       state.name = "";
@@ -800,7 +985,6 @@
       state.dominant = null;
       state.secondary = null;
       state.hp = null;
-      state.retreat = null;
       state.portraitUrl = null;
       els.name.value = "";
       els.age.value = "";
@@ -810,9 +994,8 @@
       const emailField = document.getElementById("field-email");
       if (emailField) emailField.classList.remove("has-error");
       localStorage.removeItem(STORAGE_HP);
-      localStorage.removeItem(STORAGE_RETREAT);
-      syncTempButtons();
-      render();
+      localStorage.removeItem("carta-tecnologia-retreat");
+      resetQuiz();
       const photoInput = document.getElementById("photo-input");
       const photoPreview = document.getElementById("photo-preview");
       if (photoInput) photoInput.value = "";

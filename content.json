@@ -8,15 +8,17 @@
     "title": "Carta de Tecnologia",
     "subtitle": "A equipe de tecnologia da Âncora — Agradece seu chamado.",
     "jokes": [
-      { "text": "Erro no Mercado Livre", "warn": true },
-      { "text": "ecommerce não lança", "warn": false },
-      { "text": "Kenit", "warn": false }
+      { "text": "Já tentou desligar e ligar?", "warn": false },
+      { "text": "Aqui na minha máquina funciona", "warn": true },
+      { "text": "Hotfix de cinco minutinhos", "warn": false }
     ]
   },
   "ticker": [
-    { "tag": "ML", "text": "Erro no Mercado Livre" },
-    { "tag": "ECOM", "text": "ecommerce não laça" },
-    { "tag": "???", "text": "Kenit" }
+    { "tag": "SUP", "text": "Já tentou desligar e ligar de novo?" },
+    { "tag": "DEV", "text": "Funciona em homologação…" },
+    { "tag": "USR", "text": "Erro PEBKAC detectado" },
+    { "tag": "NET", "text": "O cabo de rede está bem conectado?" },
+    { "tag": "FIX", "text": "Vou só subir um hotfix rapidinho." }
   ],
   "floaters": [
     { "src": "img/pc.png", "alt": "PC pixel", "class": "f1" },
@@ -25,19 +27,16 @@
   "form": {
     "title": "Montar carta",
     "steps": [
-      "1/5 · Dados da pessoa",
-      "2/5 · Temperamentos",
-      "3/5 · HP e recuo",
-      "4/5 · Foto → pixel art",
-      "5/5 · Baixar PDF"
+      "1/4 · Dados da pessoa",
+      "2/4 · Quiz de temperamento",
+      "3/4 · Foto → pixel art",
+      "4/4 · Baixar PDF"
     ],
     "labels": {
       "name": "Nome da pessoa",
       "age": "Idade (18–100)",
       "profession": "Profissão",
       "email": "E-mail corporativo",
-      "dominant": "Temperamento dominante",
-      "secondary": "Temperamento secundário",
       "photo": "Foto → pixel art"
     },
     "placeholders": {
@@ -50,7 +49,6 @@
       "age": "Obrigatório — define evolução e raridade",
       "profession": "Obrigatório — entra no pixel art (ambiente da área)",
       "email": "Obrigatório @ancora.com.br — 1 geração por e-mail",
-      "secondary": "Obrigatório — toque de novo para trocar",
       "download": "Conferiu a cartinha ao lado? Baixe em 7×9,7 cm ou limpe e comece de novo."
     },
     "errors": {
@@ -60,8 +58,6 @@
       "email": "Informe um e-mail @ancora.com.br válido."
     },
     "buttons": {
-      "rollHp": "🎲 Sortear HP",
-      "rollRetreat": "★ Custo de recuo",
       "stylize": "✨ Transformar em pixel art",
       "clearPhoto": "Remover foto",
       "download": "⬇️ Baixar carta (PDF)",
@@ -69,30 +65,90 @@
       "back": "← Voltar",
       "next": "Próximo →"
     },
-    "chips": {
-      "hp": "HP:",
-      "hpClass": "Classificação:",
-      "retreat": "Recuo:"
-    },
     "photoAlt": "Prévia da foto"
   },
   "wizard": {
-    "needDominant": "Selecione o temperamento dominante.",
-    "needSecondary": "Selecione o temperamento secundário.",
-    "needStats": "Sorteie o HP e o custo de recuo para continuar.",
+    "needQuiz": "Responda todas as perguntas para gerar seu temperamento.",
     "needPortrait": "Envie a foto e gere o pixel art para continuar."
+  },
+  "quiz": {
+    "intro": "Responda com sinceridade — cada profissão tem o próprio questionário; as escolhas definem dominante e secundário.",
+    "progress": "Pergunta {current} de {total}",
+    "resultTitle": "Perfil da carta",
+    "resultText": "Dominante: {dominant} · Secundário: {secondary}",
+    "questions": [
+      {
+        "text": "Chega um chamado urgente às 17h50 de sexta. Você:",
+        "options": [
+          { "id": "sanguineo", "label": "É rapidinho — resolvo antes de ir embora." },
+          { "id": "colerico", "label": "Quem deixou isso pra agora?! Quero solução já." },
+          { "id": "melancholico", "label": "Abro o log e caço a causa raiz com calma." },
+          { "id": "fleumatico", "label": "Abre o chamado. Segunda a gente vê." }
+        ]
+      },
+      {
+        "text": "Falhou na sua máquina e na do colega. Sua primeira reação:",
+        "options": [
+          { "id": "sanguineo", "label": "Na minha funciona. Deve ser o ambiente dele." },
+          { "id": "colerico", "label": "Reinicia tudo. Agora." },
+          { "id": "melancholico", "label": "Comparo versão, DNS, cache… quero prova." },
+          { "id": "fleumatico", "label": "Se ontem estava estável, não mexo em mais nada." }
+        ]
+      },
+      {
+        "text": "Alguém pede “só uma duvidinha” no corredor:",
+        "options": [
+          { "id": "sanguineo", "label": "Claro! Explico com um sorriso." },
+          { "id": "colerico", "label": "Abre chamado. Sem fichada." },
+          { "id": "melancholico", "label": "Me manda o print do erro primeiro." },
+          { "id": "fleumatico", "label": "Manda e-mail. Estou na fila mental." }
+        ]
+      },
+      {
+        "text": "Homologação ok, produção quebrou. Você:",
+        "options": [
+          { "id": "sanguineo", "label": "Sobe um hotfix — vai dar certo." },
+          { "id": "colerico", "label": "War room. Quero culpado e silêncio no Slack." },
+          { "id": "melancholico", "label": "Monto o laudo. Quase sempre é DNS." },
+          { "id": "fleumatico", "label": "Freeze. Ninguém mexe até estabilizar." }
+        ]
+      },
+      {
+        "text": "Sobre documentar o que você fez:",
+        "options": [
+          { "id": "sanguineo", "label": "Depois eu escrevo." },
+          { "id": "colerico", "label": "Não dá tempo — próximo chamado." },
+          { "id": "melancholico", "label": "Já saiu o laudo de três páginas." },
+          { "id": "fleumatico", "label": "Se não mexi, não tem o que documentar." }
+        ]
+      }
+    ]
   },
   "card": {
     "emptyName": "???",
     "emptyStage": "Basic",
-    "emptyDesc": "Selecione um temperamento dominante para revelar a descrição.",
+    "emptyDesc": "Selecione uma ação dominante para revelar a descrição.",
     "infoFallback": "Carta de Tecnologia · personalizada",
     "infoSuffix": "Carta de Tecnologia",
-    "temperamentWord": "Temperamento",
+    "temperamentWord": "Ação",
     "stats": {
       "age": "Evolução",
       "health": "Vitalidade",
-      "retreat": "Recuo"
+      "rarity": "Raridade"
+    },
+    "attrsTitle": "Atributos Especiais",
+    "attrsPowerLabel": "Poder",
+    "attrs": {
+      "paciencia": "Paciência",
+      "humor": "Humor",
+      "cafe": "Café",
+      "nerdisse": "Nerdisse"
+    },
+    "attrsBenefit": {
+      "paciencia": "+espera",
+      "humor": "+confiança",
+      "cafe": "+urgência",
+      "nerdisse": "+evidência"
     },
     "defaultRarity": "Comum",
     "energyTitle": "Energia"
@@ -110,117 +166,1355 @@
     "veryHigh": "Muito alto",
     "extreme": "Extremamente alto"
   },
-  "retreat": {
-    "none": "Nenhum"
-  },
   "professions": [
-    { "value": "Fullstack Web Developer", "label": "Desenvolvedor Web Fullstack" },
-    { "value": "ADVPL Developer", "label": "Desenvolvedor ADVPL" },
-    { "value": "Systems Analyst", "label": "Analista de Sistemas" },
-    { "value": "Systems Coordinator", "label": "Coordenador de Sistemas" },
-    { "value": "Systems Manager", "label": "Gerente de Sistemas" },
-    { "value": "Process Analyst", "label": "Analista de Processos" },
-    { "value": "Infrastructure Assistant", "label": "Assistente de Infraestrutura" },
-    { "value": "Infrastructure Analyst", "label": "Analista de Infraestrutura" }
+    {
+      "value": "Fullstack Web Developer",
+      "label": "Desenvolvedor Web Fullstack",
+      "theme": {
+        "primary": "#0ea5e9",
+        "bodyFrom": "#38bdf8",
+        "bodyMid": "#0284c7",
+        "bodyTo": "#0369a1",
+        "glow": "rgba(14, 165, 233, 0.45)",
+        "artBg": "linear-gradient(160deg, #38bdf8 0%, #0ea5e9 50%, #0369a1 100%)"
+      },
+      "quiz": {
+        "intro": "Responda no dia a dia PHP + Angular (Proweb) — liberação, chamado e teste definem o poder da carta.",
+        "questions": [
+          {
+            "text": "Proweb com erro na liberação. Você:",
+            "options": [
+              { "id": "sanguineo", "label": "Liberar de novo — deve ter sido cache." },
+              { "id": "colerico", "label": "Quem aprovou essa release?! Quero dono." },
+              { "id": "melancholico", "label": "Olho log, build e checklist da liberação." },
+              { "id": "fleumatico", "label": "Rollback. Sem liberação até estabilizar." }
+            ]
+          },
+          {
+            "text": "Chamado para testar sem código de vendedor:",
+            "options": [
+              { "id": "sanguineo", "label": "Testo com qualquer código — vai dar." },
+              { "id": "colerico", "label": "Sem código de vendedor, não testo. Ponto." },
+              { "id": "melancholico", "label": "Peço o código certo antes de reproduzir." },
+              { "id": "fleumatico", "label": "Devolvo o chamado. Falta dado." }
+            ]
+          },
+          {
+            "text": "Pedem subir sem teste automatizado:",
+            "options": [
+              { "id": "sanguineo", "label": "Testei na mão. Pode subir." },
+              { "id": "colerico", "label": "Sem teste, sem deploy." },
+              { "id": "melancholico", "label": "Listo o que falta cobrir e o risco." },
+              { "id": "fleumatico", "label": "Fica na fila até ter teste." }
+            ]
+          },
+          {
+            "text": "Homolog ok, Proweb quebrou em produção. Você:",
+            "options": [
+              { "id": "sanguineo", "label": "Hotfix rápido — vai dar certo." },
+              { "id": "colerico", "label": "War room. Quem liberou sem teste?" },
+              { "id": "melancholico", "label": "Laudo: liberação, vendedor e cenário." },
+              { "id": "fleumatico", "label": "Freeze. Ninguém libera mais nada." }
+            ]
+          },
+          {
+            "text": "PO pede “só um ajuste” no corredor, sem chamado:",
+            "options": [
+              { "id": "sanguineo", "label": "Faço e a gente abre o chamado depois." },
+              { "id": "colerico", "label": "Abre chamado com código de vendedor." },
+              { "id": "melancholico", "label": "Me passa cenário de teste completo." },
+              { "id": "fleumatico", "label": "Sem chamado e sem teste, não mexo." }
+            ]
+          }
+        ]
+      },
+      "temperaments": {
+        "sanguineo": {
+          "action": "Otimista",
+          "actionSecondary": "Enrolão",
+          "name": "Já Pode Subir",
+          "summary": "Cause 30 de dano. Se o gerente pedir ajuste de tela e você for tranquilo (“já pode ir pro deploy”), +20 e compre 1 confiança. Erro na tela anula o bônus.",
+          "attention": "“Ajuste de tela. Já sobe.”"
+        },
+        "colerico": {
+          "action": "Explosivo",
+          "actionSecondary": "Impaciente",
+          "name": "Tabela Frontend",
+          "summary": "Cause 40 de dano. Se o chamado da tabela frontend mirabolante ainda não foi tratado, o oponente fica Paralizado.",
+          "attention": "“CEO pediu tabela no Angular. Quero Excel agora.”"
+        },
+        "melancholico": {
+          "action": "Detalhista",
+          "actionSecondary": "Crítico",
+          "name": "Filtro Global",
+          "summary": "Cause 20 de dano. Se o usuário esqueceu de desativar o filtro global, +40, descarte 1 confiança e anexe evidência.",
+          "attention": "“Desativa o filtro global e testa de novo.”"
+        },
+        "fleumatico": {
+          "action": "Preguiçoso",
+          "actionSecondary": "Relaxado",
+          "name": "Sem Teste, Sem Deploy",
+          "summary": "Cause 10 de dano. Sem chamado com cenário de teste, o oponente não ataca. Sem corredor: +1 confiança.",
+          "attention": "“Falta teste. Fica na fila.”"
+        }
+      },
+      "combos": {
+        "sanguineo-colerico": {
+          "name": "Excel do CEO",
+          "desc": "Cause 50 de dano. Se a tabela for “igual ao Excel”, +20. Sem spec no chamado: Paraliza.",
+          "attention": "“Quer grid igual planilha. Ontem.”"
+        },
+        "sanguineo-fleumatico": {
+          "name": "Sobe Depois",
+          "desc": "Cause 20 de dano. Enquanto não houver chamado aberto, você ignora ataques “urgentes”.",
+          "attention": "“Gerente pediu. Chamado ainda não.”"
+        },
+        "sanguineo-melancholico": {
+          "name": "Código de Vendedor",
+          "desc": "Cause 30 de dano. Se for tranquilo e o chamado vier sem código de vendedor, +20 e compre 1 confiança.",
+          "attention": "“Sem vendedor no chamado? Acho que vai.”"
+        },
+        "colerico-sanguineo": {
+          "name": "Hotfix na Sexta",
+          "desc": "Cause 45 de dano. Chamado de produção sem tratar: Paraliza. Se limpar, +1 confiança.",
+          "attention": "“Quebrou em prod. Hotfix. Já.”"
+        },
+        "colerico-melancholico": {
+          "name": "Regra de Negócio",
+          "desc": "Cause 40 de dano. Confuso. Se a regra no chamado estiver errada ou ambígua, +30 e anexe evidência.",
+          "attention": "“Isso não é bug. É regra de negócio errada.”"
+        },
+        "colerico-fleumatico": {
+          "name": "Corredor Não Compila",
+          "desc": "Cause 40 de dano. Só com chamado aberto; senão, cause 10 e end turn.",
+          "attention": "“Dúvida no corredor não vira commit.”"
+        },
+        "melancholico-sanguineo": {
+          "name": "Laudo Absolvido",
+          "desc": "Cause 25 de dano. Você não é alvo de culpa. Oponente descarta 1 confiança.",
+          "attention": "“Print + console. Ego intacto.”"
+        },
+        "melancholico-colerico": {
+          "name": "Repro ou Nada",
+          "desc": "Cause 50 de dano. Se for “usuário” ou falta de passo a passo, +20 e descarte 1 confiança.",
+          "attention": "“Sem reprodução, sem discussão.”"
+        },
+        "melancholico-fleumatico": {
+          "name": "Chamado pela Metade",
+          "desc": "Cause 15 de dano. 2 marcadores de espera até o chamado ter módulo, tela e dado de teste.",
+          "attention": "“Chamado incompleto. Espera.”"
+        },
+        "fleumatico-sanguineo": {
+          "name": "Fila do Card",
+          "desc": "Cause 15 de dano. Com card aberto sem aceite, ataques contra você custam +1 paciência.",
+          "attention": "“Card na fila. Mínimo esforço.”"
+        },
+        "fleumatico-colerico": {
+          "name": "Merge Negado",
+          "desc": "Cause 30 de dano. Se pulou review/teste do chamado, +30 e Paralizado.",
+          "attention": "“Sem review, sem merge.”"
+        },
+        "fleumatico-melancholico": {
+          "name": "Log Arquivado",
+          "desc": "Cause 20 de dano. Anexe evidência (log PHP/Angular); se houver “usuário”, descarte 1 confiança.",
+          "attention": "“Log arquivado. Café.”"
+        }
+      }
+    },
+    {
+      "value": "ADVPL Developer",
+      "label": "Desenvolvedor ADVPL",
+      "theme": {
+        "primary": "#14b8a6",
+        "bodyFrom": "#2dd4bf",
+        "bodyMid": "#0d9488",
+        "bodyTo": "#0f766e",
+        "glow": "rgba(20, 184, 166, 0.45)",
+        "artBg": "linear-gradient(160deg, #2dd4bf 0%, #14b8a6 50%, #0f766e 100%)"
+      },
+      "quiz": {
+        "intro": "Responda no mundo ADVPL/Protheus — define o poder da carta.",
+        "questions": [
+          {
+            "text": "Custom pedida às 17h50 de sexta. Você:",
+            "options": [
+              { "id": "sanguineo", "label": "Faço o ponto de entrada rapidinho." },
+              { "id": "colerico", "label": "Quem mudou regra sem RFC?!" },
+              { "id": "melancholico", "label": "Leio o fonte legado antes de tocar." },
+              { "id": "fleumatico", "label": "Abre chamado. Sem patch de sexta." }
+            ]
+          },
+          {
+            "text": "Compila aí e dá erro de dicionário:",
+            "options": [
+              { "id": "sanguineo", "label": "Na minha base funciona." },
+              { "id": "colerico", "label": "Roda UPDDISTR. Agora." },
+              { "id": "melancholico", "label": "Comparo SX3/SX6 e o pacote." },
+              { "id": "fleumatico", "label": "Se compilou ontem, não mexo." }
+            ]
+          },
+          {
+            "text": "Analista pede “só um campo” no corredor:",
+            "options": [
+              { "id": "sanguineo", "label": "Beleza, já crio na tabela." },
+              { "id": "colerico", "label": "Abre especificação. Sem fichada." },
+              { "id": "melancholico", "label": "Me passa o layout e a regra." },
+              { "id": "fleumatico", "label": "Manda e-mail. Fila de custom." }
+            ]
+          },
+          {
+            "text": "Homolog ok, produção quebrou o pedido:",
+            "options": [
+              { "id": "sanguineo", "label": "Subo patch — deve ser parâmetro." },
+              { "id": "colerico", "label": "War room. Quem mexeu no PE?" },
+              { "id": "melancholico", "label": "Laudo: gatilho, MV_ e log." },
+              { "id": "fleumatico", "label": "Freeze. Ninguém publica fonte." }
+            ]
+          },
+          {
+            "text": "Sobre comentar o fonte ADVPL:",
+            "options": [
+              { "id": "sanguineo", "label": "Depois eu documento." },
+              { "id": "colerico", "label": "Não dá tempo — próximo ticket." },
+              { "id": "melancholico", "label": "Cabeçalho + histórico no fonte." },
+              { "id": "fleumatico", "label": "Se não alterei regra, não comento." }
+            ]
+          }
+        ]
+      },
+      "temperaments": {
+        "sanguineo": {
+          "action": "Otimista",
+          "actionSecondary": "Enrolão",
+          "name": "Na Minha Base",
+          "summary": "Cause 30 de dano. Se for tranquilo (“compila aí”), +20 e compre 1 confiança. Erro de dicionário anula o bônus.",
+          "attention": "“Na minha base funciona.”"
+        },
+        "colerico": {
+          "action": "Explosivo",
+          "actionSecondary": "Impaciente",
+          "name": "UPDDISTR Já",
+          "summary": "Cause 40 de dano. Se o chamado de dicionário ainda não foi tratado, o oponente fica Paralizado.",
+          "attention": "“Roda o UPDDISTR. Agora.”"
+        },
+        "melancholico": {
+          "action": "Detalhista",
+          "actionSecondary": "Crítico",
+          "name": "Fonte Legado",
+          "summary": "Cause 20 de dano. Se for “usuário”, PE ou MV_ errado, +40, descarte 1 confiança e anexe evidência.",
+          "attention": "“Leio o fonte antes de tocar.”"
+        },
+        "fleumatico": {
+          "action": "Preguiçoso",
+          "actionSecondary": "Relaxado",
+          "name": "Sem Patch de Sexta",
+          "summary": "Cause 10 de dano. Sem chamado/especificação, o oponente não ataca. Sem corredor: +1 confiança.",
+          "attention": "“Abre chamado. Sem patch de sexta.”"
+        }
+      },
+      "combos": {
+        "sanguineo-colerico": {
+          "name": "Ponto de Entrada Rápido",
+          "desc": "Cause 50 de dano. Se disser “é rapidinho”, +20. Chamado sem RFC: Paraliza.",
+          "attention": "“Ponto de entrada. Vai dar certo.”"
+        },
+        "sanguineo-fleumatico": {
+          "name": "Custom Otimista",
+          "desc": "Cause 20 de dano. Sem chamado na fila de custom, você ignora ataques “urgentes”.",
+          "attention": "“Sem chamado, sem fonte.”"
+        },
+        "sanguineo-melancholico": {
+          "name": "Compila com Fé",
+          "desc": "Cause 30 de dano. Se for tranquilo e o SX3/SX6 divergir, +20 e compre 1 confiança.",
+          "attention": "“Compara o dicionário. Bobagem.”"
+        },
+        "colerico-sanguineo": {
+          "name": "War Room PE",
+          "desc": "Cause 45 de dano. Chamado do PE sem tratar: Paraliza. Se limpar, +1 confiança.",
+          "attention": "“Quem mexeu no ponto de entrada?”"
+        },
+        "colerico-melancholico": {
+          "name": "Gatilho Quente",
+          "desc": "Cause 40 de dano. Confuso. Sem laudo de gatilho/MV_, +30 e anexe evidência.",
+          "attention": "“Gatilho, MV_ e log. Já.”"
+        },
+        "colerico-fleumatico": {
+          "name": "RFC Obrigatório",
+          "desc": "Cause 40 de dano. Só com chamado/especificação aberta; senão, 10 e end turn.",
+          "attention": "“Sem RFC, sem publish.”"
+        },
+        "melancholico-sanguineo": {
+          "name": "Laudo do Fonte",
+          "desc": "Cause 25 de dano. Você não é alvo de culpa. Oponente descarta 1 confiança.",
+          "attention": "“Cabeçalho no fonte. Ego intacto.”"
+        },
+        "melancholico-colerico": {
+          "name": "Escovar Bit ADVPL",
+          "desc": "Cause 50 de dano. Se for legado ou “usuário”, +20 e descarte 1 confiança.",
+          "attention": "“Fonte de 5 anos. Escovar bit.”"
+        },
+        "melancholico-fleumatico": {
+          "name": "Campo Sem Layout",
+          "desc": "Cause 15 de dano. 2 marcadores de espera até o chamado ter layout e regra.",
+          "attention": "“Só um campo? Quero o layout.”"
+        },
+        "fleumatico-sanguineo": {
+          "name": "Fila de Custom",
+          "desc": "Cause 15 de dano. Com chamado aberto, ataques contra você custam +1 paciência.",
+          "attention": "“Fila de custom. Espera.”"
+        },
+        "fleumatico-colerico": {
+          "name": "Freeze de Fonte",
+          "desc": "Cause 30 de dano. Se pulou a fila do chamado, +30 e Paralizado.",
+          "attention": "“Publicou sem fila? Freeze.”"
+        },
+        "fleumatico-melancholico": {
+          "name": "Ticket com Dicionário",
+          "desc": "Cause 20 de dano. Anexe evidência (SX/UPDDISTR); se houver “usuário”, descarte 1 confiança.",
+          "attention": "“Documentei o dicionário. Café.”"
+        }
+      }
+    },
+    {
+      "value": "Systems Analyst",
+      "label": "Analista de Sistemas",
+      "theme": {
+        "primary": "#6366f1",
+        "bodyFrom": "#818cf8",
+        "bodyMid": "#4f46e5",
+        "bodyTo": "#3730a3",
+        "glow": "rgba(99, 102, 241, 0.45)",
+        "artBg": "linear-gradient(160deg, #818cf8 0%, #6366f1 50%, #3730a3 100%)"
+      },
+      "quiz": {
+        "intro": "Responda no clima Protheus/TOTVS — usuário, MV_ e legislação definem seu poder.",
+        "questions": [
+          {
+            "text": "Usuário diz que “o sistema está errado” às 17h50. Você:",
+            "options": [
+              { "id": "sanguineo", "label": "Explico que é comportamento padrão." },
+              { "id": "colerico", "label": "Cadê o chamado? Quero parâmetro na mesa." },
+              { "id": "melancholico", "label": "Abro o MV_ e o XML antes de falar." },
+              { "id": "fleumatico", "label": "Abre chamado na TOTVS. Segunda a gente vê." }
+            ]
+          },
+          {
+            "text": "Deu rejeição na SEFAZ. Primeira reação:",
+            "options": [
+              { "id": "sanguineo", "label": "Deve ser o ambiente. Vamos tentar de novo." },
+              { "id": "colerico", "label": "Cadê o pacote do TSS? Agora." },
+              { "id": "melancholico", "label": "Deixa eu olhar o XML com calma." },
+              { "id": "fleumatico", "label": "Se ontem autorizou, não mexo hoje." }
+            ]
+          },
+          {
+            "text": "Pedem “só um relatório” no corredor:",
+            "options": [
+              { "id": "sanguineo", "label": "Claro! Já monto no Protheus." },
+              { "id": "colerico", "label": "Abre chamado. Sem fichada." },
+              { "id": "melancholico", "label": "Me diga os campos antes de tudo." },
+              { "id": "fleumatico", "label": "Manda e-mail. Estou na fila." }
+            ]
+          },
+          {
+            "text": "Saiu Release Upgrade e pedem virada rápido. Você:",
+            "options": [
+              { "id": "sanguineo", "label": "Vamos simular — o que poderia dar errado?" },
+              { "id": "colerico", "label": "War room. Plano de virada já." },
+              { "id": "melancholico", "label": "UPDDISTR, dicionário e laudo primeiro." },
+              { "id": "fleumatico", "label": "Freeze. Sem virada sem janela." }
+            ]
+          },
+          {
+            "text": "Custom de outra consultoria (5 anos). Você:",
+            "options": [
+              { "id": "sanguineo", "label": "Ajusto por fora, rapidinho." },
+              { "id": "colerico", "label": "Isso não passa sem rotina oficial." },
+              { "id": "melancholico", "label": "Vou escovar bit e documentar." },
+              { "id": "fleumatico", "label": "Chamado TOTVS. Senta e espera." }
+            ]
+          }
+        ]
+      },
+      "temperaments": {
+        "sanguineo": {
+          "action": "Otimista",
+          "actionSecondary": "Enrolão",
+          "name": "Comportamento Padrão",
+          "summary": "Cause 30 de dano. Se for tranquilo com o usuário (“é padrão”), +20 e compre 1 confiança. Parâmetro errado anula o bônus.",
+          "attention": "“Não é bug, é comportamento padrão.”"
+        },
+        "colerico": {
+          "action": "Explosivo",
+          "actionSecondary": "Impaciente",
+          "name": "Virada de Release",
+          "summary": "Cause 40 de dano. Se o chamado de Release ainda não foi tratado, o oponente fica Paralizado.",
+          "attention": "“Release novo. Fim de semana acordado.”"
+        },
+        "melancholico": {
+          "action": "Detalhista",
+          "actionSecondary": "Crítico",
+          "name": "Parâmetro",
+          "summary": "Cause 20 de dano. Se for “usuário” ou parâmetro errado, +40, descarte 1 confiança e anexe evidência.",
+          "attention": "“O problema é o seu parâmetro parâmetro.”"
+        },
+        "fleumatico": {
+          "action": "Preguiçoso",
+          "actionSecondary": "Relaxado",
+          "name": "Chamado TOTVS",
+          "summary": "Cause 10 de dano. Sem resposta da TOTVS, o oponente não ataca no próximo turno. Sem corredor: +1 confiança.",
+          "attention": "“Chamado na TOTVS. Senta e espera.”"
+        }
+      },
+      "combos": {
+        "sanguineo-colerico": {
+          "name": "Excel Glorificado",
+          "desc": "Cause 50 de dano. Se pedir “só mais uma coluna”, +20. Chamado aberto: Paraliza.",
+          "attention": "“Quer o Protheus feito Excel.”"
+        },
+        "sanguineo-fleumatico": {
+          "name": "Rotina Oficial",
+          "desc": "Cause 20 de dano. Sem chamado na rotina oficial, você ignora ataques “urgentes”.",
+          "attention": "“Tem que passar pelos gatilhos.”"
+        },
+        "sanguineo-melancholico": {
+          "name": "Refaturamento com Fé",
+          "desc": "Cause 30 de dano. Sem refaturamento/custo médio, +20 e compre 1 confiança.",
+          "attention": "“Já rodou o refaturamento?”"
+        },
+        "colerico-sanguineo": {
+          "name": "Pacote da SEFAZ",
+          "desc": "Cause 45 de dano. Chamado SEFAZ sem tratar: Paraliza. Se limpar, +1 confiança.",
+          "attention": "“Rejeição na SEFAZ. Olha o XML.”"
+        },
+        "colerico-melancholico": {
+          "name": "TSS Urgente",
+          "desc": "Cause 40 de dano. Confuso. Sem pacote TOTVS no chamado, +30 e anexe evidência.",
+          "attention": "“Cadê o pacote da TOTVS pro TSS?”"
+        },
+        "colerico-fleumatico": {
+          "name": "UPDDISTR Quente",
+          "desc": "Cause 40 de dano. Só com chamado aberto; senão, 10 e end turn.",
+          "attention": "“Já rodou o UPDDISTR?”"
+        },
+        "melancholico-sanguineo": {
+          "name": "XML Absolvido",
+          "desc": "Cause 25 de dano. Você não é alvo de culpa. Oponente descarta 1 confiança.",
+          "attention": "“Olhei o XML. Ego intacto.”"
+        },
+        "melancholico-colerico": {
+          "name": "Escovar Bit",
+          "desc": "Cause 50 de dano. Se for custom antiga ou “usuário”, +20 e descarte 1 confiança.",
+          "attention": "“Custom de outra consultoria. Escovar bit.”"
+        },
+        "melancholico-fleumatico": {
+          "name": "Campos Indefinidos",
+          "desc": "Cause 15 de dano. 2 marcadores de espera até o chamado listar os campos.",
+          "attention": "“Quer relatório sem saber os campos.”"
+        },
+        "fleumatico-sanguineo": {
+          "name": "Fila do Suporte Oficial",
+          "desc": "Cause 15 de dano. Com chamado TOTVS aberto, ataques contra você custam +1 paciência.",
+          "attention": "“Chamado aberto. Espera.”"
+        },
+        "fleumatico-colerico": {
+          "name": "Migração Explosiva",
+          "desc": "Cause 30 de dano. Se pulou a fila do chamado, +30 e Paralizado.",
+          "attention": "“Migração sem plano? Leva o fim de semana.”"
+        },
+        "fleumatico-melancholico": {
+          "name": "Ticket com Dicionário",
+          "desc": "Cause 20 de dano. Anexe evidência (UPDDISTR); se houver “usuário”, descarte 1 confiança.",
+          "attention": "“Documentei. Fui no café.”"
+        }
+      }
+    },
+    {
+      "value": "Systems Coordinator",
+      "label": "Coordenador de Sistemas",
+      "theme": {
+        "primary": "#f59e0b",
+        "bodyFrom": "#fbbf24",
+        "bodyMid": "#d97706",
+        "bodyTo": "#b45309",
+        "glow": "rgba(245, 158, 11, 0.45)",
+        "artBg": "linear-gradient(160deg, #fbbf24 0%, #f59e0b 50%, #b45309 100%)"
+      },
+      "quiz": {
+        "intro": "Responda como quem equilibra fila, time e prazo — define o poder da carta.",
+        "questions": [
+          {
+            "text": "Dois chamados críticos na mesma hora. Você:",
+            "options": [
+              { "id": "sanguineo", "label": "Distribuo com um sorriso — dá pra fazer." },
+              { "id": "colerico", "label": "Prioridade clara. Sem discussão." },
+              { "id": "melancholico", "label": "Matriz de impacto antes de escalar." },
+              { "id": "fleumatico", "label": "Entram na fila. Um por vez." }
+            ]
+          },
+          {
+            "text": "Analista quer pular o processo:",
+            "options": [
+              { "id": "sanguineo", "label": "Deixa, a gente regulariza depois." },
+              { "id": "colerico", "label": "Volta pro fluxo. Agora." },
+              { "id": "melancholico", "label": "Me mostre o risco documentado." },
+              { "id": "fleumatico", "label": "Sem aprovação, não sobe." }
+            ]
+          },
+          {
+            "text": "Usuário sobe no nível e te para no corredor:",
+            "options": [
+              { "id": "sanguineo", "label": "Atendo e acalmo na hora." },
+              { "id": "colerico", "label": "Abre chamado. Sem fichada." },
+              { "id": "melancholico", "label": "Peço evidência e prazo real." },
+              { "id": "fleumatico", "label": "Agenda. Estou em outra prioridade." }
+            ]
+          },
+          {
+            "text": "Produção caiu no meio da daily:",
+            "options": [
+              { "id": "sanguineo", "label": "Montamos um war room leve e resolve." },
+              { "id": "colerico", "label": "War room. Donos e silêncio." },
+              { "id": "melancholico", "label": "Timeline e causa raiz na mesa." },
+              { "id": "fleumatico", "label": "Freeze. Ninguém muda escopo." }
+            ]
+          },
+          {
+            "text": "Sobre reportar status à gestão:",
+            "options": [
+              { "id": "sanguineo", "label": "Mando um resumo otimista depois." },
+              { "id": "colerico", "label": "Números duros. Sem enrolação." },
+              { "id": "melancholico", "label": "Dashboard + riscos por escrito." },
+              { "id": "fleumatico", "label": "Se não mudou, não reporto." }
+            ]
+          }
+        ]
+      },
+      "temperaments": {
+        "sanguineo": {
+          "action": "Otimista",
+          "actionSecondary": "Enrolão",
+          "name": "Dá pra Fazer",
+          "summary": "Cause 30 de dano. Se distribuir os chamados com calma (“o time dá conta”), +20 e compre 1 confiança. Atraso visível anula o bônus.",
+          "attention": "“Dois críticos? Dá pra fazer.”"
+        },
+        "colerico": {
+          "action": "Explosivo",
+          "actionSecondary": "Impaciente",
+          "name": "Prioridade Clara",
+          "summary": "Cause 40 de dano. Se o chamado crítico ainda não foi priorizado, o oponente fica Paralizado.",
+          "attention": "“Prioridade clara. Sem discussão.”"
+        },
+        "melancholico": {
+          "action": "Detalhista",
+          "actionSecondary": "Crítico",
+          "name": "Matriz de Impacto",
+          "summary": "Cause 20 de dano. Se achar risco sem evidência ou “usuário” no corredor, +40, descarte 1 confiança e anexe evidência.",
+          "attention": "“Matriz de impacto antes de escalar.”"
+        },
+        "fleumatico": {
+          "action": "Preguiçoso",
+          "actionSecondary": "Relaxado",
+          "name": "Um por Vez",
+          "summary": "Cause 10 de dano. Sem chamado na fila oficial, o oponente não ataca. Sem corredor: +1 confiança.",
+          "attention": "“Entram na fila. Um por vez.”"
+        }
+      },
+      "combos": {
+        "sanguineo-colerico": {
+          "name": "War Room Leve",
+          "desc": "Cause 50 de dano. Se montar war room com sorriso, +20. Sem dono no chamado: Paraliza.",
+          "attention": "“War room leve. Resolve.”"
+        },
+        "sanguineo-fleumatico": {
+          "name": "Regulariza Depois",
+          "desc": "Cause 20 de dano. Sem chamado/aprovação, você ignora ataques “urgentes”.",
+          "attention": "“Pula o fluxo? Regulariza depois.”"
+        },
+        "sanguineo-melancholico": {
+          "name": "Status Otimista",
+          "desc": "Cause 30 de dano. Se for tranquilo no report e faltar risco escrito, +20 e compre 1 confiança.",
+          "attention": "“Resumo pra gestão. Está sob controle.”"
+        },
+        "colerico-sanguineo": {
+          "name": "Dono na Mesa",
+          "desc": "Cause 45 de dano. Chamado sem dono: Paraliza. Se assumirem, +1 confiança.",
+          "attention": "“Quero dono. Reunião agora.”"
+        },
+        "colerico-melancholico": {
+          "name": "Volta pro Fluxo",
+          "desc": "Cause 40 de dano. Confuso. Se pulou o processo sem risco documentado, +30 e anexe evidência.",
+          "attention": "“Volta pro fluxo. Agora.”"
+        },
+        "colerico-fleumatico": {
+          "name": "Sem Aprovação",
+          "desc": "Cause 40 de dano. Só com chamado/aprovação aberta; senão, cause 10 e end turn.",
+          "attention": "“Sem aprovação, não sobe.”"
+        },
+        "melancholico-sanguineo": {
+          "name": "Prazo Real",
+          "desc": "Cause 25 de dano. Você não é alvo de culpa. Oponente descarta 1 confiança.",
+          "attention": "“Evidência e prazo real. Ego intacto.”"
+        },
+        "melancholico-colerico": {
+          "name": "Timeline na Mesa",
+          "desc": "Cause 50 de dano. Se for incidente sem causa raiz, +20 e descarte 1 confiança.",
+          "attention": "“Timeline e causa raiz. Já.”"
+        },
+        "melancholico-fleumatico": {
+          "name": "Risco no Papel",
+          "desc": "Cause 15 de dano. 2 marcadores de espera até o chamado ter risco documentado.",
+          "attention": "“Sem risco escrito, espera.”"
+        },
+        "fleumatico-sanguineo": {
+          "name": "Agenda Fechada",
+          "desc": "Cause 15 de dano. Com outra prioridade ativa, ataques contra você custam +1 paciência.",
+          "attention": "“Agenda. Outra prioridade.”"
+        },
+        "fleumatico-colerico": {
+          "name": "Freeze de Escopo",
+          "desc": "Cause 30 de dano. Se pulou a fila do chamado, +30 e Paralizado.",
+          "attention": "“Freeze. Ninguém muda escopo.”"
+        },
+        "fleumatico-melancholico": {
+          "name": "Status Arquivado",
+          "desc": "Cause 20 de dano. Anexe evidência (dashboard); se não mudou nada, descarte 1 confiança do oponente.",
+          "attention": "“Não mudou. Não reporto.”"
+        }
+      }
+    },
+    {
+      "value": "IT Manager",
+      "label": "Gerente de T.I",
+      "theme": {
+        "primary": "#8b5cf6",
+        "bodyFrom": "#a78bfa",
+        "bodyMid": "#7c3aed",
+        "bodyTo": "#5b21b6",
+        "glow": "rgba(139, 92, 246, 0.45)",
+        "artBg": "linear-gradient(160deg, #a78bfa 0%, #8b5cf6 50%, #5b21b6 100%)"
+      },
+      "quiz": {
+        "intro": "Você gerencia sistemas, desenvolvimento, infraestrutura e suporte — e também os pedidos da diretoria.",
+        "questions": [
+          {
+            "text": "Diretoria pede “só uma melhoria” sem orçamento. Sistemas e desenvolvimento já estão lotados. Você:",
+            "options": [
+              { "id": "sanguineo", "label": "Encaixamos no meio — o time dá conta." },
+              { "id": "colerico", "label": "Sem prioridade oficial, não entra." },
+              { "id": "melancholico", "label": "Peço justificativa e impacto nos quatro times." },
+              { "id": "fleumatico", "label": "Fica na fila. Sem janela, sem entrega." }
+            ]
+          },
+          {
+            "text": "Incidente: suporte, infra e desenvolvimento se culpam. Você:",
+            "options": [
+              { "id": "sanguineo", "label": "Alinho os quatro e seguimos em frente." },
+              { "id": "colerico", "label": "Quero um responsável. Reunião agora." },
+              { "id": "melancholico", "label": "Análise do incidente com evidências de cada área." },
+              { "id": "fleumatico", "label": "Congela mudanças até o laudo." }
+            ]
+          },
+          {
+            "text": "Suporte escala tudo como crítico; infra discorda. Diretoria cobra prazo. Você:",
+            "options": [
+              { "id": "sanguineo", "label": "Medio na hora — a gente combina." },
+              { "id": "colerico", "label": "Defino a prioridade. Sem discussão longa." },
+              { "id": "melancholico", "label": "Quero critério escrito antes de responder à diretoria." },
+              { "id": "fleumatico", "label": "Volta pra fila. Sem pular processo." }
+            ]
+          },
+          {
+            "text": "Analista de sistemas e desenvolvedor divergem da regra. Você:",
+            "options": [
+              { "id": "sanguineo", "label": "Medio na hora — a gente combina." },
+              { "id": "colerico", "label": "Defino a regra. Sem discussão longa." },
+              { "id": "melancholico", "label": "Quero documento e impacto antes de decidir." },
+              { "id": "fleumatico", "label": "Volta pro chamado. Sem reunião de corredor." }
+            ]
+          },
+          {
+            "text": "Sobre comunicar o risco da T.I. (todas as áreas) à diretoria:",
+            "options": [
+              { "id": "sanguineo", "label": "Suavizo: está sob controle." },
+              { "id": "colerico", "label": "Falo o risco cru. Sem filtro." },
+              { "id": "melancholico", "label": "Apresentação com dados por área." },
+              { "id": "fleumatico", "label": "Só reporto se explodir." }
+            ]
+          }
+        ]
+      },
+      "temperaments": {
+        "sanguineo": {
+          "action": "Otimista",
+          "actionSecondary": "Enrolão",
+          "name": "O Time Dá Conta",
+          "summary": "Cause 30 de dano. Se alinhar as áreas e acalmar a diretoria com calma, +20 e compre 1 confiança. Atraso visível anula o bônus.",
+          "attention": "“Os quatro times dão conta.”"
+        },
+        "colerico": {
+          "action": "Explosivo",
+          "actionSecondary": "Impaciente",
+          "name": "Um Responsável",
+          "summary": "Cause 40 de dano. Se o chamado entre áreas ainda não tem dono, o oponente fica Paralizado.",
+          "attention": "“Quero um responsável. Agora.”"
+        },
+        "melancholico": {
+          "action": "Detalhista",
+          "actionSecondary": "Crítico",
+          "name": "Impacto nas Áreas",
+          "summary": "Cause 20 de dano. Se faltar evidência por área antes de falar com a diretoria, +40, descarte 1 confiança e anexe evidência.",
+          "attention": "“Impacto por área, no papel.”"
+        },
+        "fleumatico": {
+          "action": "Preguiçoso",
+          "actionSecondary": "Relaxado",
+          "name": "Fila da Casa",
+          "summary": "Cause 10 de dano. Sem prioridade/chamado oficial, o oponente não ataca. Sem corredor: +1 confiança.",
+          "attention": "“Sem janela, sem entrega.”"
+        }
+      },
+      "combos": {
+        "sanguineo-colerico": {
+          "name": "Mesa dos Quatro",
+          "desc": "Cause 50 de dano. Se reunir as áreas com sorriso, +20. Sem dono no chamado: Paraliza.",
+          "attention": "“Sistemas, dev, infra e suporte. Já.”"
+        },
+        "sanguineo-fleumatico": {
+          "name": "Encaixa no Meio",
+          "desc": "Cause 20 de dano. Sem prioridade oficial da diretoria, você ignora ataques “urgentes”.",
+          "attention": "“Diretoria pediu. Encaixa no meio.”"
+        },
+        "sanguineo-melancholico": {
+          "name": "Sob Controle",
+          "desc": "Cause 30 de dano. Se suavizar o risco à diretoria e faltar dado de alguma área, +20 e compre 1 confiança.",
+          "attention": "“Está sob controle. Quase.”"
+        },
+        "colerico-sanguineo": {
+          "name": "Dono na Mesa",
+          "desc": "Cause 45 de dano. Chamado entre áreas sem dono: Paraliza. Se limpar, +1 confiança.",
+          "attention": "“Um dono. Reunião agora.”"
+        },
+        "colerico-melancholico": {
+          "name": "Regra Fechada",
+          "desc": "Cause 40 de dano. Confuso. Se analista e dev divergirem sem documento, +30 e anexe evidência.",
+          "attention": "“Defino a regra. Sem discussão longa.”"
+        },
+        "colerico-fleumatico": {
+          "name": "Prioridade Oficial",
+          "desc": "Cause 40 de dano. Só com prioridade/chamado aberto; senão, cause 10 e end turn.",
+          "attention": "“Sem prioridade oficial, não entra.”"
+        },
+        "melancholico-sanguineo": {
+          "name": "Laudo por Área",
+          "desc": "Cause 25 de dano. Você não é alvo de culpa. Oponente descarta 1 confiança.",
+          "attention": "“Evidência de cada área. Ego intacto.”"
+        },
+        "melancholico-colerico": {
+          "name": "Critério Escrito",
+          "desc": "Cause 50 de dano. Se suporte escalar tudo como crítico sem critério, +20 e descarte 1 confiança.",
+          "attention": "“Critério escrito. Sem achismo.”"
+        },
+        "melancholico-fleumatico": {
+          "name": "Justificativa Pendente",
+          "desc": "Cause 15 de dano. 2 marcadores de espera até o pedido da diretoria ter justificativa e impacto.",
+          "attention": "“Sem justificativa, espera.”"
+        },
+        "fleumatico-sanguineo": {
+          "name": "Congela Mudanças",
+          "desc": "Cause 15 de dano. Até o laudo, ataques contra você custam +1 paciência.",
+          "attention": "“Congela. Até o laudo.”"
+        },
+        "fleumatico-colerico": {
+          "name": "Sem Pular Fila",
+          "desc": "Cause 30 de dano. Se uma área pulou a fila do chamado, +30 e Paralizado.",
+          "attention": "“Sem pular a fila.”"
+        },
+        "fleumatico-melancholico": {
+          "name": "Só se Explodir",
+          "desc": "Cause 20 de dano. Anexe evidência; se o risco à diretoria não “explodiu”, descarte 1 confiança do oponente.",
+          "attention": "“Só reporto se explodir.”"
+        }
+      }
+    },
+    {
+      "value": "Process Analyst",
+      "label": "Analista de Processos",
+      "theme": {
+        "primary": "#f43f5e",
+        "bodyFrom": "#fb7185",
+        "bodyMid": "#e11d48",
+        "bodyTo": "#be123c",
+        "glow": "rgba(244, 63, 94, 0.45)",
+        "artBg": "linear-gradient(160deg, #fb7185 0%, #f43f5e 50%, #be123c 100%)"
+      },
+      "quiz": {
+        "intro": "Responda no olhar de processo e fluxo — define o poder da carta.",
+        "questions": [
+          {
+            "text": "Área quer pular a etapa do fluxo. Você:",
+            "options": [
+              { "id": "sanguineo", "label": "Ajustamos o processo depois." },
+              { "id": "colerico", "label": "Sem etapa, sem avanço." },
+              { "id": "melancholico", "label": "Mapeio a lacuna e o risco." },
+              { "id": "fleumatico", "label": "Mantém como está. Sem atalho." }
+            ]
+          },
+          {
+            "text": "Reunião de levantamento explode em opinião:",
+            "options": [
+              { "id": "sanguineo", "label": "Facilito e fecho um acordo leve." },
+              { "id": "colerico", "label": "Uma voz por vez. Defino o dono." },
+              { "id": "melancholico", "label": "Paro e documento cada regra." },
+              { "id": "fleumatico", "label": "Adio. Sem ata, sem decisão." }
+            ]
+          },
+          {
+            "text": "Usuário inventa exceção no corredor:",
+            "options": [
+              { "id": "sanguineo", "label": "Anoto e vejo se encaixa." },
+              { "id": "colerico", "label": "Abre mudança formal." },
+              { "id": "melancholico", "label": "Me mostre o caso e a regra." },
+              { "id": "fleumatico", "label": "E-mail. Fora do fluxo não conto." }
+            ]
+          },
+          {
+            "text": "Indicador caiu no fluxo novo. Você:",
+            "options": [
+              { "id": "sanguineo", "label": "Ajuste fino e volta a subir." },
+              { "id": "colerico", "label": "Reunião de crise. Já." },
+              { "id": "melancholico", "label": "Analiso causa raiz no fluxo." },
+              { "id": "fleumatico", "label": "Congela mudanças no processo." }
+            ]
+          },
+          {
+            "text": "Sobre desenhar o fluxo:",
+            "options": [
+              { "id": "sanguineo", "label": "Depois eu desenho bonito." },
+              { "id": "colerico", "label": "Não dá tempo — próxima reunião." },
+              { "id": "melancholico", "label": "Fluxo e regras já versionados." },
+              { "id": "fleumatico", "label": "Se o fluxo não mudou, não redesenho." }
+            ]
+          }
+        ]
+      },
+      "temperaments": {
+        "sanguineo": {
+          "action": "Otimista",
+          "actionSecondary": "Enrolão",
+          "name": "Ajusta Depois",
+          "summary": "Cause 30 de dano. Se for tranquilo com o usuário (“ajustamos no SE depois”), +20 e compre 1 confiança. Etapa pulada anula o bônus.",
+          "attention": "“Ajustamos o processo depois.”"
+        },
+        "colerico": {
+          "action": "Explosivo",
+          "actionSecondary": "Impaciente",
+          "name": "Sem Etapa",
+          "summary": "Cause 40 de dano. Se o chamado ainda pulou etapa no SE, o oponente fica Paralizado.",
+          "attention": "“Sem etapa, sem avanço.”"
+        },
+        "melancholico": {
+          "action": "Detalhista",
+          "actionSecondary": "Crítico",
+          "name": "Lacuna e Risco",
+          "summary": "Cause 20 de dano. Se a exceção for “usuário” ou regra sem evidência no SE, +40, descarte 1 confiança e anexe evidência.",
+          "attention": "“Mapeio a lacuna e o risco.”"
+        },
+        "fleumatico": {
+          "action": "Preguiçoso",
+          "actionSecondary": "Relaxado",
+          "name": "Como Está",
+          "summary": "Cause 10 de dano. Sem chamado formal no SE, o oponente não ataca. Fora do fluxo: +1 confiança.",
+          "attention": "“Mantém como está. Sem atalho.”"
+        }
+      },
+      "combos": {
+        "sanguineo-colerico": {
+          "name": "Acordo Leve",
+          "desc": "Cause 50 de dano. Se fechar acordo na reunião, +20. Sem dono no chamado: Paraliza.",
+          "attention": "“Facilito e fecho um acordo leve.”"
+        },
+        "sanguineo-fleumatico": {
+          "name": "Desenho Depois",
+          "desc": "Cause 20 de dano. Sem processo publicado no SE, você ignora ataques “urgentes”.",
+          "attention": "“Depois eu desenho bonito.”"
+        },
+        "sanguineo-melancholico": {
+          "name": "Encaixa no SE",
+          "desc": "Cause 30 de dano. Se anotar a exceção com calma e a regra não bater, +20 e compre 1 confiança.",
+          "attention": "“Anoto e vejo se encaixa.”"
+        },
+        "colerico-sanguineo": {
+          "name": "Dono Definido",
+          "desc": "Cause 45 de dano. Chamado sem dono no SE: Paraliza. Se definirem, +1 confiança.",
+          "attention": "“Uma voz por vez. Defino o dono.”"
+        },
+        "colerico-melancholico": {
+          "name": "Mudança Formal",
+          "desc": "Cause 40 de dano. Confuso. Se a exceção do corredor não está no SE, +30 e anexe evidência.",
+          "attention": "“Abre mudança formal.”"
+        },
+        "colerico-fleumatico": {
+          "name": "Próxima Reunião",
+          "desc": "Cause 40 de dano. Só com chamado aberto; senão, cause 10 e fim de turno.",
+          "attention": "“Não dá tempo — próxima reunião.”"
+        },
+        "melancholico-sanguineo": {
+          "name": "Cada Regra",
+          "desc": "Cause 25 de dano. Você não é alvo de culpa. Oponente descarta 1 confiança.",
+          "attention": "“Documento cada regra. Ego intacto.”"
+        },
+        "melancholico-colerico": {
+          "name": "Causa no Fluxo",
+          "desc": "Cause 50 de dano. Se o indicador caiu sem causa no SE, +20 e descarte 1 confiança.",
+          "attention": "“Causa raiz no fluxo. Já.”"
+        },
+        "melancholico-fleumatico": {
+          "name": "Caso e Regra",
+          "desc": "Cause 15 de dano. 2 marcadores de espera até a exceção ter caso e regra no SE.",
+          "attention": "“Me mostre o caso e a regra.”"
+        },
+        "fleumatico-sanguineo": {
+          "name": "Sem Ata",
+          "desc": "Cause 15 de dano. Sem ata da reunião, ataques contra você custam +1 paciência.",
+          "attention": "“Adio. Sem ata, sem decisão.”"
+        },
+        "fleumatico-colerico": {
+          "name": "Congela o Fluxo",
+          "desc": "Cause 30 de dano. Se pulou etapa no SE, +30 e Paralizado.",
+          "attention": "“Congela mudanças no processo.”"
+        },
+        "fleumatico-melancholico": {
+          "name": "Não Redesenho",
+          "desc": "Cause 20 de dano. Anexe evidência; se o fluxo no SE não mudou, descarte 1 confiança do oponente.",
+          "attention": "“Se o fluxo não mudou, não redesenho.”"
+        }
+      }
+    },
+    {
+      "value": "Infrastructure Assistant",
+      "label": "Assistente de Infraestrutura",
+      "theme": {
+        "primary": "#64748b",
+        "bodyFrom": "#94a3b8",
+        "bodyMid": "#64748b",
+        "bodyTo": "#334155",
+        "glow": "rgba(100, 116, 139, 0.45)",
+        "artBg": "linear-gradient(160deg, #94a3b8 0%, #64748b 50%, #334155 100%)"
+      },
+      "quiz": {
+        "intro": "Responda no dia a dia de suporte, máquina, rede e acesso — define o poder da carta.",
+        "questions": [
+          {
+            "text": "Update das 5h40 travou o computador. Você:",
+            "options": [
+              { "id": "sanguineo", "label": "Deixo terminar. Volta já." },
+              { "id": "colerico", "label": "Quem marcou update às 5h40?!" },
+              { "id": "melancholico", "label": "Vejo qual update pegou a máquina." },
+              { "id": "fleumatico", "label": "Atualiza sozinho. Segunda a gente vê." }
+            ]
+          },
+          {
+            "text": "Usuário sem Wi-Fi no meio da reunião. Você:",
+            "options": [
+              { "id": "sanguineo", "label": "Reconecto o ponto. É rapidinho." },
+              { "id": "colerico", "label": "Quem mexeu no roteador?!" },
+              { "id": "melancholico", "label": "Testo ponto, Wi-Fi e a impressora." },
+              { "id": "fleumatico", "label": "Se ontem conectava, não mexo." }
+            ]
+          },
+          {
+            "text": "Usuário pede acesso remoto no corredor:",
+            "options": [
+              { "id": "sanguineo", "label": "Entro na máquina daqui." },
+              { "id": "colerico", "label": "Abre chamado. Sem acesso no corredor." },
+              { "id": "melancholico", "label": "Me passa o usuário e o erro." },
+              { "id": "fleumatico", "label": "Manda e-mail. Estou na fila." }
+            ]
+          },
+          {
+            "text": "Computador da área não liga. Você:",
+            "options": [
+              { "id": "sanguineo", "label": "Troco a peça. Volta já." },
+              { "id": "colerico", "label": "Abro a máquina. Quero a peça." },
+              { "id": "melancholico", "label": "Testo fonte, memória e o monitor." },
+              { "id": "fleumatico", "label": "Se ligava ontem, não desmonto." }
+            ]
+          },
+          {
+            "text": "Pedem a senha de um colega. Você:",
+            "options": [
+              { "id": "sanguineo", "label": "Passo agora. Ele troca depois." },
+              { "id": "colerico", "label": "Senha não se empresta." },
+              { "id": "melancholico", "label": "Registro o pedido e o dono." },
+              { "id": "fleumatico", "label": "Sem chamado, não libero." }
+            ]
+          }
+        ]
+      },
+      "temperaments": {
+        "sanguineo": {
+          "action": "Otimista",
+          "actionSecondary": "Enrolão",
+          "name": "Acesso Remoto",
+          "summary": "Cause 30 de dano. Se for tranquilo com o usuário (“entro na máquina”), +20 e compre 1 confiança. Erro ainda na tela anula o bônus.",
+          "attention": "“Entro na máquina. Volta já.”"
+        },
+        "colerico": {
+          "action": "Explosivo",
+          "actionSecondary": "Impaciente",
+          "name": "Chamado Agora",
+          "summary": "Cause 40 de dano. Se o chamado ainda não foi aberto, o oponente fica Paralizado.",
+          "attention": "“Abre chamado. Sem acesso no corredor.”"
+        },
+        "melancholico": {
+          "action": "Detalhista",
+          "actionSecondary": "Crítico",
+          "name": "Diagnóstico",
+          "summary": "Cause 20 de dano. Se a causa for peça, rede ou “usuário”, +40, descarte 1 confiança e anexe evidência.",
+          "attention": "“Testo peça, rede e o acesso.”"
+        },
+        "fleumatico": {
+          "action": "Preguiçoso",
+          "actionSecondary": "Relaxado",
+          "name": "Na Fila",
+          "summary": "Cause 10 de dano. Sem chamado, o oponente não ataca. Sem corredor: +1 confiança.",
+          "attention": "“Sem chamado, não libero acesso.”"
+        }
+      },
+      "combos": {
+        "sanguineo-colerico": {
+          "name": "Update das 5h40",
+          "desc": "Cause 50 de dano. Se deixar o update das 5h40 terminar com calma, +20. Sem chamado da máquina: Paraliza.",
+          "attention": "“Deixo terminar. Volta já.”"
+        },
+        "sanguineo-fleumatico": {
+          "name": "Suporte Remoto",
+          "desc": "Cause 20 de dano. Sem chamado aberto, você ignora pedidos “urgentes” de acesso no corredor.",
+          "attention": "“Remoto sem chamado? Não entro.”"
+        },
+        "sanguineo-melancholico": {
+          "name": "Programa Instalado",
+          "desc": "Cause 30 de dano. Se instalar o programa com calma e faltar o registro, +20 e compre 1 confiança.",
+          "attention": "“Programa no ar. O registro fica pra depois.”"
+        },
+        "colerico-sanguineo": {
+          "name": "Backup na Mesa",
+          "desc": "Cause 45 de dano. Backup sem cópia: Paraliza. Se concluírem, +1 confiança.",
+          "attention": "“Backup do dia. Quero a cópia.”"
+        },
+        "colerico-melancholico": {
+          "name": "Monta e Testa",
+          "desc": "Cause 40 de dano. Confuso. Se trocou peça ou montou a máquina sem testar, +30 e anexe evidência.",
+          "attention": "“Trocou a peça sem testar? Quero a prova.”"
+        },
+        "colerico-fleumatico": {
+          "name": "Chamado Formal",
+          "desc": "Cause 40 de dano. Só com chamado aberto; senão, cause 10 e fim de turno.",
+          "attention": "“Presencial ou remoto: abre chamado.”"
+        },
+        "melancholico-sanguineo": {
+          "name": "Antivírus em Dia",
+          "desc": "Cause 25 de dano. Você não é alvo de culpa. Oponente descarta 1 confiança.",
+          "attention": "“Antivírus conferido. Ego intacto.”"
+        },
+        "melancholico-colerico": {
+          "name": "Wi-Fi sem Teste",
+          "desc": "Cause 50 de dano. Se o Wi-Fi voltou sem teste do ponto, +20 e descarte 1 confiança.",
+          "attention": "“Wi-Fi no ar. Quero o teste.”"
+        },
+        "melancholico-fleumatico": {
+          "name": "Periférico na Fila",
+          "desc": "Cause 15 de dano. 2 marcadores de espera até o chamado dizer se é mouse, teclado ou monitor.",
+          "attention": "“Mouse, teclado ou monitor? Escreve.”"
+        },
+        "fleumatico-sanguineo": {
+          "name": "Segunda a Gente Vê",
+          "desc": "Cause 15 de dano. Enquanto o update das 5h40 não termina, ataques contra você custam +1 paciência.",
+          "attention": "“Atualiza sozinho. Segunda a gente vê.”"
+        },
+        "fleumatico-colerico": {
+          "name": "Não Fura Fila",
+          "desc": "Cause 30 de dano. Se o chamado aleatório pulou a fila, +30 e Paralizado.",
+          "attention": "“Chamado aleatório não fura fila.”"
+        },
+        "fleumatico-melancholico": {
+          "name": "Senha não Empresta",
+          "desc": "Cause 20 de dano. Anexe evidência; se o acesso não foi liberado, descarte 1 confiança do oponente.",
+          "attention": "“Sem chamado, não libero senha.”"
+        }
+      }
+    },
+    {
+      "value": "Infrastructure Analyst",
+      "label": "Analista de Infraestrutura",
+      "theme": {
+        "primary": "#059669",
+        "bodyFrom": "#34d399",
+        "bodyMid": "#059669",
+        "bodyTo": "#065f46",
+        "glow": "rgba(5, 150, 105, 0.45)",
+        "artBg": "linear-gradient(160deg, #34d399 0%, #059669 50%, #065f46 100%)"
+      },
+      "quiz": {
+        "intro": "Responda no clima de servidor, DNS e mudança — define o poder da carta.",
+        "questions": [
+          {
+            "text": "Pedem alteração em produção na sexta. Você:",
+            "options": [
+              { "id": "sanguineo", "label": "Só um ajuste rápido — deve dar certo." },
+              { "id": "colerico", "label": "Quem aprovou isso?! Quero CAB." },
+              { "id": "melancholico", "label": "Janela, rollback e checklist primeiro." },
+              { "id": "fleumatico", "label": "Se está quieto, não mexe." }
+            ]
+          },
+          {
+            "text": "Serviço caiu e o ping responde:",
+            "options": [
+              { "id": "sanguineo", "label": "Reinicia e torce. Costuma voltar." },
+              { "id": "colerico", "label": "Queda total. War room agora." },
+              { "id": "melancholico", "label": "Ainda assim… DNS. Quero prova." },
+              { "id": "fleumatico", "label": "Freeze. Ninguém altera rota." }
+            ]
+          },
+          {
+            "text": "Dev pede “só liberar a porta” no corredor:",
+            "options": [
+              { "id": "sanguineo", "label": "Liberto e a gente documenta depois." },
+              { "id": "colerico", "label": "Abre chamado. Sem exceção." },
+              { "id": "melancholico", "label": "Me passa origem, destino e motivo." },
+              { "id": "fleumatico", "label": "Fila do firewall. Espera." }
+            ]
+          },
+          {
+            "text": "Monitoramento grita e ninguém assume:",
+            "options": [
+              { "id": "sanguineo", "label": "Eu olho — provavelmente falso positivo." },
+              { "id": "colerico", "label": "Dono no canal. Já." },
+              { "id": "melancholico", "label": "Correlaciono métrica, log e change." },
+              { "id": "fleumatico", "label": "Ack e espera estabilizar sozinho." }
+            ]
+          },
+          {
+            "text": "Sobre o post-mortem:",
+            "options": [
+              { "id": "sanguineo", "label": "Depois eu escrevo." },
+              { "id": "colerico", "label": "Não dá tempo — próximo alerta." },
+              { "id": "melancholico", "label": "Laudo completo já saiu." },
+              { "id": "fleumatico", "label": "Se não mexi, não tem post-mortem." }
+            ]
+          }
+        ]
+      },
+      "temperaments": {
+        "sanguineo": {
+          "action": "Otimista",
+          "actionSecondary": "Enrolão",
+          "name": "Alteração de Sexta",
+          "summary": "Cause 35 de dano. Se for “só um ajuste rápido”, cause 25 a mais e compre 1 risco. Se falhar, o oponente compra “servidor caiu”.",
+          "attention": "“O que poderia dar errado?”"
+        },
+        "colerico": {
+          "action": "Explosivo",
+          "actionSecondary": "Impaciente",
+          "name": "Queda Total",
+          "summary": "Cause 60 de dano. O oponente não pode curar neste turno. Escolha um culpado em jogo e cause 10 a ele também.",
+          "attention": "“Quem mexeu em produção?!”"
+        },
+        "melancholico": {
+          "action": "Detalhista",
+          "actionSecondary": "Crítico",
+          "name": "Culpa do DNS",
+          "summary": "Cause 25 de dano. Enquanto “DNS” estiver em jogo, este ataque causa 20 a mais e o oponente não pode redirecionar dano.",
+          "attention": "“Pinga? Ainda assim… DNS.”"
+        },
+        "fleumatico": {
+          "action": "Preguiçoso",
+          "actionSecondary": "Relaxado",
+          "name": "Não Mexe",
+          "summary": "Cause 10 de dano. Evite o próximo ataque se o seu campo estiver “estável”. Você não pode jogar alterações neste turno.",
+          "attention": "“Se está quieto, deixe quieto.”"
+        }
+      },
+      "combos": {
+        "sanguineo-colerico": {
+          "name": "Sexta Fatal",
+          "desc": "Cause 70 de dano. Se você usou Alteração de Sexta neste duelo, este ataque não pode ser bloqueado.",
+          "attention": "“Era só um ajuste.”"
+        },
+        "sanguineo-fleumatico": {
+          "name": "Quase Não Mexe",
+          "desc": "Cause 25 de dano. Você pode anular este ataque para evitar 40 de dano no próximo turno do oponente.",
+          "attention": "“Dois impulsos. Uma escolha.”"
+        },
+        "sanguineo-melancholico": {
+          "name": "Deploy no DNS",
+          "desc": "Cause 40 de dano. Coloque “DNS” no campo. O oponente descarta 1 carta “funcionava ontem”.",
+          "attention": "“Otimismo com post-mortem.”"
+        },
+        "colerico-sanguineo": {
+          "name": "Hotfix Gritado",
+          "desc": "Cause 55 de dano. No próximo turno, seu ataque custa −1 e causa 15 a mais.",
+          "attention": "“Grito agora. Sobe depois.”"
+        },
+        "colerico-melancholico": {
+          "name": "War Room",
+          "desc": "Cause 45 de dano. Revele logs: se houver timeout, cause 30 a mais e silencie o Slack do oponente.",
+          "attention": "“Raiva com evidência.”"
+        },
+        "colerico-fleumatico": {
+          "name": "Freeze de Crise",
+          "desc": "Cause 40 de dano. Ninguém joga “alteração” até o fim do seu próximo turno.",
+          "attention": "“Estabiliza. Depois aponta.”"
+        },
+        "melancholico-sanguineo": {
+          "name": "DNS com Esperança",
+          "desc": "Cause 30 de dano. Prove DNS: cause 20 a mais. Depois, cure 20 em você (fé renovada).",
+          "attention": "“Laudo cirúrgico. Esperança intacta.”"
+        },
+        "melancholico-colerico": {
+          "name": "Réu DNS",
+          "desc": "Cause 50 de dano. O oponente deve responder “backup em dia?” ou tomar 20 a mais.",
+          "attention": "“Sem rodeios no war room.”"
+        },
+        "melancholico-fleumatico": {
+          "name": "Um Incêndio",
+          "desc": "Cause 20 de dano. Trave todas as outras zonas. Só DNS pode ser alvo até você passar o turno.",
+          "attention": "“Um fogo por vez.”"
+        },
+        "fleumatico-sanguineo": {
+          "name": "Exceção Perigosa",
+          "desc": "Cause 20 de dano. Você pode ignorar “Não Mexe” uma vez: se fizer, cause 40 — e o oponente prepara Queda Total.",
+          "attention": "“A regra de ouro tem asterisco.”"
+        },
+        "fleumatico-colerico": {
+          "name": "Lei Marcial",
+          "desc": "Cause 35 de dano. Depois da queda, seus ataques causam +10 e o oponente não joga magias de “ajuste”.",
+          "attention": "“Calmo até cair. Depois, ordem.”"
+        },
+        "fleumatico-melancholico": {
+          "name": "Freeze e Log",
+          "desc": "Cause 25 de dano. Compre 2 logs. Se ambos citarem DNS, cause 40 a mais.",
+          "attention": "“Mínimo esforço. Máximo log.”"
+        }
+      }
+    }
   ],
+
   "temperaments": {
     "sanguineo": {
-      "label": "Sanguíneo",
+      "label": "Otimista",
+      "labelSecondary": "Enrolão",
       "icon": "☀️",
-      "name": "Já vou aí!",
-      "summary": "Atende o chamado sorrindo — impressora, microondas ou o Mercado Livre travado.",
-      "attention": "Abre cinco chamados e esquece o primeiro."
+      "name": "Fé Cega",
+      "summary": "Cause 30 de dano. Ignore a primeira falha deste turno. Se ainda assim falhar, o oponente compra “ambiente”.",
+      "attention": "“Na minha máquina, naturalmente, está impecável.”"
     },
     "colerico": {
-      "label": "Colérico",
-      "icon": "⚡",
-      "name": "Prioridade máxima",
-      "summary": "Resolve na hora: tela quebrada, cabo solto, sistema parado.",
-      "attention": "“Só uma duvidinha” esgota a paciência."
+      "label": "Explosivo",
+      "labelSecondary": "Impaciente",
+      "icon": "💣",
+      "name": "Prazo Agora",
+      "summary": "Cause 50 de dano. Este ataque não pode ser adiado. O oponente pula efeitos de “vamos alinhar”.",
+      "attention": "“Reunião depois — se sobrar tempo.”"
     },
     "melancholico": {
-      "label": "Melancólico",
-      "icon": "🍂",
-      "name": "Diagnóstico total",
-      "summary": "Vasculha o chamado até achar a causa — até no microondas da cozinha.",
-      "attention": "O pedido simples vira laudo de três páginas."
+      "label": "Detalhista",
+      "labelSecondary": "Crítico",
+      "icon": "📋",
+      "name": "Causa Raiz",
+      "summary": "Cause 20 de dano. Olhe o topo do deck do oponente. Se for erro, cause 40 a mais e exílio esse card.",
+      "attention": "“A causa raiz raramente grita. Eu faço.”"
     },
     "fleumatico": {
-      "label": "Fleumático",
+      "label": "Preguiçoso",
+      "labelSecondary": "Relaxado",
       "icon": "🌊",
-      "name": "Fila tranquila",
-      "summary": "Recebe qualquer chamado com calma: trocar tela, ligar monitor, nota fiscal travada.",
-      "attention": "Aceita mais um “minutinho” e a fila não acaba."
+      "name": "Deixa Quieto",
+      "summary": "Cause 10 de dano. Evite o próximo ataque se você não jogou ações neste turno.",
+      "attention": "“A estabilidade agradece.”"
     }
   },
   "combos": {
     "sanguineo-colerico": {
       "icon": "📣",
-      "name": "SOS corporativo",
-      "desc": "Chega falando alto e já resolvendo — microondas, tela ou Kenit."
+      "name": "Correção Blindada",
+      "desc": "Cause 55 de dano. Se alguém “mexeu”, cause 20 a mais e compre 1 fé.",
+      "attention": "“Fé com prazo curto.”"
     },
     "sanguineo-fleumatico": {
       "icon": "☕",
-      "name": "Chamado com café",
-      "desc": "Explica com paciência e ainda deixa o clima leve. Vira ímã de trabalhinho."
+      "name": "Cinco Minutos",
+      "desc": "Cause 25 de dano. O oponente só responde no fim do turno — a fila também é uma estratégia.",
+      "attention": "“O chamado pode esperar.”"
     },
     "sanguineo-melancholico": {
       "icon": "🌙",
-      "name": "Plantão surpresa",
-      "desc": "Anima quem pediu ajuda e, no fundo, investiga até o fim."
+      "name": "Feature Disfarçada",
+      "desc": "Cause 30 de dano. Até o laudo sair, trate o dano como “feature”: o oponente não pode reclamar neste turno.",
+      "attention": "“Ontem funcionava. Quase.”"
     },
     "colerico-sanguineo": {
       "icon": "🚀",
-      "name": "Chamado express",
-      "desc": "Abre, resolve e fecha antes do café esfriar — Mas zero paciência para novos chamados."
+      "name": "Sobe e Reza",
+      "desc": "Cause 45 de dano. No próximo turno, seu ataque custa menos e causa +15 se o alvo ainda estiver de pé.",
+      "attention": "“Urgência com moral alta.”"
     },
     "colerico-melancholico": {
       "icon": "🔍",
-      "name": "Caçador de chamado",
-      "desc": "Não para até o Mercado Livre voltar e a tela nova funcionar."
+      "name": "Caça-usuario",
+      "desc": "Cause 40 de dano. Se o oponente não leu a mensagem de erro, ele fica Confuso e toma 20 a mais.",
+      "attention": "“Cadeira e teclado.”"
     },
     "colerico-fleumatico": {
       "icon": "📐",
-      "name": "Fila blindada",
-      "desc": "Organiza a urgência e entrega sem drama — até se for o microondas."
+      "name": "Checklist Quente",
+      "desc": "Cause 35 de dano. Confira cabo/cache: se ambos ok, cause 25 a mais; senão, trave o campo.",
+      "attention": "“Fila firme. Drama zero.”"
     },
     "melancholico-sanguineo": {
       "icon": "🎧",
-      "name": "Suporte com fone",
-      "desc": "Escuta o relato, testa de tudo e acalma quem está em pânico."
+      "name": "Homolog vs Prod",
+      "desc": "Cause 30 de dano. Se passou em homologação, o oponente descarta 1 “surpresa”. Você faz correção rápida (+10 no próximo).",
+      "attention": "“Laudo primeiro. Esperança depois.”"
     },
     "melancholico-colerico": {
       "icon": "🧹",
-      "name": "Chamado impecável",
-      "desc": "Troca a tela, testa o cabo, confere o sistema — nada pela metade."
+      "name": "Veredito Seco",
+      "desc": "Cause 60 de dano. Ignore defesas se o veredito for PEBKAC.",
+      "attention": "“Nada pela metade.”"
     },
     "melancholico-fleumatico": {
       "icon": "🖥️",
-      "name": "Herói invisível",
-      "desc": "Resolve nos bastidores: ML travou, monitor morto, “não era TI, mas…”."
+      "name": "Bastidores",
+      "desc": "Cause 20 de dano. Este ataque não pode ser respondido em público — só nos bastidores (sem contra-ataque neste turno).",
+      "attention": "“Silêncio. Resultado.”"
     },
     "fleumatico-sanguineo": {
       "icon": "🤝",
-      "name": "Pode chamar de novo",
-      "desc": "Aceita de tudo — do sistema ao microondas — sem julgamento."
+      "name": "Depois Documento",
+      "desc": "Cause 20 de dano. Evite 1 ataque. A documentação deste efeito fica pendente até o fim do duelo.",
+      "attention": "“Talvez. Depois.”"
     },
     "fleumatico-colerico": {
       "icon": "📌",
-      "name": "Prazo do chamado",
-      "desc": "Fecha o ticket no horário, com calma e firmeza."
+      "name": "Checklist ou Nada",
+      "desc": "Cause 30 de dano. Se o checklist estiver incompleto, este ataque falha — e o oponente também não ataca.",
+      "attention": "“Calmo por fora. Firme por dentro.”"
     },
     "fleumatico-melancholico": {
       "icon": "⏰",
-      "name": "Plantão de ferro",
-      "desc": "Mesmo ritmo todo dia: fila, jeito, entrega — nem o Kenit fora abala."
+      "name": "Plantão de Ferro",
+      "desc": "Cause 25 de dano. Repita o ritual (cabo, cache, erro): a cada item ok, +10 de dano.",
+      "attention": "“Sem pressa aparente.”"
     }
   },
   "rarities": [
-    { "symbol": "●", "name": "Comum" },
-    { "symbol": "◆", "name": "Incomum" },
-    { "symbol": "★", "name": "Rara" },
-    { "symbol": "★★", "name": "Rara Ultra" },
-    { "symbol": "★★★", "name": "Rara Ilustração Especial" }
+    { "name": "Comum" },
+    { "name": "Incomum" },
+    { "name": "Rara" },
+    { "name": "Rara Ultra" },
+    { "name": "Rara Ilustração Especial" }
   ],
   "stylize": {
     "apiOff": "Geração de imagem desligada (HF_IMAGE_API=0).",

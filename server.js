@@ -93,7 +93,7 @@ const PROFESSIONS = new Map([
   ["ADVPL Developer", "at a pixel-art ERP workstation with chunky software screens and an office desk"],
   ["Systems Analyst", "beside a pixel whiteboard with system diagrams and sticky notes, laptop open"],
   ["Systems Coordinator", "in a pixel team space with a planning board and laptops"],
-  ["Systems Manager", "in a pixel manager office with dashboard monitors and strategy notes"],
+  ["IT Manager", "in a pixel manager office with dashboard monitors and strategy notes"],
   ["Process Analyst", "near pixel process flowcharts and a kanban board, documents and laptop"],
   ["Infrastructure Assistant", "with pixel data-center / server-rack tiles in the background, cables and network gear"],
   ["Infrastructure Analyst", "in a pixel network ops vibe with server racks and monitoring screens behind the character"],

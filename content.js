@@ -80,25 +80,6 @@
     labelFor("email", "email");
     labelFor("photo-input", "photo");
 
-    const dominantLabel = document.querySelector('#dominant-grid')?.closest(".field")?.querySelector("label");
-    setText(dominantLabel, labels.dominant);
-    const secondaryField = document.querySelector("#secondary-grid")?.closest(".field");
-    if (secondaryField && labels.secondary) {
-      const lab = secondaryField.querySelector("label");
-      if (lab) {
-        lab.innerHTML = "";
-        lab.appendChild(document.createTextNode(labels.secondary + " "));
-        if (labels.secondaryOptional) {
-          const opt = document.createElement("span");
-          opt.style.fontWeight = "400";
-          opt.style.textTransform = "none";
-          opt.style.letterSpacing = "0";
-          opt.textContent = labels.secondaryOptional;
-          lab.appendChild(opt);
-        }
-      }
-    }
-
     const placeholders = F.placeholders || {};
     const name = document.getElementById("name");
     const age = document.getElementById("age");
@@ -111,13 +92,15 @@
     const ageHint = document.querySelector("#field-age .hint");
     const professionHint = document.querySelector("#field-profession .hint");
     const emailHint = document.querySelector("#field-email .hint");
-    const secondaryHint = secondaryField && secondaryField.querySelector(".hint");
-    const downloadHint = document.querySelector('.wizard-step[data-step="4"] .hint');
+    const downloadHint = document.querySelector('.wizard-step[data-step="3"] .hint');
     setText(ageHint, hints.age);
     setText(professionHint, hints.profession);
     setText(emailHint, hints.email);
-    setText(secondaryHint, hints.secondary);
     setText(downloadHint, hints.download);
+
+    const quiz = C.quiz || {};
+    setText(document.getElementById("quiz-intro"), quiz.intro);
+    setText(document.getElementById("quiz-result-title"), quiz.resultTitle);
 
     const errors = F.errors || {};
     setText(document.getElementById("name-error"), errors.name);
@@ -127,8 +110,6 @@
 
     const buttons = F.buttons || {};
     const btnMap = [
-      ["btn-hp", "rollHp"],
-      ["btn-retreat", "rollRetreat"],
       ["btn-stylize", "stylize"],
       ["btn-clear-photo", "clearPhoto"],
       ["btn-download", "download"],
@@ -139,19 +120,6 @@
     btnMap.forEach(([id, key]) => {
       const el = document.getElementById(id);
       if (el && buttons[key]) el.textContent = buttons[key];
-    });
-
-    const chips = F.chips || {};
-    document.querySelectorAll(".stat-chips .chip").forEach((chip, i) => {
-      const strong = chip.querySelector("strong");
-      if (!strong) return;
-      const prefix =
-        i === 0 ? chips.hp : i === 1 ? chips.hpClass : i === 2 ? chips.retreat : null;
-      if (!prefix) return;
-      chip.childNodes.forEach((node) => {
-        if (node.nodeType === Node.TEXT_NODE) node.remove();
-      });
-      chip.insertBefore(document.createTextNode(prefix + " "), strong);
     });
 
     const preview = document.getElementById("photo-preview");
@@ -184,16 +152,30 @@
     setText(document.getElementById("card-stage"), card.emptyStage);
     setText(document.getElementById("card-desc"), card.emptyDesc);
     setText(document.getElementById("card-info-bar"), card.infoFallback);
-    setText(document.getElementById("card-rarity-name"), card.defaultRarity);
     const energy = document.getElementById("card-energy");
     if (energy && card.energyTitle) energy.title = card.energyTitle;
 
     const stats = card.stats || {};
     const items = document.querySelectorAll(".card-stats-bar .item");
-    const keys = ["age", "health", "retreat"];
+    const keys = ["age", "health", "rarity"];
     items.forEach((item, i) => {
       const span = item.querySelector("span");
       if (span && stats[keys[i]]) span.textContent = stats[keys[i]];
+    });
+
+    const attrsTitle = document.getElementById("card-attrs-title");
+    if (attrsTitle && card.attrsTitle) attrsTitle.textContent = card.attrsTitle;
+
+    const attrs = card.attrs || {};
+    document.querySelectorAll(".card-attrs-bar .attr span[data-attr]").forEach((span) => {
+      const key = span.getAttribute("data-attr");
+      if (key && attrs[key]) span.textContent = attrs[key];
+    });
+
+    const benefits = card.attrsBenefit || {};
+    document.querySelectorAll(".card-attrs-bar .attr-benefit[data-benefit]").forEach((el) => {
+      const key = el.getAttribute("data-benefit");
+      if (key && benefits[key]) el.textContent = benefits[key];
     });
   }
 

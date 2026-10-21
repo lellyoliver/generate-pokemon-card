@@ -171,15 +171,3 @@ HP	Classificação aproximada
 260–330	Muito alto
 340–380	Extremamente alto
 
-
-Tipos de custo de recuo
-Símbolos	Custo	O que significa
-Nenhum	0	Recuo gratuito
-⭐	1	Descartar 1 energia
-⭐⭐	2	Descartar 2 energias
-⭐⭐⭐	3	Descartar 3 energias
-⭐⭐⭐⭐	4	Descartar 4 energias
-⭐⭐⭐⭐⭐	5	Descartar 5 energias
-
-
-esse é por math tbm
