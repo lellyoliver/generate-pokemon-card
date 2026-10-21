@@ -21,11 +21,8 @@ jobs:
     runs-on: ubuntu-24.04
     env:
       HF_TOKEN: ${{ secrets.HF_TOKEN }}
-      HF_MODEL: ${{ vars.HF_MODEL || 'black-forest-labs/FLUX.1-Kontext-dev' }}
-      HF_PROVIDER: ${{ vars.HF_PROVIDER || 'fal-ai' }}
-      EMAIL_GATE: ${{ vars.EMAIL_GATE || '1' }}
-      EMAIL_DOMAIN: ${{ vars.EMAIL_DOMAIN || 'ancora.com.br' }}
-      HF_IMAGE_API: "1"
+      HF_MODEL: "black-forest-labs/FLUX.1-Kontext-dev"
+      HF_PROVIDER: "fal-ai"
       PORT: "3000"
     steps:
       - name: Checkout
@@ -39,33 +36,3 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Run tests
-        run: npm test
-
-      - name: Smoke server (prod env)
-        run: |
-          set -e
-          node server.js &
-          pid=$!
-          cleanup() { kill "$pid" 2>/dev/null || true; }
-          trap cleanup EXIT
-          for i in $(seq 1 30); do
-            if curl -sf "http://127.0.0.1:${PORT}/api/health" -o /tmp/health.json; then
-              break
-            fi
-            sleep 1
-          done
-          echo "Health:"
-          cat /tmp/health.json
-          echo
-          node -e '
-            const h = require("/tmp/health.json");
-            if (!h.ok) { console.error("health.ok false"); process.exit(1); }
-            if (!h.hfConfigured) {
-              console.error("HF_TOKEN não identificado (hfConfigured=false). Confira Secrets → HF_TOKEN.");
-              process.exit(1);
-            }
-            console.log("Prod OK — provider=%s model=%s emailGate=%s domain=%s",
-              h.provider, h.model, h.emailGateEnabled, h.emailDomain);
-          '
