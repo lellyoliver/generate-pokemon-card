@@ -46,6 +46,7 @@
 
   let originalDataUrl = null;
   let apiReady = false;
+  let serverReachable = false;
   let isBusy = false;
   let emailGateEnabled = true;
   let emailDomain = "ancora.com.br";
@@ -120,6 +121,7 @@
       const res = await fetch(new URL("api/health", document.baseURI));
       if (!res.ok) throw new Error("Servidor indisponível.");
       const data = await res.json();
+      serverReachable = true;
       imageApiEnabled = data.imageApiEnabled !== false;
       emailGateEnabled = data.emailGateEnabled !== false;
       emailDomain = data.emailDomain || "ancora.com.br";
@@ -127,12 +129,25 @@
       syncEmailFieldVisibility();
       if (!imageApiEnabled) {
         setStatus(msg("apiOff", "Geração de imagem desligada (HF_IMAGE_API=0)."), "warn");
+      } else if (!apiReady) {
+        setStatus(
+          msg("needToken", "Configure HF_TOKEN no .env e reinicie o servidor. Veja o README."),
+          "warn"
+        );
       }
     } catch (_) {
+      serverReachable = false;
       apiReady = false;
       imageApiEnabled = true;
       emailGateEnabled = true;
       syncEmailFieldVisibility();
+      setStatus(
+        msg(
+          "needServer",
+          "Sem servidor Node neste endereço (ex.: GitHub Pages). Rode localmente com npm start."
+        ),
+        "warn"
+      );
     } finally {
       setBusy(isBusy);
     }
@@ -151,9 +166,14 @@
       );
       return;
     }
-    if (!apiReady) {
+    if (!serverReachable || !apiReady) {
       setStatus(
-        msg("needToken", "Configure HF_TOKEN no .env e reinicie o servidor. Veja o README."),
+        serverReachable
+          ? msg("needToken", "Configure HF_TOKEN no .env e reinicie o servidor. Veja o README.")
+          : msg(
+              "needServer",
+              "Sem servidor Node neste endereço (ex.: GitHub Pages). Rode localmente com npm start."
+            ),
         "warn"
       );
       return;

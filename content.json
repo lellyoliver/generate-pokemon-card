@@ -226,6 +226,7 @@
     "apiOff": "Geração de imagem desligada (HF_IMAGE_API=0).",
     "apiOffHint": "Geração de imagem desligada (HF_IMAGE_API=0). Ative no .env e reinicie.",
     "needToken": "Configure HF_TOKEN no .env e reinicie o servidor. Veja o README.",
+    "needServer": "Sem servidor Node neste endereço (ex.: GitHub Pages). Rode localmente com npm start.",
     "needPhoto": "Escolha uma foto primeiro.",
     "needProfession": "Selecione a profissão antes de gerar o pixel art.",
     "needEmail": "Informe o e-mail @ancora.com.br antes de gerar.",
