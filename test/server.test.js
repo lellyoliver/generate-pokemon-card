@@ -48,11 +48,23 @@ async function start(t, options = {}) {
   };
 }
 
+const APPEARANCE = {
+  gender: "feminino",
+  skin: "clara",
+  hairColor: "castanho",
+  eyeColor: "castanho",
+  hairLength: "medio",
+  hairType: "liso",
+  glasses: "nao",
+};
+
 function post(base, body) {
+  const payload = { appearance: APPEARANCE, ...body };
+  if (body && body.appearance === null) delete payload.appearance;
   return nativeFetch(base + "/api/stylize", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+    body: JSON.stringify(payload),
   });
 }
 
@@ -62,11 +74,18 @@ test("health informa configuração sem divulgar o token", async (t) => {
   });
   const response = await nativeFetch(base + "/api/health");
   assert.equal(response.status, 200);
-  assert.deepEqual(await response.json(), {
-    ok: true, provider: "huggingface", model: "example/model",
-    inferenceProvider: "fal-ai", imageApiEnabled: true, hfConfigured: true,
-    emailGateEnabled: false, emailDomain: "ancora.com.br",
-  });
+  const health = await response.json();
+  assert.equal(health.ok, true);
+  assert.equal(health.provider, "huggingface");
+  assert.equal(health.model, "example/model");
+  assert.equal(health.inferenceProvider, "fal-ai");
+  assert.equal(health.imageApiEnabled, true);
+  assert.equal(health.hfConfigured, true);
+  assert.equal(health.emailGateEnabled, false);
+  assert.equal(health.emailDomain, "ancora.com.br");
+  assert.equal(health.textApiEnabled, true);
+  assert.ok(health.llmModel);
+  assert.equal(typeof health.llmConfigured, "boolean");
 });
 
 test("HF_IMAGE_API=0 desliga a geração sem chamar o serviço", async (t) => {
@@ -77,7 +96,7 @@ test("HF_IMAGE_API=0 desliga a geração sem chamar o serviço", async (t) => {
   const health = await (await nativeFetch(base + "/api/health")).json();
   assert.equal(health.imageApiEnabled, false);
   assert.equal(health.hfConfigured, false);
-  const response = await post(base, { image: IMAGE, profession: "Fullstack Web Developer" });
+  const response = await post(base, { image: IMAGE, profession: "Web Developer" });
   assert.equal(response.status, 503);
   assert.match((await response.json()).error, /desligada|HF_IMAGE_API/i);
 });
@@ -111,13 +130,19 @@ test("SDK envia foto e prompt pelo roteador HF e retorna a arte como data URL", 
       assert.equal(init.headers.Authorization, "Bearer " + FAKE_TOKEN);
       const payload = JSON.parse(init.body);
       assert.equal(payload.image_url, IMAGE);
-      assert.match(payload.prompt, /chibi|super-deformed/i);
-      assert.match(payload.prompt, /Fullstack Web Developer/);
-      assert.match(payload.prompt, /dual monitors/);
-      assert.match(payload.prompt, /vertical black pixel eyes/i);
-      assert.match(payload.prompt, /Do not show teeth/i);
-      assert.equal(payload.guidance_scale, 3.2);
+      assert.match(payload.prompt, /Pokémon|anime|Sugimori/i);
+      assert.match(payload.prompt, /FULL BODY|full body/i);
+      assert.match(payload.prompt, /comic|gag|question mark|sweat/i);
+      assert.match(payload.prompt, /corporate|office|workplace/i);
+      assert.match(payload.prompt, /sky-blue|dark blue denim/i);
+      assert.match(payload.prompt, /Web Developer/);
+      assert.match(payload.prompt, /likeness/i);
+      assert.match(payload.prompt, /woman/i);
+      assert.match(payload.prompt, /fair light skin/i);
+      assert.equal(payload.guidance_scale, 3.5);
       assert.equal(payload.num_inference_steps, 28);
+      assert.equal(payload.width, 1456);
+      assert.equal(payload.height, 720);
       return Response.json({
         request_id: "offline-test", status: "COMPLETED",
         response_url: "https://queue.fal.run/fal-ai/flux-kontext/requests/offline-test",
@@ -135,31 +160,84 @@ test("SDK envia foto e prompt pelo roteador HF e retorna a arte como data URL", 
     assert.fail("Requisição externa inesperada nos testes: " + url.origin + url.pathname);
   });
   const { base } = await start(t);
-  const response = await post(base, { image: IMAGE, profession: "Fullstack Web Developer" });
-  assert.equal(response.status, 200);
-  assert.deepEqual(await response.json(), {
-    url: IMAGE, provider: "huggingface", inferenceProvider: "fal-ai",
-    model: "black-forest-labs/FLUX.1-Kontext-dev", saved: true, cached: false,
+  const response = await post(base, {
+    image: IMAGE,
+    profession: "Web Developer",
+    appearance: {
+      gender: "feminino",
+      skin: "clara",
+      hairColor: "preto",
+      eyeColor: "castanho",
+      hairLength: "medio",
+      hairType: "cacheado",
+      glasses: "sim",
+    },
   });
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.match(body.url, /^data:image\/jpeg;base64,/);
+  assert.equal(body.provider, "huggingface");
+  assert.equal(body.inferenceProvider, "fal-ai");
+  assert.equal(body.model, "black-forest-labs/FLUX.1-Kontext-dev");
+  assert.equal(body.saved, true);
+  assert.equal(body.cached, false);
+  assert.equal(body.width, 1456);
+  assert.equal(body.height, 720);
+  assert.equal(body.dpi, 90);
   assert.ok(calls.some(({ url, init }) => url.hostname === "router.huggingface.co" && init.method === "POST"));
   assert.ok(calls.every(({ init }) => init.signal instanceof AbortSignal));
 });
 
-test("estilo pixel art com profissão e mantém o tipo da imagem retornada", async (t) => {
+test("estilo anime widescreen full-body corporativo com attrs", async (t) => {
   const { base } = await start(t, { client: {
     async imageToImage(args, options) {
       assert.equal(args.inputs.type, "image/png");
-      assert.equal(args.parameters.guidance_scale, 3.2);
-      assert.match(args.parameters.prompt, /chibi|super-deformed/i);
+      assert.equal(args.parameters.guidance_scale, 3.5);
+      assert.equal(args.parameters.width, 1456);
+      assert.equal(args.parameters.height, 720);
+      assert.match(args.parameters.prompt, /Pokémon|anime|Sugimori/i);
+      assert.match(args.parameters.prompt, /FULL BODY|full body/i);
+      assert.match(args.parameters.prompt, /MAIN ACTION|Priority storyboard/i);
+      assert.match(args.parameters.prompt, /comic|gag|question mark|sweat/i);
+      assert.match(args.parameters.prompt, /corporate|office|workplace/i);
+      assert.match(args.parameters.prompt, /sky-blue|dark blue denim/i);
       assert.match(args.parameters.prompt, /Systems Analyst/);
+      assert.match(args.parameters.prompt, /Rainha do Print|laudo com sorriso|SPECIAL ATTRS|café/i);
       assert.equal(options.retry_on_error, false);
       assert.ok(options.signal instanceof AbortSignal);
-      return new Blob([Buffer.from("ffd8ffe00001", "hex")], { type: "image/jpeg" });
+      const png = Buffer.from(
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+        "base64"
+      );
+      return new Blob([png], { type: "image/png" });
     },
   } });
-  const response = await post(base, { image: IMAGE, profession: "Systems Analyst" });
+  const response = await post(base, {
+    image: IMAGE,
+    profession: "Systems Analyst",
+    appearance: {
+      gender: "feminino",
+      skin: "clara",
+      hairColor: "preto",
+      eyeColor: "castanho",
+      hairLength: "medio",
+      hairType: "cacheado",
+      glasses: "sim",
+    },
+    mood: {
+      dominant: "melancholico",
+      attrs: { paciencia: 4, humor: 2, cafe: 8, nerdisse: 50 },
+      name: "Rainha do Print",
+      flavor: "Ela entrega laudo com sorriso e não leva a culpa.",
+      attention: "Sem evidência, a conversa não anda.",
+    },
+  });
   assert.equal(response.status, 200);
-  assert.match((await response.json()).url, /^data:image\/jpeg;base64,/);
+  const body = await response.json();
+  assert.match(body.url, /^data:image\/jpeg;base64,/);
+  assert.equal(body.width, 1456);
+  assert.equal(body.height, 720);
+  assert.equal(body.dpi, 90);
 });
 
 test("JSON e imagens inválidas são recusados antes de chegar ao provedor", async (t) => {
@@ -168,7 +246,8 @@ test("JSON e imagens inválidas são recusados antes de chegar ao provedor", asy
   } });
   for (const body of [null, [], {}, { image: "https://example.test/photo.png" },
     { image: "data:image/png;base64,AAAA" }, { image: "data:image/svg+xml;base64,AAAA" },
-    { image: IMAGE }, { image: IMAGE, profession: "Pirate" }]) {
+    { image: IMAGE }, { image: IMAGE, profession: "Pirate" },
+    { image: IMAGE, profession: "Web Developer", appearance: null }]) {
     const response = await post(base, body);
     assert.equal(response.status, 400);
     assert.ok((await response.json()).error);
@@ -202,7 +281,7 @@ for (const [upstream, expected, message] of [
           { requestId: "offline", status: upstream, body: "private provider detail" });
       },
     } });
-    const response = await post(base, { image: IMAGE, profession: "Fullstack Web Developer" });
+    const response = await post(base, { image: IMAGE, profession: "Web Developer" });
     assert.equal(response.status, expected);
     const result = await response.text();
     assert.match(result, message);
@@ -224,7 +303,7 @@ test("modelo sem provedor, tempo limite e resposta inválida são tratados", asy
         return failure.blob;
       },
     } });
-    const response = await post(base, { image: IMAGE, profession: "Fullstack Web Developer" });
+    const response = await post(base, { image: IMAGE, profession: "Web Developer" });
     assert.equal(response.status, failure.status);
     assert.ok((await response.json()).error);
   }
@@ -246,27 +325,29 @@ test("EMAIL_GATE exige @ancora.com.br e devolve a arte já gerada", async (t) =>
   assert.equal(health.emailGateEnabled, true);
 
   const bad = await post(base, {
-    image: IMAGE, profession: "Fullstack Web Developer", email: "alguem@gmail.com",
+    image: IMAGE, profession: "Web Developer", email: "alguem@gmail.com",
   });
   assert.equal(bad.status, 400);
   assert.match((await bad.json()).error, /ancora\.com\.br/i);
 
-  const missing = await post(base, { image: IMAGE, profession: "Fullstack Web Developer" });
+  const missing = await post(base, { image: IMAGE, profession: "Web Developer" });
   assert.equal(missing.status, 400);
 
   const ok = await post(base, {
     image: IMAGE,
-    profession: "Fullstack Web Developer",
+    profession: "Web Developer",
     email: "pessoa@ancora.com.br",
   });
   assert.equal(ok.status, 200);
   const first = await ok.json();
   assert.equal(first.saved, true);
   assert.equal(first.cached, false);
-  assert.match(first.url, /^data:image\/png;base64,/);
+  assert.match(first.url, /^data:image\/jpeg;base64,/);
+  assert.equal(first.width, 1456);
+  assert.equal(first.height, 720);
   assert.equal(hfCalls, 1);
 
-  const files = fs.readdirSync(pixelArtDir).filter((f) => f.endsWith(".png"));
+  const files = fs.readdirSync(pixelArtDir).filter((f) => /\.(jpe?g|png)$/i.test(f));
   assert.equal(files.length, 1);
   const log = JSON.parse(fs.readFileSync(logPath, "utf8"));
   assert.equal(log.length, 1);
@@ -275,7 +356,7 @@ test("EMAIL_GATE exige @ancora.com.br e devolve a arte já gerada", async (t) =>
 
   const again = await post(base, {
     image: IMAGE,
-    profession: "Fullstack Web Developer",
+    profession: "Web Developer",
     email: "pessoa@ancora.com.br",
   });
   assert.equal(again.status, 200);
@@ -283,7 +364,10 @@ test("EMAIL_GATE exige @ancora.com.br e devolve a arte já gerada", async (t) =>
   assert.equal(reused.cached, true);
   assert.equal(reused.url, first.url);
   assert.equal(hfCalls, 1, "Não deve chamar o HF de novo");
-  assert.equal(fs.readdirSync(pixelArtDir).filter((f) => f.endsWith(".png")).length, 1);
+  assert.equal(
+    fs.readdirSync(pixelArtDir).filter((f) => /\.(jpe?g|png)$/i.test(f)).length,
+    1
+  );
 });
 
 test("HTML carrega o novo script e o servidor publica somente arquivos da tela", async (t) => {

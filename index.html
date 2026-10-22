@@ -32,6 +32,7 @@
           <div class="wizard-dot" data-dot="1"></div>
           <div class="wizard-dot" data-dot="2"></div>
           <div class="wizard-dot" data-dot="3"></div>
+          <div class="wizard-dot" data-dot="4"></div>
         </div>
 
         <div class="wizard-step active" data-step="0">
@@ -63,6 +64,48 @@
 
         <div class="wizard-step" data-step="1">
           <p class="step-title"></p>
+          <p class="hint" id="appearance-intro"></p>
+          <div class="appearance-grid" id="appearance-grid">
+            <div class="field" id="field-gender">
+              <label for="gender"></label>
+              <select id="gender" required></select>
+              <p class="error" id="gender-error"></p>
+            </div>
+            <div class="field" id="field-skin">
+              <label for="skin"></label>
+              <select id="skin" required></select>
+              <p class="error" id="skin-error"></p>
+            </div>
+            <div class="field" id="field-hair-color">
+              <label for="hair-color"></label>
+              <select id="hair-color" required></select>
+              <p class="error" id="hair-color-error"></p>
+            </div>
+            <div class="field" id="field-eye-color">
+              <label for="eye-color"></label>
+              <select id="eye-color" required></select>
+              <p class="error" id="eye-color-error"></p>
+            </div>
+            <div class="field" id="field-hair-length">
+              <label for="hair-length"></label>
+              <select id="hair-length" required></select>
+              <p class="error" id="hair-length-error"></p>
+            </div>
+            <div class="field" id="field-hair-type">
+              <label for="hair-type"></label>
+              <select id="hair-type" required></select>
+              <p class="error" id="hair-type-error"></p>
+            </div>
+            <div class="field" id="field-glasses">
+              <label for="glasses"></label>
+              <select id="glasses" required></select>
+              <p class="error" id="glasses-error"></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="wizard-step" data-step="2">
+          <p class="step-title"></p>
           <p class="hint quiz-intro" id="quiz-intro"></p>
           <div id="quiz-panel" class="quiz-panel">
             <p class="quiz-progress" id="quiz-progress" aria-live="polite"></p>
@@ -75,7 +118,7 @@
           </div>
         </div>
 
-        <div class="wizard-step" data-step="2">
+        <div class="wizard-step" data-step="3">
           <p class="step-title"></p>
           <div class="field photo-field">
             <label for="photo-input"></label>
@@ -89,7 +132,7 @@
           </div>
         </div>
 
-        <div class="wizard-step" data-step="3">
+        <div class="wizard-step" data-step="4">
           <p class="step-title"></p>
           <p class="hint" style="margin-bottom:1rem;color:rgba(255,252,232,0.75)"></p>
           <button type="button" class="btn btn-download" id="btn-download"></button>

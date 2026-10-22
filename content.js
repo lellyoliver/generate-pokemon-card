@@ -79,6 +79,13 @@
     labelFor("profession", "profession");
     labelFor("email", "email");
     labelFor("photo-input", "photo");
+    labelFor("gender", "gender");
+    labelFor("skin", "skin");
+    labelFor("hair-color", "hairColor");
+    labelFor("eye-color", "eyeColor");
+    labelFor("hair-length", "hairLength");
+    labelFor("hair-type", "hairType");
+    labelFor("glasses", "glasses");
 
     const placeholders = F.placeholders || {};
     const name = document.getElementById("name");
@@ -92,11 +99,15 @@
     const ageHint = document.querySelector("#field-age .hint");
     const professionHint = document.querySelector("#field-profession .hint");
     const emailHint = document.querySelector("#field-email .hint");
-    const downloadHint = document.querySelector('.wizard-step[data-step="3"] .hint');
+    const appearanceIntro = document.getElementById("appearance-intro");
+    const downloadHint = document.querySelector('.wizard-step[data-step="4"] .hint');
     setText(ageHint, hints.age);
     setText(professionHint, hints.profession);
     setText(emailHint, hints.email);
+    setText(appearanceIntro, hints.appearance);
     setText(downloadHint, hints.download);
+
+    fillAppearanceSelects(F);
 
     const quiz = C.quiz || {};
     setText(document.getElementById("quiz-intro"), quiz.intro);
@@ -107,6 +118,16 @@
     setText(document.getElementById("age-error"), errors.age);
     setText(document.getElementById("profession-error"), errors.profession);
     setText(document.getElementById("email-error"), errors.email);
+    const appearanceError = errors.appearance || "Preencha todas as características.";
+    [
+      "gender-error",
+      "skin-error",
+      "hair-color-error",
+      "eye-color-error",
+      "hair-length-error",
+      "hair-type-error",
+      "glasses-error",
+    ].forEach((id) => setText(document.getElementById(id), appearanceError));
 
     const buttons = F.buttons || {};
     const btnMap = [
@@ -124,6 +145,36 @@
 
     const preview = document.getElementById("photo-preview");
     if (preview && F.photoAlt) preview.alt = F.photoAlt;
+  }
+
+  function fillSelect(select, options, placeholder) {
+    if (!select || !Array.isArray(options)) return;
+    const current = select.value;
+    select.innerHTML = "";
+    const empty = document.createElement("option");
+    empty.value = "";
+    empty.textContent = placeholder || "Selecione…";
+    select.appendChild(empty);
+    options.forEach((opt) => {
+      if (!opt || !opt.value) return;
+      const el = document.createElement("option");
+      el.value = opt.value;
+      el.textContent = opt.label || opt.value;
+      select.appendChild(el);
+    });
+    if (current) select.value = current;
+  }
+
+  function fillAppearanceSelects(F) {
+    const A = F.appearance || {};
+    const ph = (F.placeholders && F.placeholders.select) || "Selecione…";
+    fillSelect(document.getElementById("gender"), A.gender, ph);
+    fillSelect(document.getElementById("skin"), A.skin, ph);
+    fillSelect(document.getElementById("hair-color"), A.hairColor, ph);
+    fillSelect(document.getElementById("eye-color"), A.eyeColor, ph);
+    fillSelect(document.getElementById("hair-length"), A.hairLength, ph);
+    fillSelect(document.getElementById("hair-type"), A.hairType, ph);
+    fillSelect(document.getElementById("glasses"), A.glasses, ph);
   }
 
   function applyProfessions(C) {

@@ -254,6 +254,9 @@
     secondary: null,
     hp: null,
     portraitUrl: null,
+    /** Poder gerado (LLM ou fallback): { name, summary, attention } */
+    generatedPower: null,
+    powerLoading: false,
   };
 
   const quizState = {
@@ -291,6 +294,13 @@
     cardRarityStat: document.getElementById("card-rarity-stat"),
     cardAttrsBar: document.getElementById("card-attrs-bar"),
     cardAttrsPower: document.getElementById("card-attrs-power"),
+    gender: document.getElementById("gender"),
+    skin: document.getElementById("skin"),
+    hairColor: document.getElementById("hair-color"),
+    eyeColor: document.getElementById("eye-color"),
+    hairLength: document.getElementById("hair-length"),
+    hairType: document.getElementById("hair-type"),
+    glasses: document.getElementById("glasses"),
     attrPaciencia: document.getElementById("attr-paciencia"),
     attrHumor: document.getElementById("attr-humor"),
     attrCafe: document.getElementById("attr-cafe"),
@@ -384,27 +394,87 @@
   function actionLabel(tempId, role) {
     const base = TEMPERAMENTS[tempId];
     if (!base) return "";
-    const pack = professionPack();
-    const override = pack && pack.temperaments && pack.temperaments[tempId];
-    const isSecondary = role === "secondary";
-
-    if (override) {
-      if (isSecondary) {
-        return (
-          override.actionSecondary ||
-          override.labelSecondary ||
-          override.action ||
-          override.label ||
-          override.name ||
-          base.labelSecondary ||
-          base.label
-        );
-      }
-      return override.action || override.label || override.name || base.label;
-    }
-
-    if (isSecondary) return base.labelSecondary || base.label;
+    if (role === "secondary") return base.labelSecondary || base.label;
     return base.label;
+  }
+
+  function hookLabelsFromAnswers(answers) {
+    const questions = getQuiz();
+    const labels = [];
+    answers.forEach((id, i) => {
+      const q = questions[i];
+      if (!q || !Array.isArray(q.options)) return;
+      const opt = q.options.find((o) => o && o.id === id);
+      if (opt && opt.label) labels.push(opt.label);
+    });
+    // Todas as respostas do quiz — a LLM monta name/punchline a partir delas.
+    return labels;
+  }
+
+  function readAppearance() {
+    return {
+      gender: els.gender && els.gender.value ? els.gender.value.trim() : "",
+      skin: els.skin && els.skin.value ? els.skin.value.trim() : "",
+      hairColor: els.hairColor && els.hairColor.value ? els.hairColor.value.trim() : "",
+      eyeColor: els.eyeColor && els.eyeColor.value ? els.eyeColor.value.trim() : "",
+      hairLength: els.hairLength && els.hairLength.value ? els.hairLength.value.trim() : "",
+      hairType: els.hairType && els.hairType.value ? els.hairType.value.trim() : "",
+      glasses: els.glasses && els.glasses.value ? els.glasses.value.trim() : "",
+    };
+  }
+
+  function appearanceComplete(a) {
+    if (!a) return false;
+    const required = ["gender", "skin", "hairColor", "eyeColor", "hairLength", "glasses"];
+    if (!required.every((k) => a[k])) return false;
+    if (a.hairLength === "careca") return true;
+    return Boolean(a.hairType && a.hairType !== "");
+  }
+
+  async function requestGeneratedPower(dominant, secondary, answers) {
+    const pack = professionPack();
+    const profession = selectedProfessionValue();
+    const professionLabel = (pack && pack.label) || profession;
+    const hooks = hookLabelsFromAnswers(answers);
+    const appearance = readAppearance();
+    state.powerLoading = true;
+    state.generatedPower = null;
+    render();
+    try {
+      const res = await fetch("/api/generate-power", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          profession,
+          professionLabel,
+          dominant,
+          secondary,
+          hooks,
+          gender: appearance.gender,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.power) {
+        throw new Error((data && data.error) || "Falha ao gerar poder.");
+      }
+      const summary = String(data.power.summary || data.power.flavor || "").trim();
+      const attention = String(data.power.attention || "").trim();
+      state.generatedPower = {
+        name: data.power.name,
+        summary,
+        attention,
+        source: data.power.source,
+      };
+      if (!summary) {
+        console.warn("[generate-power] resposta sem flavor/summary", data.power);
+      }
+    } catch (err) {
+      console.warn("[generate-power] falha no client:", err && err.message);
+      state.generatedPower = null;
+    } finally {
+      state.powerLoading = false;
+      render();
+    }
   }
 
   /** Quiz da profissão selecionada; senão, o quiz geral. */
@@ -434,11 +504,21 @@
     return getQuizConfig().questions;
   }
 
+  function escapeHtml(value) {
+    return String(value || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
   function resetQuiz() {
     quizState.index = 0;
     quizState.answers = [];
     state.dominant = null;
     state.secondary = null;
+    state.generatedPower = null;
+    state.powerLoading = false;
     const quizIntro = document.getElementById("quiz-intro");
     if (quizIntro) {
       quizIntro.hidden = false;
@@ -476,6 +556,7 @@
     const { dominant, secondary } = scoreQuiz(quizState.answers);
     state.dominant = dominant;
     state.secondary = secondary;
+    state.generatedPower = null;
     saveHp(rollHp());
     const quizIntro = document.getElementById("quiz-intro");
     if (quizIntro) quizIntro.hidden = true;
@@ -492,6 +573,7 @@
         .replace("{secondary}", actionLabel(secondary, "secondary"));
     }
     render();
+    void requestGeneratedPower(dominant, secondary, quizState.answers.slice());
   }
 
   function renderQuizQuestion() {
@@ -658,43 +740,44 @@
 
     const pack = professionPack();
     const packArtBg = pack && pack.theme && pack.theme.artBg ? pack.theme.artBg : null;
-    const packTemps = (pack && pack.temperaments) || {};
-    const packCombos = (pack && pack.combos) || {};
+    const gen = state.generatedPower;
 
     if (state.secondary && state.secondary !== state.dominant) {
       const key = `${state.dominant}-${state.secondary}`;
       const combo = COMBOS[key];
       if (combo) {
         const secondary = TEMPERAMENTS[state.secondary];
-        const override = packCombos[key] || {};
         const artBg = packArtBg || combo.artBg;
         return {
-          icon: override.icon || combo.icon,
+          icon: combo.icon,
           energyIcon: dominant.icon,
           energyLabel: `${actionLabel(state.dominant, "dominant")} + ${actionLabel(state.secondary, "secondary")}`,
-          comboName: override.name || combo.name,
-          desc: override.desc || combo.desc,
-          attention:
-            override.attention ||
-            combo.attention ||
-            (packTemps[state.secondary] && packTemps[state.secondary].attention) ||
-            secondary.attention ||
-            null,
+          comboName: (gen && gen.name) || combo.name,
+          desc:
+            state.powerLoading
+              ? "Gerando poder da carta…"
+              : (gen && gen.summary) || combo.desc,
+          attention: state.powerLoading
+            ? null
+            : (gen && gen.attention) || combo.attention || secondary.attention || null,
           artBg,
           artColors: parseGradientColors(artBg),
         };
       }
     }
 
-    const tOverride = packTemps[state.dominant] || {};
     const artBg = packArtBg || dominant.artBg;
     return {
       icon: dominant.icon,
       energyIcon: dominant.icon,
       energyLabel: actionLabel(state.dominant, "dominant"),
-      comboName: tOverride.name || dominant.name || dominant.label,
-      desc: tOverride.summary || dominant.summary,
-      attention: tOverride.attention || dominant.attention,
+      comboName: (gen && gen.name) || dominant.name || dominant.label,
+      desc: state.powerLoading
+        ? "Gerando poder da carta…"
+        : (gen && gen.summary) || dominant.summary,
+      attention: state.powerLoading
+        ? null
+        : (gen && gen.attention) || dominant.attention,
       artBg,
       artColors: parseGradientColors(artBg),
     };
@@ -716,7 +799,10 @@
       attrs: (() => {
         const a = resolveAttributes(state.dominant, state.secondary);
         if (!a) return null;
-        return { ...a, power: computePowerScore(a, state.dominant) };
+        return {
+          ...a,
+          power: computePowerScore(a, state.dominant),
+        };
       })(),
       rarityName: rarity ? rarity.name : "—",
       rarityStyle: rarity
@@ -799,9 +885,9 @@
       els.cardArt.style.setProperty("--art-bg", profile.artBg);
       els.cardArt.style.background = profile.artBg;
 
-      let descHtml = profile.desc;
+      let descHtml = escapeHtml(profile.desc);
       if (profile.attention) {
-        descHtml += `<div class="attention">${profile.attention}</div>`;
+        descHtml += `<div class="attention">${escapeHtml(profile.attention)}</div>`;
       }
       els.cardDesc.innerHTML = descHtml;
     } else {
@@ -873,7 +959,7 @@
     });
   }
 
-  const WIZARD_LAST = 3;
+  const WIZARD_LAST = 4;
   let wizardStep = 0;
 
   function setWizardStep(step) {
@@ -904,6 +990,32 @@
     return { ok };
   }
 
+  function markAppearanceErrors(show) {
+    const a = readAppearance();
+    const checks = [
+      ["field-gender", () => !a.gender],
+      ["field-skin", () => !a.skin],
+      ["field-hair-color", () => !a.hairColor],
+      ["field-eye-color", () => !a.eyeColor],
+      ["field-hair-length", () => !a.hairLength],
+      ["field-hair-type", () => a.hairLength !== "careca" && !a.hairType],
+      ["field-glasses", () => !a.glasses],
+    ];
+    checks.forEach(([id, isBad]) => {
+      const field = document.getElementById(id);
+      if (field) field.classList.toggle("has-error", Boolean(show && isBad()));
+    });
+  }
+
+  function syncHairTypeForBald() {
+    if (!els.hairLength || !els.hairType) return;
+    const bald = els.hairLength.value === "careca";
+    els.hairType.disabled = bald;
+    if (bald) els.hairType.value = "na";
+    const field = document.getElementById("field-hair-type");
+    if (field) field.classList.toggle("is-disabled", bald);
+  }
+
   function canLeaveWizardStep(step) {
     if (step === 0) {
       const nameOk = Boolean(String(els.name.value || "").trim());
@@ -931,13 +1043,22 @@
       return nameOk && ageOk && professionOk && emailOk;
     }
     if (step === 1) {
+      const a = readAppearance();
+      const ok = appearanceComplete(a);
+      markAppearanceErrors(!ok);
+      if (!ok) {
+        alert(txt("form.errors.appearance", "Preencha todas as características."));
+      }
+      return ok;
+    }
+    if (step === 2) {
       if (!state.dominant || !state.secondary) {
         alert(txt("wizard.needQuiz", "Responda todas as perguntas para gerar seu temperamento."));
         return false;
       }
       return true;
     }
-    if (step === 2) {
+    if (step === 3) {
       if (!state.portraitUrl) {
         alert(txt("wizard.needPortrait", "Envie a foto e gere o pixel art para continuar."));
         return false;
@@ -978,6 +1099,10 @@
         resetQuiz();
       });
     }
+    if (els.hairLength) {
+      els.hairLength.addEventListener("change", syncHairTypeForBald);
+      syncHairTypeForBald();
+    }
 
     els.btnReset.addEventListener("click", () => {
       state.name = "";
@@ -986,9 +1111,23 @@
       state.secondary = null;
       state.hp = null;
       state.portraitUrl = null;
+      state.generatedPower = null;
       els.name.value = "";
       els.age.value = "";
       if (els.profession) els.profession.value = "";
+      [
+        els.gender,
+        els.skin,
+        els.hairColor,
+        els.eyeColor,
+        els.hairLength,
+        els.hairType,
+        els.glasses,
+      ].forEach((el) => {
+        if (el) el.value = "";
+      });
+      syncHairTypeForBald();
+      markAppearanceErrors(false);
       const emailInput = document.getElementById("email");
       if (emailInput) emailInput.value = "";
       const emailField = document.getElementById("field-email");
@@ -1020,6 +1159,20 @@
 
   window.getTemperamentoCardData = getCardSnapshot;
   window.setCardPortrait = setCardPortrait;
+  window.getAppearanceTraits = readAppearance;
+  window.getStylizeMood = function getStylizeMood() {
+    const attrs = resolveAttributes(state.dominant, state.secondary);
+    const gen = state.generatedPower;
+    return {
+      dominant: state.dominant || "",
+      secondary: state.secondary || "",
+      attrs: attrs || { paciencia: 0, humor: 0, cafe: 0, nerdisse: 0 },
+      /** Texto da carta (LLM) → roteiro cômico da imagem */
+      name: (gen && gen.name) || "",
+      flavor: (gen && gen.summary) || "",
+      attention: (gen && gen.attention) || "",
+    };
+  };
 
   whenContentReady().then(init);
 })();

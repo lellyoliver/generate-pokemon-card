@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Moldura de impressão — PDF 7,0 × 9,7 cm (70 × 97 mm).
+  viewBox 700×970 → 10 u = 1 mm.
+
+  Press Start 2P precisa de font-size BEM menor que Outfit
+  (o glifo já é “grande”). Escala alinhada à carta na tela (~0.35–0.72rem).
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  viewBox="0 0 700 970"
+  width="70mm"
+  height="97mm"
+  role="img"
+  aria-label="Carta de Tecnologia"
+>
+  <defs>
+    <linearGradient id="body-stripes" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="var(--body-from, #20c2f1)"/>
+      <stop offset="33%" stop-color="var(--body-from, #20c2f1)"/>
+      <stop offset="33%" stop-color="var(--theme-primary, #6259a8)"/>
+      <stop offset="66%" stop-color="var(--theme-primary, #6259a8)"/>
+      <stop offset="66%" stop-color="var(--body-to, #004090)"/>
+      <stop offset="100%" stop-color="var(--body-to, #004090)"/>
+    </linearGradient>
+
+    <linearGradient id="art-fallback" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2a9d8f"/>
+      <stop offset="100%" stop-color="#1a6b6b"/>
+    </linearGradient>
+
+    <clipPath id="art-clip">
+      <rect x="44" y="112" width="612" height="300"/>
+    </clipPath>
+
+    <!--
+      Escala tipográfica (viewBox 700):
+      pixel micro 6–7 · small 7–8 · name 10–11 · ui desc 12–13
+    -->
+    <style type="text/css"><![CDATA[
+      .px {
+        font-family: "Press Start 2P", "VT323", ui-monospace, monospace;
+        font-weight: 400;
+      }
+      .ui {
+        font-family: Outfit, "Segoe UI", system-ui, sans-serif;
+        font-weight: 500;
+      }
+      .t-micro { font-size: 6px; }
+      .t-xs    { font-size: 7px; }
+      .t-sm    { font-size: 8px; }
+      .t-md    { font-size: 10px; }
+      .t-name  { font-size: 11px; }
+      .t-hp    { font-size: 11px; }
+      .fill-ink { fill: #111; }
+      .fill-hp  { fill: #004090; }
+      .fill-muted { fill: #5c4a32; }
+    ]]></style>
+  </defs>
+
+  <!-- moldura externa -->
+  <rect width="700" height="970" fill="url(#body-stripes)"/>
+  <rect x="4" y="4" width="692" height="962" fill="none" stroke="#111" stroke-width="5"/>
+
+  <!-- miolo branco -->
+  <rect
+    id="frame-inner"
+    x="20" y="20" width="660" height="930"
+    fill="#ffffff"
+    stroke="var(--rarity-border, #1060b0)"
+    stroke-width="5"
+  />
+  <rect x="26" y="26" width="648" height="918" fill="none" stroke="#111" stroke-width="2"/>
+
+  <!-- ===== Header ===== -->
+  <rect x="40" y="40" width="78" height="28" fill="#b0c8e8" stroke="#111" stroke-width="2.5"/>
+  <text id="slot-stage" class="px t-micro fill-ink" x="79" y="58" text-anchor="middle">BASIC</text>
+
+  <text id="slot-name" class="px t-name fill-ink" x="132" y="60">NOME</text>
+
+  <text id="slot-hp-label" class="px t-hp fill-hp" x="528" y="60" text-anchor="end">HP</text>
+  <text id="slot-hp" class="px t-hp fill-hp" x="536" y="60">??</text>
+
+  <rect x="618" y="36" width="36" height="36" fill="#fff" stroke="#111" stroke-width="2.5"/>
+  <text id="slot-energy" x="636" y="60" text-anchor="middle" font-size="16">☀️</text>
+
+  <!-- ===== Arte ===== -->
+  <rect x="38" y="84" width="624" height="336" fill="#5a7ab0" stroke="#111" stroke-width="2.5"/>
+  <rect x="42" y="88" width="616" height="328" fill="none" stroke="#cfcfcf" stroke-width="2"/>
+  <rect x="44" y="90" width="612" height="324" fill="none" stroke="#5a5a5a" stroke-width="1.5"/>
+
+  <rect x="44" y="112" width="612" height="300" fill="url(#art-fallback)"/>
+  <image
+    id="slot-art"
+    x="44" y="112" width="612" height="300"
+    preserveAspectRatio="xMidYMin slice"
+    clip-path="url(#art-clip)"
+    href=""
+  />
+  <text id="slot-art-icon" x="350" y="280" text-anchor="middle" font-size="56" opacity="0.3">❓</text>
+
+  <!-- ===== Profissão ===== -->
+  <rect x="40" y="432" width="620" height="30" fill="#b0c8e8" stroke="#111" stroke-width="2.5"/>
+  <text id="slot-info" class="px t-sm fill-ink" x="52" y="452">Carta de Tecnologia</text>
+
+  <!-- ===== Poder ===== -->
+  <text id="slot-ability-cost" x="48" y="490" font-size="16">❓</text>
+  <text id="slot-ability-name" class="px t-sm fill-ink" x="74" y="488">—</text>
+
+  <!-- desc (texto escuro, como na tela — sem caixa roxa) -->
+  <foreignObject x="40" y="500" width="620" height="52">
+    <div
+      xmlns="http://www.w3.org/1999/xhtml"
+      id="slot-desc"
+      style="margin:0;padding:0;font-family:Outfit,'Segoe UI',sans-serif;font-size:12px;line-height:1.2;color:#2a2418;overflow:hidden;height:52px;"
+    >Descrição do poder</div>
+  </foreignObject>
+
+  <foreignObject x="40" y="554" width="620" height="36">
+    <div
+      xmlns="http://www.w3.org/1999/xhtml"
+      id="slot-attention"
+      style="margin:0;padding:6px 0 0;border-top:1px solid rgba(0,0,0,.14);font-family:Outfit,'Segoe UI',sans-serif;font-size:11px;line-height:1.25;color:#5c4a32;font-style:italic;overflow:hidden;height:30px;"
+    ></div>
+  </foreignObject>
+
+  <!-- ===== Atributos ===== -->
+  <rect
+    x="40" y="612" width="620" height="150"
+    fill="var(--theme-primary, #6259a8)"
+    stroke="#111"
+    stroke-width="2.5"
+    opacity="0.92"
+  />
+  <!-- badges no topo (creme / amarelo, como na tela) -->
+  <rect x="52" y="598" width="188" height="24" fill="#fff8dc" stroke="#111" stroke-width="2.5"/>
+  <text class="px t-micro fill-ink" x="146" y="614" text-anchor="middle">ATRIBUTOS ESPECIAIS</text>
+
+  <rect x="508" y="598" width="140" height="24" fill="#ffe566" stroke="#111" stroke-width="2.5"/>
+  <text id="slot-attrs-power" class="px t-xs fill-ink" x="578" y="614" text-anchor="middle">Poder —/10</text>
+
+  <!-- labels azuis claros + valores -->
+  <text class="px t-micro" x="56" y="648" fill="#dce9f8">PACIÊNCIA</text>
+  <text class="px t-micro" x="56" y="660" fill="#dce9f8">+espera</text>
+  <text id="slot-paciencia" class="px t-md fill-ink" x="56" y="680">—/10</text>
+
+  <text class="px t-micro" x="360" y="648" fill="#dce9f8">HUMOR</text>
+  <text class="px t-micro" x="360" y="660" fill="#dce9f8">+confiança</text>
+  <text id="slot-humor" class="px t-md fill-ink" x="360" y="680">—/10</text>
+
+  <text class="px t-micro" x="56" y="710" fill="#dce9f8">CAFÉ</text>
+  <text class="px t-micro" x="56" y="722" fill="#dce9f8">+urgência</text>
+  <text id="slot-cafe" class="px t-md fill-ink" x="56" y="742">—/10</text>
+
+  <text class="px t-micro" x="360" y="710" fill="#dce9f8">NERDISSE</text>
+  <text class="px t-micro" x="360" y="722" fill="#dce9f8">+evidência</text>
+  <text id="slot-nerdisse" class="px t-md fill-ink" x="360" y="742">—/50</text>
+
+  <!-- ===== Stats ===== -->
+  <rect x="40" y="778" width="620" height="68" fill="#b0c8e8" stroke="#111" stroke-width="2.5"/>
+
+  <text class="px t-micro fill-ink" x="56" y="798">EVOLUÇÃO</text>
+  <text id="slot-evolucao" class="px t-sm fill-ink" x="56" y="822">—</text>
+
+  <text class="px t-micro fill-ink" x="270" y="798">VITALIDADE</text>
+  <text id="slot-vitalidade" class="px t-sm fill-ink" x="270" y="822">—</text>
+
+  <text class="px t-micro fill-ink" x="500" y="798">RARIDADE</text>
+  <text id="slot-raridade" class="px t-sm fill-ink" x="500" y="822">—</text>
+
+  <!-- footer energia -->
+  <text id="slot-energy-label" class="px t-xs fill-ink" x="350" y="890" text-anchor="middle">—</text>
+</svg>

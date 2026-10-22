@@ -516,6 +516,15 @@ body::after {
   background: linear-gradient(180deg, var(--c2) 0%, var(--c3) 55%, var(--c4) 100%);
 }
 
+.btn-teal:disabled,
+.btn-teal.is-loading {
+  opacity: 0.72;
+  cursor: wait;
+  transform: none;
+  filter: none;
+  pointer-events: none;
+}
+
 .btn-download {
   width: 100%;
   margin-top: 0.75rem;
@@ -1057,6 +1066,18 @@ body::after {
   font-size: 0.54rem !important;
 }
 
+.appearance-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem 1rem;
+}
+
+@media (max-width: 640px) {
+  .appearance-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .card-attrs-bar .attr {
   display: grid;
   grid-template-columns: 1fr auto;
@@ -1138,8 +1159,8 @@ body::after {
   height: 100%;
   object-fit: cover;
   z-index: 1;
-  image-rendering: pixelated;
   image-rendering: crisp-edges;
+  object-position: 50% 20%
 }
 
 .card.has-portrait .card-art-icon {

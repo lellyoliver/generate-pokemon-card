@@ -50,6 +50,16 @@
   let isBusy = false;
   let emailGateEnabled = true;
   let emailDomain = "ancora.com.br";
+  let idleStylizeLabel = "";
+
+  function stylizeIdleLabel() {
+    const fromForm =
+      window.APP_CONTENT &&
+      window.APP_CONTENT.form &&
+      window.APP_CONTENT.form.buttons &&
+      window.APP_CONTENT.form.buttons.stylize;
+    return fromForm || idleStylizeLabel || "✨ Transformar em cartoon";
+  }
 
   function setStatus(text, kind) {
     if (!els.status) return;
@@ -59,7 +69,23 @@
 
   function setBusy(busy) {
     isBusy = busy;
-    if (els.btnStylize) els.btnStylize.disabled = busy || !originalDataUrl || !apiReady;
+    if (els.btnStylize) {
+      els.btnStylize.disabled = busy || !originalDataUrl || !apiReady;
+      if (typeof els.btnStylize.setAttribute === "function") {
+        els.btnStylize.setAttribute("aria-busy", busy ? "true" : "false");
+      }
+      if (els.btnStylize.classList && typeof els.btnStylize.classList.toggle === "function") {
+        els.btnStylize.classList.toggle("is-loading", Boolean(busy));
+      }
+      if (busy) {
+        if (!idleStylizeLabel && els.btnStylize.textContent) {
+          idleStylizeLabel = els.btnStylize.textContent;
+        }
+        els.btnStylize.textContent = msg("generating", "Gerando cartoon…");
+      } else {
+        els.btnStylize.textContent = stylizeIdleLabel();
+      }
+    }
     if (els.file) els.file.disabled = busy;
     if (els.btnClearPhoto) els.btnClearPhoto.disabled = busy;
     if (els.btnReset) els.btnReset.disabled = busy;
@@ -186,6 +212,25 @@
     }
     markProfessionError(false);
 
+    const appearance =
+      typeof window.getAppearanceTraits === "function" ? window.getAppearanceTraits() : null;
+    if (
+      !appearance ||
+      !appearance.gender ||
+      !appearance.skin ||
+      !appearance.hairColor ||
+      !appearance.eyeColor ||
+      !appearance.hairLength ||
+      !appearance.glasses ||
+      (appearance.hairLength !== "careca" && !appearance.hairType)
+    ) {
+      setStatus(
+        msg("needAppearance", "Preencha as características (gênero, pele, cabelo, olhos, óculos) antes de gerar."),
+        "warn"
+      );
+      return;
+    }
+
     const email = getEmail();
     if (emailGateEnabled) {
       if (!isValidCorporateEmail(email, emailDomain)) {
@@ -197,10 +242,13 @@
     markEmailError(false);
 
     setBusy(true);
-    setStatus(msg("pending", "Gerando pixel art… isso pode levar até 2 minutos."), "pending");
+    setStatus(msg("pending", "Gerando cartoon… isso pode levar até 2 minutos."), "pending");
 
     try {
-      const payload = { image: originalDataUrl, profession };
+      const mood =
+        typeof window.getStylizeMood === "function" ? window.getStylizeMood() : null;
+      const payload = { image: originalDataUrl, profession, appearance };
+      if (mood) payload.mood = mood;
       if (emailGateEnabled) payload.email = email.toLowerCase();
 
       const res = await fetch(new URL("api/stylize", document.baseURI), {
@@ -224,7 +272,7 @@
           "ok"
         );
       } else {
-        setStatus(msg("ready", "Pixel art pronto! A arte da carta foi atualizada."), "ok");
+        setStatus(msg("ready", "Cartoon pronto! A arte da carta foi atualizada."), "ok");
       }
     } catch (err) {
       console.error(err);

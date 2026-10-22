@@ -18,8 +18,12 @@ Abra <http://localhost:3000>. A aplicação precisa do servidor para transformar
 ## Textos da tela
 
 Quase todos os textos editáveis ficam em **`content.json`**: marca, piadas, ticker,
-rótulos do wizard, botões, profissões, temperamentos, combinações, raridades e
-mensagens da geração de imagem. Edite o arquivo e recarregue a página (`Ctrl+F5`).
+rótulos do wizard, botões, profissões (tema + quiz), temperamentos/combos **globais**
+(fallback), raridades e mensagens. Wizard: dados → **características** → quiz → foto → PDF. O **gênero** vai para
+a LLM de texto (flavor + attention); **aparência + foto + temperamento/combo/atributos
+(Base 70/30)** entram no cartoon (`/api/stylize`, estilo tipo `img/REF.jpg`).
+Descrição = flavor engraçado + **Poder X/10**. Contrato em
+`regras/regras-carta-temperamento.md`. `Ctrl+F5`.
 
 ## Configuração
 
@@ -32,6 +36,9 @@ HF_MODEL=black-forest-labs/FLUX.1-Kontext-dev
 HF_PROVIDER=fal-ai
 PORT=3000
 HF_IMAGE_API=1
+LLM_TEXT_API=1
+LLM_MODEL=openai/gpt-oss-20b
+LLM_PROVIDER=groq
 EMAIL_GATE=1
 EMAIL_DOMAIN=seu email
 # Só se a rede corporativa bloquear TLS (desenvolvimento local):
@@ -46,6 +53,10 @@ As artes ficam em `pixel-art/`. Para liberar gerações livres, use `EMAIL_GATE=
   **Inference Providers**. O token fica no servidor, sem ser enviado ao navegador.
 - Para desligar a geração de imagem sem apagar o token, use `HF_IMAGE_API=0`
   e reinicie o servidor. Com `1` (padrão) a API fica ativa.
+- O poder da carta chama o router HF (`/v1/chat/completions`) com `LLM_MODEL` +
+  `LLM_PROVIDER` (padrão: `openai/gpt-oss-20b` + `groq`). **Não** use `fal-ai` —
+  esse é só de imagem. Com `LLM_TEXT_API=0`, o poder é local. Se a API falhar,
+  `power.source` vem `fallback`/`offline` e o erro aparece no log do servidor.
 - Em rede com proxy/SSL inspection, use `HF_INSECURE_TLS=1` no `.env` local
   (desliga a verificação TLS) ou configure `NODE_EXTRA_CA_CERTS` com o
   certificado raiz da empresa. Não use isso em produção.
@@ -63,13 +74,15 @@ As artes ficam em `pixel-art/`. Para liberar gerações livres, use `EMAIL_GATE=
 
 ## Uso
 
-1. Monte a carta e escolha uma foto.
+1. Monte a carta, responda o quiz (o poder é gerado na hora) e escolha uma foto.
 2. Clique em **Transformar em pixel art**.
 3. Quando a arte estiver pronta, use **Baixar carta (PDF)** (7×9,7 cm para impressão).
    O PDF captura a carta **igual à tela** (não redesenha do zero).
 
 A foto é reduzida para até 768 pixels no maior lado e convertida para JPEG antes
-do envio. O estilo é fixo: retrato em pixel art 16-bit no visual de carta Pokémon.
+do envio. Estilo anime carta Pokémon **widescreen HD (1456×720)**: personagem
+**full body** no centro, cenário **corporativo de TI**, gag do flavor + props dos
+atributos (café, humor, paciência, nerdisse); camisa azul-claro + jeans escuro.
 
 O indicador **Hugging Face configurado** informa que há um token com o prefixo
 esperado. A autenticação, o saldo e a disponibilidade do modelo são verificados

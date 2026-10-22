@@ -17,7 +17,7 @@ async function setup(configured) {
     const handlers = new Map();
     elements.set(id, {
       dataset: {},
-      value: id === "profession" ? "Fullstack Web Developer" : "",
+      value: id === "profession" ? "Web Developer" : "",
       files: [],
       hidden: id === "field-email",
       classList: {
@@ -43,6 +43,15 @@ async function setup(configured) {
     window: {
       APP_CONTENT: {},
       setCardPortrait: image => portraits.push(image),
+      getAppearanceTraits: () => ({
+        gender: "feminino",
+        skin: "clara",
+        hairColor: "castanho",
+        eyeColor: "castanho",
+        hairLength: "medio",
+        hairType: "liso",
+        glasses: "nao",
+      }),
       addEventListener() {},
     },
     document: {
@@ -104,14 +113,23 @@ test("tela consulta health, transforma a foto e limpa o estado ao reiniciar", as
   assert.equal(app.canvases[0].height, 512);
   assert.equal(get("btn-stylize").disabled, false);
   const generating = get("btn-stylize").fire("click");
+  assert.equal(get("btn-stylize").disabled, true);
+  assert.match(get("btn-stylize").textContent, /Gerando cartoon/);
   assert.equal(get("btn-reset").disabled, true);
   assert.equal(get("btn-clear-photo").disabled, true);
-  assert.deepEqual(app.requests, [{ image: PHOTO, profession: "Fullstack Web Developer" }]);
+  assert.equal(app.requests.length, 1);
+  assert.equal(app.requests[0].image, PHOTO);
+  assert.equal(app.requests[0].profession, "Web Developer");
+  assert.equal(app.requests[0].appearance.gender, "feminino");
+  // Segundo clique enquanto carrega não dispara outra API
+  await get("btn-stylize").fire("click");
+  assert.equal(app.requests.length, 1);
   app.finish();
   await generating;
   assert.equal(get("photo-preview").src, ART);
   assert.equal(app.portraits.at(-1), ART);
-  assert.match(get("stylize-status").textContent, /Pixel art pronto/);
+  assert.match(get("stylize-status").textContent, /Cartoon pronto|Pixel art pronto/);
+  assert.match(get("btn-stylize").textContent, /Transformar em cartoon/);
   assert.equal(get("btn-reset").disabled, false);
   await get("btn-reset").fire("click");
   assert.equal(get("btn-stylize").disabled, true);

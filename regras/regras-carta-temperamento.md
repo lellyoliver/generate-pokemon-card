@@ -53,8 +53,57 @@ Trocar a profissão **reinicia** o questionário.
 Estas regras valem para **todas as áreas de TI** (dev, sistemas, processos, infra, coordenação, etc.).  
 Todo mundo **recebe chamado** e **conversa com usuário** — isso é o núcleo do jogo, não um tema de uma profissão só.
 
-A **profissão** só troca o *cenário* da frase (código, DNS, processo, servidor…), nunca a mecânica.  
-Texto na carta: `name` (título) + `summary` (efeito) + `attention` (sabor).
+A **profissão** só troca o *cenário* da zoeira (PROWEB, Protheus, servidor…).  
+O **gênero** (step Características) define a concordância do texto (`ela`/`ele`).  
+As **características** (pele, cabelo, olhos, óculos…) entram no prompt do **pixel art**.  
+Na carta: `name` + **flavor** (`summary`/`desc`) + `attention` + caixinha **`Poder X/10`**.
+
+### Campos do poder (contrato da carta)
+
+Referência oficial. Se mudar de novo, atualize **esta seção** primeiro.
+
+| Campo | O que é | O que **não** é | Tamanho |
+|---|---|---|---|
+| **`name`** | Apelido engraçado (quiz + profissão). | Frase cortada do quiz. | **3–5 palavras**. |
+| **`summary`** / **`flavor`** / **`desc`** | Frase **hilária** de personalidade + cargo, com gênero. | `Cause`, `+20`, colar opção do quiz. | **1–2 linhas**. |
+| **`attention`** | Aviso curto / fraqueza em tom de zoeira. | Citação entre aspas; bônus numérico (`+N`). | **1 linha**. |
+
+#### `name` (título)
+
+- **3–5 palavras**, sem ponto final; **apelido engraçado** de colega de TI.
+- Bons: `Profissional do Chamado`, `Rainha do Print`, `Senhor do Rollback`, `Fé no Cache`.
+- Ruins: `PROWEB vendedor Pro`, `Liberar de novo deve ter`, `Olho log build e`.
+- Proibido terminar com `Pro` ou só colar keywords da profissão.
+
+#### `summary` / `flavor` (descrição)
+
+**Sem** `Cause X de dano` e **sem** bônus `+20` / `+40`. Só sabor + concordância de gênero:
+
+| Temperamento | Exemplo (feminino) | Exemplo (masculino) |
+|---|---|---|
+| Colérico | Ela já abriu o log em CAPS. | Ele já abriu o log em CAPS. |
+| Melancólico | Sem print ela nem começa a conversa. | Sem print ele nem começa a conversa. |
+| Sanguíneo | Ela relaxa — com fé e café isso volta. | Ele relaxa — com fé e café isso volta. |
+| Fleumático | Ela manda o urgente pra fila. | Ele manda o urgente pra fila. |
+
+#### `attention`
+
+- Fraqueza engraçada no tom do dominante, **sem números de bônus**.
+- Exemplos: `Sem chamado aberto, o drama esfria.` · `Se mostrarem o erro na tela, a fé acaba.`
+
+### Características (wizard step 2/5)
+
+Obrigatórias antes do quiz / pixel art:
+
+| Campo | Valores |
+|---|---|
+| Gênero | `feminino` · `masculino` → textos da LLM |
+| Cor de pele | clara, morena-clara, morena, negra, amarela → imagem |
+| Cor de cabelo | preto, castanho, loiro, ruivo, grisalho, colorido → imagem |
+| Cor dos olhos | castanho, preto, verde, azul, mel → imagem |
+| Tamanho do cabelo | grande, medio, pequeno, careca → imagem |
+| Tipo de cabelo | liso, cacheado (N/A se careca) → imagem |
+| Óculos | sim, nao → imagem |
 
 ### Tokens de jogo (universais de TI)
 
@@ -68,30 +117,18 @@ Texto na carta: `name` (título) + `summary` (efeito) + `attention` (sabor).
 
 ### Mecânica-base por dominante
 
-| Temperamento | Ação | Dano base | Condição / ganho | Fraqueza (atenção) |
-|---|---|---|---|---|
-| **Colérico** | Explosivo | Alto (35–60) | Bônus se o chamado **ainda não foi tratado com urgência** (reinício, hotfix, war room). Pode **Paralisar** até cumprir o protocolo. | Impaciência: sem urgência/chamado, dano **parcial** ou fim de turno. |
-| **Melancólico** | Detalhista | Baixo–médio (20–30) | Bônus se achar causa em **usuário**, erro ou evidência. O oponente pode **descartar 1 confiança**; anexa evidência. | Sem prova, só o dano base. |
-| **Sanguíneo** | Otimista | Médio (25–40) | Se for **tranquilo com o usuário** (confiança, “funciona aí”, tom leve), cause **dano extra** e **compre 1 confiança**. | Se o oponente **mostrar o erro**, o bônus some. |
-| **Fleumático** | Preguiçoso | Baixo (10–20) | **Dano pleno / bloqueio** só se a dúvida **não foi resolvida no corredor** — o outro lado precisa **abrir chamado**. Ficar calmo → **ganha confiança**; ataque inimigo custa +1 “paciência”. | Se você atender tudo na hora / mexer demais, perde a espera. |
+| Temperamento | Ação | Tom do flavor | Fraqueza típica (`attention`) |
+|---|---|---|---|
+| **Colérico** | Explosivo | CAPS, urgência, dono do chamado | Sem chamado, o drama esfria |
+| **Melancólico** | Detalhista | Print, laudo, “me prova” | Sem evidência, a conversa não anda |
+| **Sanguíneo** | Otimista | Fé, café, “vai dar” | Se mostrarem o erro, a fé acaba |
+| **Fleumático** | Preguiçoso | Fila, café, segunda a gente vê | Atender no corredor: perde a fila |
 
 ### Como escrever um poder (qualquer profissão)
 
-1. **Abrir com dano** (“Cause X de dano”).
-2. **Uma condição universal**: chamado, usuário, confiança ou evidência.
-3. **Um bônus ou status** (dano extra, Paralisado, Confuso, descartar confiança).
-4. **Uma frase de atenção** no tom da profissão (só o sabor muda).
-
-**Tamanho:** `summary` / `desc` com **no máximo 3 linhas** na carta. Atenção também curta.
-
-**Exemplos-guia (iguais para todos — mude só o vocabulário da área):**
-
-| Dominante | Exemplo de efeito |
-|---|---|
-| Colérico | Cause 40 de dano. Se o chamado ainda não foi tratado neste turno, o oponente fica Paralizado até cumprir o protocolo. |
-| Melancólico | Cause 20 de dano. Se a causa for “usuário”, cause 40 a mais e ele descarta 1 confiança. |
-| Sanguíneo | Cause 30 de dano. Se você for tranquilo com o usuário e declarar que “funciona”, cause 20 a mais e compre 1 confiança. |
-| Fleumático | Cause 10 de dano. O oponente não pode atacar no próximo turno, a menos que abra um chamado. Se você não responder no corredor, compre 1 confiança. |
+1. **`name`:** apelido engraçado (quiz + profissão).
+2. **`flavor` / `summary`:** 1 frase hilária com gênero — **sem** Cause e **sem** `+N`.
+3. **`attention`:** fraqueza curta no mesmo tom.
 
 ### Combos (dominante + secundário)
 
@@ -107,6 +144,73 @@ O combo **mistura** as duas mecânicas (sempre com chamado/usuário no centro).
 | Fleumático → Melancólico | Espera documentada: dano baixo + **marcadores de espera / evidência**. |
 
 Implementação por cargo: `content.json` → `professions[].temperaments` e `professions[].combos` (mesmo esqueleto; só mudam nomes e frases).
+
+## Geração por IA (contrato de prompt)
+
+Objetivo texto: **`name`** + **`flavor`** hilário (com gênero) + **`attention`** curto.  
+Objetivo imagem: cenário de humor com **tabela de temperamento** + **combo** + **Base 70/30** (`/api/stylize`).
+
+### Quem decide o quê
+
+| Parte | Quem | Por quê |
+|---|---|---|
+| Dominante / secundário | Quiz + `scoreQuiz` | Determinístico |
+| Atributos (paciência/humor/café/nerdisse) | Base dominante 70% + secundário 30% | Caixinha + cena da imagem |
+| Gênero | Step Características | Concordância ela/ele nos textos |
+| Aparência | Step Características | Prompt do cartoon (`/api/stylize`) |
+| `name` / `flavor` / `attention` | LLM (`/api/generate-power`) | Zoeira de personalidade |
+| Humor visual (tabela + combo + attrs) | Prompt imagem (`/api/stylize`) | Estado de humor na arte |
+| Poder `X/10` | Atributos + dano típico interno | Caixinha amarela |
+| Validação | Servidor | Rejeita Cause / `+N` / colar quiz |
+
+### Payload texto (generate-power)
+
+```json
+{
+  "profissao": "Desenvolvedor Web",
+  "genero": "feminino",
+  "genero_gramatica": "Use ela/dela e adjetivos no feminino.",
+  "dominante": "colerico",
+  "secundario": "sanguineo",
+  "hooks": ["…"],
+  "keywords": ["PROWEB", "vendedor", "título sumiu"],
+  "vibe": "Humor PROWEB/comercial…"
+}
+```
+
+### Payload imagem (stylize)
+
+Além de `image` + `profession`, envia:
+
+- `appearance` — características (pele, cabelo, olhos, óculos, gênero visual)
+- `mood` — `{ dominant, secondary, attrs, name, flavor, attention }`
+  - `attrs` = Base 70/30
+  - `name` / `flavor` / `attention` = texto da carta (LLM) → gag visual
+
+O prompt:
+
+1. mantém **semelhança facial da foto** enviada;
+2. aplica os traços de `appearance`;
+3. desenha em estilo **anime / carta Pokémon** (Sugimori/TCG), **full body** centralizado, widescreen;
+4. uniforme fixo: **camisa azul-claro** + **jeans azul-escuro**;
+5. prioridade visual: **flavor = pose**, efeitos cômicos (`?`, suor), **attention = gag**, attrs = props, escritório = fundo;
+6. saída HD: **1456×720** (sem downscale para 288×152).
+
+### Saída da LLM de texto
+
+```
+{"name":"...","flavor":"...","attention":"..."}
+```
+
+Validar: sem Cause / `+N` / colar quiz; flavor respeita o gênero.
+
+### Fluxo resumido
+
+```
+dados → características → quiz → LLM textos (com gênero)
+                              → foto + appearance + mood(tabela/combo/attrs) → cartoon
+                              → carta / PDF
+```
 
 ## Atributos (junção de poder)
 
@@ -131,9 +235,13 @@ Valem para **todas as profissões** — vêm só do temperamento (dominante 70% 
 | Sanguíneo | 5 | 10 | 6 | 20 |
 | Fleumático | 10 | 6 | 7 | 15 |
 
-### Poder total (caixinha flutuante `X/10`)
+### Caixinha flutuante (atributos)
 
-Nota única na carta: **Poder de junção**, de **1 a 10**.
+Ao lado do título **Atributos Especiais**: **`Poder X/10`** (junção de atributos + dano típico interno). Amarelo.
+
+### Poder total (caixinha `X/10`)
+
+Nota de **1 a 10** (junção):
 
 1. Normalizar atributos em 0–10: `paciência`, `humor`, `café`, `nerdisse ÷ 5`.
 2. Dano típico do temperamento dominante → 0–10:
