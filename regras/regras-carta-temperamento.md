@@ -88,7 +88,7 @@ Na carta: `name` + **flavor** (`summary`) + `attention` + caixinha `Poder X/10`.
 | Campo                | O que é                                           | O que **não** é                             | Tamanho (validação)                           |
 | -------------------- | ------------------------------------------------- | ------------------------------------------- | --------------------------------------------- |
 | `name`               | Apelido engraçado (quiz + profissão).             | Frase cortada do quiz; terminar em `Pro`.   | **3–4 palavras**, ≤ 30 caracteres.            |
-| `flavor` / `summary` | 1 frase hilária (personalidade + cargo + gênero). | `Cause`, `+20`, colar opção do quiz.        | **12–48 caracteres** (corta se passar de 48). |
+| `flavor` / `summary` | 1 frase hilária (personalidade + cargo + gênero). | `Cause`, `+20`, colar opção do quiz.        | **12–48 caracteres** (sem cortar; rejeita se passar). |
 | `attention`          | Aviso curto / fraqueza em tom de zoeira.          | Citação entre aspas; bônus numérico (`+N`). | **16–38 caracteres**, 1 linha.                |
 
 #### `name` (título do poder)

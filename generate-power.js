@@ -374,12 +374,8 @@ function validateLlmFields(raw) {
   if (BONUS_NUMBER_RE.test(flavor)) {
     throw new Error("flavor não pode ter bônus/dano numérico.");
   }
-  if (flavor.length > 48) {
-    const clipped = flavor.slice(0, 48).replace(/\s+\S*$/, "").trim();
-    flavor = clipped.length >= 12 ? clipped : flavor.slice(0, 48).trim();
-  }
   if (flavor.length < 12 || flavor.length > 48) {
-    throw new Error("flavor deve ter até 48 caracteres.");
+    throw new Error("flavor deve ter entre 12 e 48 caracteres (sem cortar).");
   }
 
   let attention = String(raw.attention || "").replace(/\s+/g, " ").trim();
