@@ -33,6 +33,10 @@ const PUBLIC_FILES = new Map([
     "/modern-screenshot.js",
     ["node_modules/modern-screenshot/dist/index.js", "text/javascript; charset=utf-8"],
   ],
+  [
+    "/assets/font/PressStart2P-Regular.ttf",
+    ["assets/font/PressStart2P-Regular.ttf", "font/ttf"],
+  ],
 ]);
 
 class HttpError extends Error {
@@ -159,9 +163,9 @@ const APPEARANCE_MAPS = {
     mel: "hazel eyes",
   },
   hairLength: {
-    grande: "long hair",
+    longo: "long hair",
     medio: "medium-length hair",
-    pequeno: "short hair",
+    curto: "short hair",
     careca: "bald head",
   },
   hairType: {
@@ -172,6 +176,15 @@ const APPEARANCE_MAPS = {
   glasses: {
     sim: "wearing simple pixel glasses",
     nao: "no glasses",
+  },
+  beard: {
+    nenhuma: "clean-shaven, no facial hair",
+    bigode: "mustache only, no beard",
+    cavanhaque: "neat goatee",
+    rala: "light stubble facial hair",
+    curta: "short trimmed beard",
+    cheia: "full thick beard",
+    longa: "long beard",
   },
 };
 
@@ -192,13 +205,14 @@ function parseAppearance(raw) {
   const eyeColor = pick("eyeColor");
   const hairLength = pick("hairLength");
   const glasses = pick("glasses");
+  const beard = pick("beard");
   let hairType = String(raw.hairType || "").trim();
   if (hairLength === "careca") {
     hairType = "na";
   } else if (!APPEARANCE_MAPS.hairType[hairType] || hairType === "na") {
     throw new HttpError(400, "Informe se o cabelo é liso ou cacheado.");
   }
-  return { gender, skin, hairColor, eyeColor, hairLength, hairType, glasses };
+  return { gender, skin, hairColor, eyeColor, hairLength, hairType, glasses, beard };
 }
 
 function appearancePromptLine(appearance) {
@@ -207,6 +221,7 @@ function appearancePromptLine(appearance) {
   const skin = APPEARANCE_MAPS.skin[appearance.skin];
   const eyes = APPEARANCE_MAPS.eyeColor[appearance.eyeColor];
   const glasses = APPEARANCE_MAPS.glasses[appearance.glasses];
+  const beard = APPEARANCE_MAPS.beard[appearance.beard];
   let hair = "";
   if (appearance.hairLength === "careca") {
     hair = APPEARANCE_MAPS.hairLength.careca;
@@ -217,7 +232,7 @@ function appearancePromptLine(appearance) {
     hair = [len, typ, col].filter(Boolean).join(", ");
   }
   return (
-    "Apply these look traits (hair/skin/eyes/glasses) while keeping facial likeness from the photo: " +
+    "Apply these look traits (hair/skin/eyes/glasses/beard) while keeping facial likeness from the photo: " +
     g +
     " with " +
     skin +
@@ -227,6 +242,8 @@ function appearancePromptLine(appearance) {
     eyes +
     ", " +
     glasses +
+    ", " +
+    beard +
     ". "
   );
 }
@@ -333,9 +350,9 @@ function moodSceneLine(mood) {
   const sec = secondary && secondary !== dominant ? TEMPERAMENT_TABLE[secondary] : null;
   const comboKey = sec ? `${dominant}-${secondary}` : "";
   const combo = comboKey ? COMBO_SCENE[comboKey] : "";
-  const powerName = clipPromptText(mood.name, 48);
+  const powerName = clipPromptText(mood.name, 30);
   const flavor = clipPromptText(mood.flavor, 140);
-  const attention = clipPromptText(mood.attention, 90);
+  const attention = clipPromptText(mood.attention, 38);
 
   const bits = [];
 
@@ -434,9 +451,9 @@ function parseMood(raw) {
       cafe: hasAny ? num(attrsIn.cafe, 10) : base.cafe,
       nerdisse: hasAny ? num(attrsIn.nerdisse, 50) : base.nerdisse,
     },
-    name: clip(raw.name || raw.powerName, 48),
+    name: clip(raw.name || raw.powerName, 30),
     flavor: clip(raw.flavor || raw.summary || raw.punchline, 120),
-    attention: clip(raw.attention, 80),
+    attention: clip(raw.attention, 38),
   };
 }
 
@@ -791,26 +808,26 @@ function serveImg(res, pathname) {
 }
 
 function serveStatic(res, pathname) {
+  const entry = PUBLIC_FILES.get(pathname);
+  if (entry) {
+    fs.readFile(path.join(ROOT, entry[0]), (error, data) => {
+      if (error) {
+        sendJson(res, 404, { error: "Arquivo não encontrado." });
+        return;
+      }
+      res.writeHead(200, {
+        "Content-Type": entry[1],
+        "X-Content-Type-Options": "nosniff",
+      });
+      res.end(data);
+    });
+    return;
+  }
   if (pathname.startsWith("/img/")) {
     serveImg(res, pathname);
     return;
   }
-  const entry = PUBLIC_FILES.get(pathname);
-  if (!entry) {
-    sendJson(res, 404, { error: "Arquivo não encontrado." });
-    return;
-  }
-  fs.readFile(path.join(ROOT, entry[0]), (error, data) => {
-    if (error) {
-      sendJson(res, 404, { error: "Arquivo não encontrado." });
-      return;
-    }
-    res.writeHead(200, {
-      "Content-Type": entry[1],
-      "X-Content-Type-Options": "nosniff",
-    });
-    res.end(data);
-  });
+  sendJson(res, 404, { error: "Arquivo não encontrado." });
 }
 
 function createServer({ env = process.env, client, storage } = {}) {

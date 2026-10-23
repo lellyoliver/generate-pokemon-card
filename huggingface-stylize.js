@@ -222,10 +222,11 @@
       !appearance.eyeColor ||
       !appearance.hairLength ||
       !appearance.glasses ||
+      !appearance.beard ||
       (appearance.hairLength !== "careca" && !appearance.hairType)
     ) {
       setStatus(
-        msg("needAppearance", "Preencha as características (gênero, pele, cabelo, olhos, óculos) antes de gerar."),
+        msg("needAppearance", "Preencha as características (gênero, pele, cabelo, olhos, óculos, barba) antes de gerar."),
         "warn"
       );
       return;

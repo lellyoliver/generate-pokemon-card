@@ -2,22 +2,29 @@
 
 Página em `.html` + `.js` que gera uma carta com as características de uma pessoa, usando os 4 temperamentos clássicos como "símbolo de energia".
 
-## Tela
+## Tela (carta HTML)
 
-- **Topo:** estágio de evolução, nome da pessoa, HP e símbolo de energia.
-- **Centro:** ícone do temperamento (ou da combinação) e descrição.
-- **Rodapé:** idade, saúde (classificação de HP), raridade e **atributos** (Paciência, Humor, Café, Nerdisse).
+O que aparece hoje na carta (`#card`):
+
+- **Topo:** estágio de evolução (`Basic` / `Stage 1` / `Stage 2`), nome da pessoa, **HP** (sem ícone de energia).
+- **Arte:** foto → cartoon (`/api/stylize`); sem ícone de temperamento.
+- **Barra de info:** rótulo da **profissão** (ex.: Desenvolvedor Web).
+- **Bloco de poder:** `name` do poder (combo/temperamento) + **flavor** (descrição) + **attention** (aviso).
+- **Atributos Especiais:** Paciência, Humor, Café, Nerdisse + caixinha `Poder X/10`.
+- **Rodapé:** Evolução (idade), Vitalidade (classificação de HP), Raridade.
+
+**PDF:** captura do HTML da carta (`modern-screenshot` → JPEG → página **7,0 × 9,7 cm**).
 
 ## Temperamentos
 
-| Temperamento | Ícone | Cor do tema | Resumo | Pontos de atenção |
-|---|---|---|---|---|
-| Sanguíneo | ☀️ | Âmbar / coral `#e07a5f` | Expansivo, otimista, comunicativo, sociável | Dispersão, impulsividade |
-| Colérico | ⚡ | Amarelo elétrico `#f4a261` | Enérgico, decidido, competitivo | Impaciência, teimosia |
-| Melancólico | 🍂 | Índigo / névoa `#5c6b8a` | Reflexivo, sensível, analítico | Pessimismo, autocrítica |
-| Fleumático | 🌊 | Azul água `#2a9d8f` | Calmo, estável, paciente | Passividade, resistência a mudanças |
+Textos vêm de `content.json`. Cores de **fundo da carta** vêm do `theme` da **profissão** (`content.json` → `professions[].theme`) — a profissão é obrigatória. Sem ícones de temperamento na carta.
 
-O **dominante** define a cor de fundo da carta (como o tipo na carta Pokémon). Com secundário, o fundo mistura as duas cores.
+| Temperamento | Resumo | Pontos de atenção |
+|---|---|---|
+| Sanguíneo | Expansivo, otimista, comunicativo | Dispersão, impulsividade |
+| Colérico | Enérgico, decidido, competitivo | Impaciência, teimosia |
+| Melancólico | Reflexivo, sensível, analítico | Pessimismo, autocrítica |
+| Fleumático | Calmo, estável, paciente | Passividade, resistência a mudanças |
 
 ### Seleção
 
@@ -33,67 +40,84 @@ Trocar a profissão **reinicia** o questionário.
 
 ### Combinações (dominante-secundário)
 
-| Combinação | Ícone | Nome |
-|---|---|---|
-| Sanguíneo-Colérico | 🌦️ | Sol com chuva e raios |
-| Sanguíneo-Fleumático | 🏖️ | Praia ensolarada |
-| Sanguíneo-Melancólico | 🌅 | Pôr do sol |
-| Colérico-Sanguíneo | 🔥 | Fogo selvagem |
-| Colérico-Melancólico | 🌪️ | Tornado |
-| Colérico-Fleumático | 💨 | Vapor / Gêiser |
-| Melancólico-Sanguíneo | 🌫️ | Névoa com sol |
-| Melancólico-Colérico | 🌬️ | Vento gelado |
-| Melancólico-Fleumático | 🌲 | Floresta isolada |
-| Fleumático-Sanguíneo | 🏝️ | Oásis |
-| Fleumático-Colérico | 🏞️ | Rio com correnteza |
-| Fleumático-Melancólico | 🧊 | Bloco de gelo |
+| Combinação |
+|---|
+| Sanguíneo-Colérico |
+| Sanguíneo-Fleumático |
+| Sanguíneo-Melancólico |
+| Colérico-Sanguíneo |
+| Colérico-Melancólico |
+| Colérico-Fleumático |
+| Melancólico-Sanguíneo |
+| Melancólico-Colérico |
+| Melancólico-Fleumático |
+| Fleumático-Sanguíneo |
+| Fleumático-Colérico |
+| Fleumático-Melancólico |
 
 ## Poderes (por temperamento)
 
-Estas regras valem para **todas as áreas de TI** (dev, sistemas, processos, infra, coordenação, etc.).  
-Todo mundo **recebe chamado** e **conversa com usuário** — isso é o núcleo do jogo, não um tema de uma profissão só.
+Estas regras valem para **todas as áreas de TI**.  
+Todo mundo **recebe chamado** e **conversa com usuário** — núcleo do jogo.
 
-A **profissão** só troca o *cenário* da zoeira (PROWEB, Protheus, servidor…).  
+A **profissão** só troca o *cenário* da zoeira e as **cores** da carta (`theme`).  
 O **gênero** (step Características) define a concordância do texto (`ela`/`ele`).  
-As **características** (pele, cabelo, olhos, óculos…) entram no prompt do **pixel art**.  
-Na carta: `name` + **flavor** (`summary`/`desc`) + `attention` + caixinha **`Poder X/10`**.
+As **características** (pele, cabelo, olhos, óculos, barba…) entram no prompt do **cartoon**.  
+Na carta: `name` + **flavor** (`summary`) + `attention` + caixinha `Poder X/10`.
 
-### Campos do poder (contrato da carta)
+### Campos do poder — retorno atual da API
 
-Referência oficial. Se mudar de novo, atualize **esta seção** primeiro.
+`POST /api/generate-power` devolve (após validação):
 
-| Campo | O que é | O que **não** é | Tamanho |
-|---|---|---|---|
-| **`name`** | Apelido engraçado (quiz + profissão). | Frase cortada do quiz. | **3–5 palavras**. |
-| **`summary`** / **`flavor`** / **`desc`** | Frase **hilária** de personalidade + cargo, com gênero. | `Cause`, `+20`, colar opção do quiz. | **1–2 linhas**. |
-| **`attention`** | Aviso curto / fraqueza em tom de zoeira. | Citação entre aspas; bônus numérico (`+N`). | **1 linha**. |
+```json
+{
+  "name": "…",
+  "summary": "…",
+  "flavor": "…",
+  "attention": "…",
+  "slot_id": "COL",
+  "dano": 40,
+  "source": "llm"
+}
+```
 
-#### `name` (título)
+- `summary` e `flavor` são o **mesmo texto** (descrição da carta).
+- `source`: `llm` | `offline` | `fallback`.
+- Sem `Cause`, sem `+N` na descrição.
 
-- **3–5 palavras**, sem ponto final; **apelido engraçado** de colega de TI.
-- Bons: `Profissional do Chamado`, `Rainha do Print`, `Senhor do Rollback`, `Fé no Cache`.
-- Ruins: `PROWEB vendedor Pro`, `Liberar de novo deve ter`, `Olho log build e`.
-- Proibido terminar com `Pro` ou só colar keywords da profissão.
+| Campo                | O que é                                           | O que **não** é                             | Tamanho (validação)                           |
+| -------------------- | ------------------------------------------------- | ------------------------------------------- | --------------------------------------------- |
+| `name`               | Apelido engraçado (quiz + profissão).             | Frase cortada do quiz; terminar em `Pro`.   | **3–4 palavras**, ≤ 30 caracteres.            |
+| `flavor` / `summary` | 1 frase hilária (personalidade + cargo + gênero). | `Cause`, `+20`, colar opção do quiz.        | **12–48 caracteres** (corta se passar de 48). |
+| `attention`          | Aviso curto / fraqueza em tom de zoeira.          | Citação entre aspas; bônus numérico (`+N`). | **16–38 caracteres**, 1 linha.                |
 
-#### `summary` / `flavor` (descrição)
+#### `name` (título do poder)
 
-**Sem** `Cause X de dano` e **sem** bônus `+20` / `+40`. Só sabor + concordância de gênero:
+- **3–4 palavras**, ≤ 30 caracteres, sem ponto final; apelido de colega de TI.
+- Bons: `Profissional do Chamado`, `Rainha do Print`, `Senhor do Rollback`.
+- Ruins: `PROWEB vendedor Pro`, colar keywords da profissão.
 
-| Temperamento | Exemplo (feminino) | Exemplo (masculino) |
-|---|---|---|
-| Colérico | Ela já abriu o log em CAPS. | Ele já abriu o log em CAPS. |
-| Melancólico | Sem print ela nem começa a conversa. | Sem print ele nem começa a conversa. |
-| Sanguíneo | Ela relaxa — com fé e café isso volta. | Ele relaxa — com fé e café isso volta. |
-| Fleumático | Ela manda o urgente pra fila. | Ele manda o urgente pra fila. |
+#### `flavor` / `summary` (descrição na carta)
+
+**Até 48 caracteres.** Sem `Cause` e sem `+N`. Exemplos curtos:
+
+| Temperamento | Exemplo (≤ 48) |
+|---|---|
+| Colérico | `Log em CAPS. Quem mexeu que se explique.` |
+| Melancólico | `Sem print do cenário eu nem começo a conversa.` |
+| Sanguíneo | `Relaxa — com fé e um café isso volta sozinho.` |
+| Fleumático | `Entra na fila. O urgente do corredor espera.` |
+
+Concordância: feminino → ela/dela; masculino → ele/dele (também no `name`: Rainha/Rei, Senhora/Senhor).
 
 #### `attention`
 
 - Fraqueza engraçada no tom do dominante, **sem números de bônus**.
-- Exemplos: `Sem chamado aberto, o drama esfria.` · `Se mostrarem o erro na tela, a fé acaba.`
+- Exemplos: `Sem chamado, o drama esfria.` · `Sem print, a fé acaba.`
 
 ### Características (wizard step 2/5)
 
-Obrigatórias antes do quiz / pixel art:
+Obrigatórias antes do quiz / cartoon:
 
 | Campo | Valores |
 |---|---|
@@ -101,19 +125,20 @@ Obrigatórias antes do quiz / pixel art:
 | Cor de pele | clara, morena-clara, morena, negra, amarela → imagem |
 | Cor de cabelo | preto, castanho, loiro, ruivo, grisalho, colorido → imagem |
 | Cor dos olhos | castanho, preto, verde, azul, mel → imagem |
-| Tamanho do cabelo | grande, medio, pequeno, careca → imagem |
+| Tamanho do cabelo | longo, medio, curto, careca → imagem |
 | Tipo de cabelo | liso, cacheado (N/A se careca) → imagem |
 | Óculos | sim, nao → imagem |
+| Barba / facial | nenhuma, bigode, cavanhaque, rala, curta, cheia, longa → imagem |
 
 ### Tokens de jogo (universais de TI)
 
 | Token | Significado | Vale para |
 |---|---|---|
-| Dano | HP perdido pelo oponente | Todos |
-| Confiança | Buff próprio (próximo ataque / moral na conversa) | Todos |
-| Chamado | Ticket / demanda formal aberta (Service Desk, e-mail, fila) | Todos |
-| Usuário | Pessoa do outro lado — culpa, dúvida no corredor, “só uma perguntinha” | Todos |
-| Evidência | Print, log, laudo, repro — prova do que aconteceu | Todos |
+| Dano | HP perdido pelo oponente (interno / slot) | Todos |
+| Confiança | Buff próprio (próximo ataque / moral) | Todos |
+| Chamado | Ticket / demanda formal | Todos |
+| Usuário | Pessoa do outro lado | Todos |
+| Evidência | Print, log, laudo | Todos |
 
 ### Mecânica-base por dominante
 
@@ -124,107 +149,99 @@ Obrigatórias antes do quiz / pixel art:
 | **Sanguíneo** | Otimista | Fé, café, “vai dar” | Se mostrarem o erro, a fé acaba |
 | **Fleumático** | Preguiçoso | Fila, café, segunda a gente vê | Atender no corredor: perde a fila |
 
-### Como escrever um poder (qualquer profissão)
+### Como escrever um poder
 
-1. **`name`:** apelido engraçado (quiz + profissão).
-2. **`flavor` / `summary`:** 1 frase hilária com gênero — **sem** Cause e **sem** `+N`.
-3. **`attention`:** fraqueza curta no mesmo tom.
+1. `name`**:** apelido engraçado (quiz + profissão), 3–4 palavras (≤ 30 caracteres).
+2. `flavor` **/** `summary`**:** 1 frase hilária com gênero, **12–48 caracteres** — sem Cause e sem `+N`.
+3. `attention`**:** fraqueza curta no mesmo tom (16–38 caracteres).
 
 ### Combos (dominante + secundário)
-
-O combo **mistura** as duas mecânicas (sempre com chamado/usuário no centro).
 
 | Dominante → Secundário | Tendência do poder |
 |---|---|
 | Colérico → Fleumático | Impacto alto **só com chamado aberto**. |
-| Fleumático → Colérico | Pouco esforço; **pune quem pula a fila** do chamado. |
+| Fleumático → Colérico | Pouco esforço; **pune quem pula a fila**. |
 | Sanguíneo → Fleumático | Pouco dano; **imunidade a “urgente”** sem chamado. |
-| Melancólico → Sanguíneo | Evidência + ego: você **não é alvo de culpa** neste turno. |
-| Colérico → Melancólico | Pressão + prova: Confuso / bônus se falhar no protocolo. |
-| Fleumático → Melancólico | Espera documentada: dano baixo + **marcadores de espera / evidência**. |
+| Melancólico → Sanguíneo | Evidência + ego: **não é alvo de culpa** neste turno. |
+| Colérico → Melancólico | Pressão + prova. |
+| Fleumático → Melancólico | Espera documentada + evidência. |
 
-Implementação por cargo: `content.json` → `professions[].temperaments` e `professions[].combos` (mesmo esqueleto; só mudam nomes e frases).
+Implementação: quiz/textos em `content.json` → `professions[]`; lógica em `script.js` + `generate-power.js`.
 
-## Geração por IA (contrato de prompt)
-
-Objetivo texto: **`name`** + **`flavor`** hilário (com gênero) + **`attention`** curto.  
-Objetivo imagem: cenário de humor com **tabela de temperamento** + **combo** + **Base 70/30** (`/api/stylize`).
+## Geração por IA (contrato)
 
 ### Quem decide o quê
 
 | Parte | Quem | Por quê |
 |---|---|---|
 | Dominante / secundário | Quiz + `scoreQuiz` | Determinístico |
-| Atributos (paciência/humor/café/nerdisse) | Base dominante 70% + secundário 30% | Caixinha + cena da imagem |
-| Gênero | Step Características | Concordância ela/ele nos textos |
-| Aparência | Step Características | Prompt do cartoon (`/api/stylize`) |
-| `name` / `flavor` / `attention` | LLM (`/api/generate-power`) | Zoeira de personalidade |
-| Humor visual (tabela + combo + attrs) | Prompt imagem (`/api/stylize`) | Estado de humor na arte |
+| Atributos | Base dominante **70%** + secundário **30%** | Caixinha + props na imagem |
+| Cores da carta | `professions[].theme` (obrigatório) | Faixas do fundo |
+| Gênero | Step Características | Concordância ela/ele |
+| Aparência | Step Características | Prompt do cartoon |
+| `name` / `flavor` / `attention` | LLM (`/api/generate-power`) | Texto da carta |
+| Humor visual | Prompt imagem (`/api/stylize` + `mood`) | Pose / gag |
 | Poder `X/10` | Atributos + dano típico interno | Caixinha amarela |
-| Validação | Servidor | Rejeita Cause / `+N` / colar quiz |
+| PDF | Screenshot do `#card` | 7 × 9,7 cm |
+| Validação texto | Servidor (`generate-power.js`) | Cause / `+N` / tamanho / quiz |
 
-### Payload texto (generate-power)
+### Payload texto (`/api/generate-power`)
 
 ```json
 {
-  "profissao": "Desenvolvedor Web",
+  "profession": "Web Developer",
+  "professionLabel": "Desenvolvedor Web",
   "genero": "feminino",
-  "genero_gramatica": "Use ela/dela e adjetivos no feminino.",
-  "dominante": "colerico",
-  "secundario": "sanguineo",
-  "hooks": ["…"],
-  "keywords": ["PROWEB", "vendedor", "título sumiu"],
-  "vibe": "Humor PROWEB/comercial…"
+  "dominant": "colerico",
+  "secondary": "sanguineo",
+  "hooks": ["…"]
 }
 ```
 
-### Payload imagem (stylize)
+(O servidor monta `genero_gramatica`, `keywords` e `vibe` a partir da profissão.)
 
-Além de `image` + `profession`, envia:
+### Payload imagem (`/api/stylize`)
 
-- `appearance` — características (pele, cabelo, olhos, óculos, gênero visual)
+- `image` + `profession`
+- `appearance` — pele, cabelo, olhos, óculos, barba, gênero visual
 - `mood` — `{ dominant, secondary, attrs, name, flavor, attention }`
-  - `attrs` = Base 70/30
-  - `name` / `flavor` / `attention` = texto da carta (LLM) → gag visual
 
 O prompt:
 
-1. mantém **semelhança facial da foto** enviada;
-2. aplica os traços de `appearance`;
-3. desenha em estilo **anime / carta Pokémon** (Sugimori/TCG), **full body** centralizado, widescreen;
-4. uniforme fixo: **camisa azul-claro** + **jeans azul-escuro**;
-5. prioridade visual: **flavor = pose**, efeitos cômicos (`?`, suor), **attention = gag**, attrs = props, escritório = fundo;
-6. saída HD: **1456×720** (sem downscale para 288×152).
+1. mantém **semelhança facial** da foto;
+2. aplica `appearance`;
+3. estilo **anime / TCG** (Sugimori), **full body**, widescreen;
+4. uniforme: **camisa azul-claro** + **jeans azul-escuro**;
+5. prioridade: **flavor = pose**, efeitos cômicos, **attention = gag**, attrs = props, escritório = fundo;
+6. saída HD: **1456×720** (FLUX → `sharp`, sem downscale 288×152).
 
-### Saída da LLM de texto
+### Saída LLM texto (validada)
 
-```
+```json
 {"name":"...","flavor":"...","attention":"..."}
 ```
 
-Validar: sem Cause / `+N` / colar quiz; flavor respeita o gênero.
+Servidor espelha `flavor` → `summary` para a UI.
 
 ### Fluxo resumido
 
 ```
-dados → características → quiz → LLM textos (com gênero)
-                              → foto + appearance + mood(tabela/combo/attrs) → cartoon
-                              → carta / PDF
+dados → características → quiz → LLM textos (name≤30·3–4/flavor≤48/attention≤38)
+                              → foto + appearance + mood → cartoon 1456×720
+                              → carta HTML → PDF 7×9,7 cm
 ```
 
 ## Atributos (junção de poder)
 
-Aparecem no **fim da carta**, abaixo de Evolução / Vitalidade / Raridade.  
-Valem para **todas as profissões** — vêm só do temperamento (dominante 70% + secundário 30%, arredondado).
+Abaixo de Evolução / Vitalidade / Raridade.  
+Só do temperamento: dominante **70%** + secundário **30%** (arredondado).
 
-### O que cada atributo dá ao jogador
-
-| Atributo | Escala | O que dá (benefício) | Como entra no poder |
+| Atributo | Escala | Benefício | No poder |
 |---|---|---|---|
-| **Paciência** | 0–10 | **+espera / defesa**: o oponente gasta mais para te pressionar; bônus em poderes de fila e “não respondo no corredor”. | 1 ponto = 1 na média |
-| **Humor** | 0–10 | **+confiança / conversa**: dano extra se for tranquilo com o usuário; compra confiança. | 1 ponto = 1 na média |
-| **Café** | 0–10 | **+urgência / war room**: acelera dano de pressão, reinício, hotfix. | 1 ponto = 1 na média |
-| **Nerdisse** | 0–50 | **+evidência / laudo**: dano extra com causa raiz, print, “usuário”. | **÷ 5** → escala 0–10 |
+| **Paciência** | 0–10 | +espera / defesa | 1:1 na média |
+| **Humor** | 0–10 | +confiança / conversa | 1:1 |
+| **Café** | 0–10 | +urgência / war room | 1:1 |
+| **Nerdisse** | 0–50 | +evidência / laudo | **÷ 5** → 0–10 |
 
 ### Base por temperamento dominante
 
@@ -235,36 +252,17 @@ Valem para **todas as profissões** — vêm só do temperamento (dominante 70% 
 | Sanguíneo | 5 | 10 | 6 | 20 |
 | Fleumático | 10 | 6 | 7 | 15 |
 
-### Caixinha flutuante (atributos)
+### Poder total (`X/10`)
 
-Ao lado do título **Atributos Especiais**: **`Poder X/10`** (junção de atributos + dano típico interno). Amarelo.
-
-### Poder total (caixinha `X/10`)
-
-Nota de **1 a 10** (junção):
-
-1. Normalizar atributos em 0–10: `paciência`, `humor`, `café`, `nerdisse ÷ 5`.
-2. Dano típico do temperamento dominante → 0–10:
-
-| Temperamento | Dano médio do poder | `dano_n` (÷ 6, máx 10) |
-|---|---|---|
-| Colérico | 47 | 8 |
-| Melancólico | 25 | 4 |
-| Sanguíneo | 33 | 6 |
-| Fleumático | 15 | 3 |
-
-3. **Fórmula:**
-
-```
-média = (paciência + humor + café + nerdisse/5 + dano_n) / 5
-poder = clamp(1, 10, arredondar(média))
-```
-
-4. Exibição: caixinha flutuante **`{poder}/10`** ao lado do título “Atributos Especial”. Cada atributo na barra mostra **`valor/máx`** (ex.: `7/10`, `41/50`).
+1. Normalizar: `paciência`, `humor`, `café`, `nerdisse ÷ 5`.
+2. Dano típico do dominante → `dano_n` (÷ 6, máx 10): Colérico 8 · Melancólico 4 · Sanguíneo 6 · Fleumático 3.
+3. `média = (paciência + humor + café + nerdisse/5 + dano_n) / 5`
+4. `poder = clamp(1, 10, round(média))`
+5. UI: `{poder}/10` + cada atributo como `valor/máx`.
 
 ## Idade
 
-Válida apenas de **18 a 90 anos**.
+Válida de **18 a 90 anos**.
 
 ## Evolução (por idade)
 
@@ -276,24 +274,22 @@ Válida apenas de **18 a 90 anos**.
 
 ## Raridade (por idade)
 
-Intervalo 18–90 dividido em 5 faixas iguais: `índice = min(4, floor((idade - 18) / 14,4))`.
+`índice = min(4, floor((idade - 18) / 14,4))`.
 
-| Idade | Símbolo | Raridade | Cor da borda |
-|---|---|---|---|
-| 18–32 | ● | Comum (Common) | Prata `#9aa0a6` |
-| 33–46 | ◆ | Incomum (Uncommon) | Esmeralda `#3d9b6e` |
-| 47–61 | ★ | Rara (Rare) | Ouro `#d4a84b` |
-| 62–75 | ★★ | Rara Ultra (Ultra Rare) | Violeta `#9b5de5` |
-| 76–90 | ★★★ | Rara Ilustração Especial (Special Illustration Rare) | Arco-íris / holofoil |
+| Idade | Raridade | Borda (código atual) |
+|---|---|---|
+| 18–32 | Comum | `#448ecb` |
+| 33–46 | Incomum | `#1060b0` |
+| 47–61 | Rara | `#0050a0` |
+| 62–75 | Rara Ultra | `#6259a8` (holo) |
+| 76–90 | Rara Ilustração Especial | `#004090` (holo + rainbow) |
 
 ## Pontos de Saúde (HP)
 
-O HP segue o **temperamento** (estressado → pouco HP; calmo/paciente → muito HP).  
-Sorteado **automaticamente ao terminar o quiz**, em **múltiplos de 10** dentro da faixa. O secundário pode empurrar a faixa **um nível** para cima ou para baixo. Valor salvo em `localStorage`.
+Sorteado ao **terminar o quiz**, múltiplos de 10, salvo em `localStorage`.  
+Secundário pode subir/descer **1 faixa** conforme calma relativa.
 
-### Faixas por classificação
-
-| HP | Classificação |
+| HP | Classificação (Vitalidade) |
 |---|---|
 | 30–60 | Muito baixo |
 | 70–100 | Baixo |
@@ -302,20 +298,21 @@ Sorteado **automaticamente ao terminar o quiz**, em **múltiplos de 10** dentro 
 | 260–330 | Muito alto |
 | 340–380 | Extremamente alto |
 
-### Tabela por temperamento dominante
-
-| Temperamento | Perfil | Faixa base (HP) | Classificação |
-|---|---|---|---|
-| Colérico (Explosivo) | Estressado | 30–60 | Muito baixo |
-| Melancólico (Detalhista) | Tenso / crítico | 70–100 | Baixo |
-| Sanguíneo (Otimista) | Energético | 190–250 | Alto |
-| Fleumático (Preguiçoso) | Calmo / paciente | 340–380 | Extremamente alto |
-
-**Secundário:** se for mais calmo que o dominante, sobe 1 faixa (ex.: Colérico + Fleumático → 70–100). Se for mais estressado, desce 1 faixa (ex.: Fleumático + Colérico → 260–330). As faixas **Médio** (110–180) e **Muito alto** (260–330) aparecem nesses ajustes.
+| Temperamento dominante | Faixa base | Classificação |
+|---|---|---|
+| Colérico | 30–60 | Muito baixo |
+| Melancólico | 70–100 | Baixo |
+| Sanguíneo | 190–250 | Alto |
+| Fleumático | 340–380 | Extremamente alto |
 
 ## Arquivos
 
-- `index.html`: estrutura da tela.
-- `style.css`: estilos da tela e da carta.
-- `content.json`: textos editáveis (marca, formulário, temperamentos, combos, mensagens).
-- `script.js`: dados, regras e renderização da carta.
+| Arquivo | Papel |
+|---|---|
+| `index.html` | Estrutura da tela / carta |
+| `style.css` | UI + carta (Press Start 2P local) |
+| `content.json` / `content.js` | Textos, profissões, quizzes, themes |
+| `script.js` | Quiz, atributos, theme, render da carta |
+| `generate-power.js` | LLM `name` / `flavor` / `attention` |
+| `huggingface-stylize.js` + `server.js` | Cartoon `/api/stylize` |
+| `download-card.js` | PDF a partir do HTML `#card` |

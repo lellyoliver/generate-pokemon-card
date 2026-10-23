@@ -131,10 +131,7 @@
     return null;
   }
 
-  /**
-   * Captura a carta como ela aparece na tela (o browser desenha via SVG).
-   * modern-screenshot > html2canvas para fidelidade de CSS.
-   */
+  /** Captura a carta HTML da tela para o PDF. */
   async function captureCardAsJpeg(card) {
     const api = window.modernScreenshot;
     if (!api || typeof api.domToJpeg !== "function") {

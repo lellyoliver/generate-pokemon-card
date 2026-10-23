@@ -17,143 +17,99 @@
     return cur != null && cur !== "" ? cur : fallback;
   }
 
-  /** Temas/cores ficam aqui; textos vêm de content.json. */
+  /** Dados de temperamento; textos vêm de content.json. Cores da carta = theme da profissão. */
   const TEMPERAMENTS = {
     sanguineo: {
       id: "sanguineo",
       label: "Sanguíneo",
-      icon: "☀️",
       name: "",
       summary: "",
       attention: "",
       artBg: "linear-gradient(160deg, #20c2f1 0%, #0f9bd6 50%, #1060b0 100%)",
-      theme: {
-        primary: "#0f9bd6",
-        bodyFrom: "#20c2f1",
-        bodyMid: "#1060b0",
-        bodyTo: "#0050a0",
-        glow: "rgba(32, 194, 241, 0.45)",
-      },
     },
     colerico: {
       id: "colerico",
       label: "Colérico",
-      icon: "⚡",
       name: "",
       summary: "",
       attention: "",
       artBg: "linear-gradient(160deg, #3070b0 0%, #1060b0 45%, #004090 100%)",
-      theme: {
-        primary: "#1060b0",
-        bodyFrom: "#3070b0",
-        bodyMid: "#1060b0",
-        bodyTo: "#004090",
-        glow: "rgba(16, 96, 176, 0.45)",
-      },
     },
     melancholico: {
       id: "melancholico",
       label: "Melancólico",
-      icon: "🍂",
       name: "",
       summary: "",
       attention: "",
       artBg: "linear-gradient(160deg, #6561ab 0%, #6259a8 55%, #5350a1 100%)",
-      theme: {
-        primary: "#6259a8",
-        bodyFrom: "#6561ab",
-        bodyMid: "#5050a0",
-        bodyTo: "#004090",
-        glow: "rgba(98, 89, 168, 0.45)",
-      },
     },
     fleumatico: {
       id: "fleumatico",
       label: "Fleumático",
-      icon: "🌊",
       name: "",
       summary: "",
       attention: "",
       artBg: "linear-gradient(160deg, #0ea8de 0%, #0050a0 55%, #004090 100%)",
-      theme: {
-        primary: "#0050a0",
-        bodyFrom: "#0f9bd6",
-        bodyMid: "#0050a0",
-        bodyTo: "#004090",
-        glow: "rgba(0, 80, 160, 0.45)",
-      },
     },
   };
 
   const COMBOS = {
     "sanguineo-colerico": {
-      icon: "🌦️",
       name: "",
       desc: "",
       artBg: "linear-gradient(160deg, #20c2f1 0%, #1060b0 50%, #004090 100%)",
     },
     "sanguineo-fleumatico": {
-      icon: "🏖️",
       name: "",
       desc: "",
       artBg: "linear-gradient(160deg, #20c2f1 0%, #0f9bd6 50%, #0050a0 100%)",
     },
     "sanguineo-melancholico": {
-      icon: "🌅",
       name: "",
       desc: "",
       artBg: "linear-gradient(160deg, #20c2f1 0%, #6259a8 40%, #004090 100%)",
     },
     "colerico-sanguineo": {
-      icon: "🔥",
       name: "",
       desc: "",
       artBg: "linear-gradient(160deg, #3070b0 0%, #1060b0 40%, #004090 100%)",
     },
     "colerico-melancholico": {
-      icon: "🌪️",
       name: "",
       desc: "",
       artBg: "linear-gradient(160deg, #1060b0 0%, #5050a0 40%, #004090 100%)",
     },
     "colerico-fleumatico": {
-      icon: "💨",
       name: "",
       desc: "",
       artBg: "linear-gradient(160deg, #448ecb 0%, #1060b0 50%, #004090 100%)",
     },
     "melancholico-sanguineo": {
-      icon: "🌫️",
       name: "",
       desc: "",
       artBg: "linear-gradient(160deg, #6561ab 0%, #0f9bd6 40%, #004090 100%)",
     },
     "melancholico-colerico": {
-      icon: "🌬️",
       name: "",
       desc: "",
       artBg: "linear-gradient(160deg, #6259a8 0%, #1060b0 55%, #004090 100%)",
     },
     "melancholico-fleumatico": {
-      icon: "🌲",
       name: "",
       desc: "",
       artBg: "linear-gradient(160deg, #5350a1 0%, #0050a0 50%, #004090 100%)",
     },
     "fleumatico-sanguineo": {
-      icon: "🏝️",
       name: "",
       desc: "",
       artBg: "linear-gradient(160deg, #0ea8de 0%, #20c2f1 40%, #0050a0 100%)",
     },
     "fleumatico-colerico": {
-      icon: "🏞️",
       name: "",
       desc: "",
       artBg: "linear-gradient(160deg, #0f9bd6 0%, #1060b0 45%, #004090 100%)",
     },
     "fleumatico-melancholico": {
-      icon: "🧊",
       name: "",
       desc: "",
       artBg: "linear-gradient(160deg, #0ea8de 0%, #6259a8 40%, #004090 100%)",
@@ -206,7 +162,6 @@
       if (!src) return;
       if (src.label) TEMPERAMENTS[id].label = src.label;
       if (src.labelSecondary) TEMPERAMENTS[id].labelSecondary = src.labelSecondary;
-      if (src.icon) TEMPERAMENTS[id].icon = src.icon;
       if (src.name) TEMPERAMENTS[id].name = src.name;
       if (src.summary) TEMPERAMENTS[id].summary = src.summary;
       if (src.attention) TEMPERAMENTS[id].attention = src.attention;
@@ -216,7 +171,6 @@
     Object.keys(COMBOS).forEach((key) => {
       const src = combos[key];
       if (!src) return;
-      if (src.icon) COMBOS[key].icon = src.icon;
       if (src.name) COMBOS[key].name = src.name;
       if (src.desc) COMBOS[key].desc = src.desc;
       if (src.attention) COMBOS[key].attention = src.attention;
@@ -281,12 +235,9 @@
     cardStage: document.getElementById("card-stage"),
     cardName: document.getElementById("card-name"),
     cardHp: document.getElementById("card-hp"),
-    cardEnergy: document.getElementById("card-energy"),
     cardArt: document.getElementById("card-art"),
-    cardIcon: document.getElementById("card-icon"),
     cardPortrait: document.getElementById("card-portrait"),
     cardInfoBar: document.getElementById("card-info-bar"),
-    cardAbilityCost: document.getElementById("card-ability-cost"),
     cardComboName: document.getElementById("card-combo-name"),
     cardDesc: document.getElementById("card-desc"),
     cardAge: document.getElementById("card-age"),
@@ -301,11 +252,11 @@
     hairLength: document.getElementById("hair-length"),
     hairType: document.getElementById("hair-type"),
     glasses: document.getElementById("glasses"),
+    beard: document.getElementById("beard"),
     attrPaciencia: document.getElementById("attr-paciencia"),
     attrHumor: document.getElementById("attr-humor"),
     attrCafe: document.getElementById("attr-cafe"),
     attrNerdisse: document.getElementById("attr-nerdisse"),
-    cardEnergyLabel: document.getElementById("card-energy-label"),
   };
 
   /** Atributos-base por temperamento (junção de poder). Escala 0–10, Nerdisse 0–50. */
@@ -363,22 +314,6 @@
     return RARITIES[index];
   }
 
-  function hexToRgb(hex) {
-    const h = hex.replace("#", "");
-    const full = h.length === 3 ? h.split("").map((c) => c + c).join("") : h;
-    const n = parseInt(full, 16);
-    return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
-  }
-
-  function mixHex(a, b, t) {
-    const A = hexToRgb(a);
-    const B = hexToRgb(b);
-    const r = Math.round(A.r + (B.r - A.r) * t);
-    const g = Math.round(A.g + (B.g - A.g) * t);
-    const bl = Math.round(A.b + (B.b - A.b) * t);
-    return `#${[r, g, bl].map((v) => v.toString(16).padStart(2, "0")).join("")}`;
-  }
-
   function selectedProfessionValue() {
     return els.profession && els.profession.value ? els.profession.value.trim() : "";
   }
@@ -420,12 +355,13 @@
       hairLength: els.hairLength && els.hairLength.value ? els.hairLength.value.trim() : "",
       hairType: els.hairType && els.hairType.value ? els.hairType.value.trim() : "",
       glasses: els.glasses && els.glasses.value ? els.glasses.value.trim() : "",
+      beard: els.beard && els.beard.value ? els.beard.value.trim() : "",
     };
   }
 
   function appearanceComplete(a) {
     if (!a) return false;
-    const required = ["gender", "skin", "hairColor", "eyeColor", "hairLength", "glasses"];
+    const required = ["gender", "skin", "hairColor", "eyeColor", "hairLength", "glasses", "beard"];
     if (!required.every((k) => a[k])) return false;
     if (a.hairLength === "careca") return true;
     return Boolean(a.hairType && a.hairType !== "");
@@ -629,24 +565,7 @@
         glow: pack.theme.glow,
       };
     }
-
-    const dominant = state.dominant ? TEMPERAMENTS[state.dominant] : null;
-    if (!dominant) return { ...DEFAULT_THEME };
-
-    const base = { ...dominant.theme };
-    if (state.secondary && state.secondary !== state.dominant) {
-      const sec = TEMPERAMENTS[state.secondary];
-      if (sec) {
-        return {
-          primary: mixHex(base.primary, sec.theme.primary, 0.35),
-          bodyFrom: mixHex(base.bodyFrom, sec.theme.bodyFrom, 0.35),
-          bodyMid: mixHex(base.bodyMid, sec.theme.bodyMid, 0.35),
-          bodyTo: mixHex(base.bodyTo, sec.theme.bodyTo, 0.35),
-          glow: base.glow,
-        };
-      }
-    }
-    return base;
+    return { ...DEFAULT_THEME };
   }
 
   function applyCardColors(theme, rarity) {
@@ -749,8 +668,6 @@
         const secondary = TEMPERAMENTS[state.secondary];
         const artBg = packArtBg || combo.artBg;
         return {
-          icon: combo.icon,
-          energyIcon: dominant.icon,
           energyLabel: `${actionLabel(state.dominant, "dominant")} + ${actionLabel(state.secondary, "secondary")}`,
           comboName: (gen && gen.name) || combo.name,
           desc:
@@ -768,8 +685,6 @@
 
     const artBg = packArtBg || dominant.artBg;
     return {
-      icon: dominant.icon,
-      energyIcon: dominant.icon,
       energyLabel: actionLabel(state.dominant, "dominant"),
       comboName: (gen && gen.name) || dominant.name || dominant.label,
       desc: state.powerLoading
@@ -816,11 +731,13 @@
         : { ...DEFAULT_RARITY_STYLE },
       theme,
       profession: els.profession && els.profession.value ? els.profession.value : "",
+      professionLabel: (() => {
+        const pack = professionPack();
+        return (pack && pack.label) || "";
+      })(),
       portraitUrl: state.portraitUrl,
       ready: Boolean(state.dominant),
       profile: profile || {
-        icon: "❓",
-        energyIcon: "❓",
         energyLabel: "—",
         comboName: "",
         desc: txt("card.emptyDesc", "Selecione uma ação dominante para revelar a descrição."),
@@ -876,10 +793,6 @@
     }
 
     if (profile) {
-      els.cardEnergy.textContent = profile.energyIcon;
-      els.cardEnergyLabel.textContent = profile.energyLabel;
-      els.cardIcon.textContent = profile.icon;
-      if (els.cardAbilityCost) els.cardAbilityCost.textContent = profile.energyIcon;
       // Título do bloco = nome do poder (combo ou temperamento solo).
       els.cardComboName.textContent = profile.comboName || profile.energyLabel || "—";
       els.cardArt.style.setProperty("--art-bg", profile.artBg);
@@ -891,10 +804,6 @@
       }
       els.cardDesc.innerHTML = descHtml;
     } else {
-      els.cardEnergy.textContent = "❓";
-      els.cardEnergyLabel.textContent = "—";
-      els.cardIcon.textContent = "❓";
-      if (els.cardAbilityCost) els.cardAbilityCost.textContent = "❓";
       els.cardComboName.textContent = "—";
       els.cardArt.style.background =
         "linear-gradient(160deg, #6c757d 0%, #495057 100%)";
@@ -1000,6 +909,7 @@
       ["field-hair-length", () => !a.hairLength],
       ["field-hair-type", () => a.hairLength !== "careca" && !a.hairType],
       ["field-glasses", () => !a.glasses],
+      ["field-beard", () => !a.beard],
     ];
     checks.forEach(([id, isBad]) => {
       const field = document.getElementById(id);
@@ -1123,6 +1033,7 @@
         els.hairLength,
         els.hairType,
         els.glasses,
+        els.beard,
       ].forEach((el) => {
         if (el) el.value = "";
       });

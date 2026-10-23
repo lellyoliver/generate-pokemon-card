@@ -51,6 +51,7 @@ async function setup(configured) {
         hairLength: "medio",
         hairType: "liso",
         glasses: "nao",
+        beard: "nenhuma",
       }),
       addEventListener() {},
     },

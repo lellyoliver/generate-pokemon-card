@@ -77,7 +77,8 @@
       "eyeColor": "Cor dos olhos",
       "hairLength": "Tamanho do cabelo",
       "hairType": "Tipo de cabelo",
-      "glasses": "Usa óculos?"
+      "glasses": "Usa óculos?",
+      "beard": "Barba / facial"
     },
     "placeholders": {
       "name": "Ex.: Mario",
@@ -102,45 +103,156 @@
     },
     "appearance": {
       "gender": [
-        { "value": "feminino", "label": "Feminino" },
-        { "value": "masculino", "label": "Masculino" }
+        {
+          "value": "feminino",
+          "label": "Feminino"
+        },
+        {
+          "value": "masculino",
+          "label": "Masculino"
+        }
       ],
       "skin": [
-        { "value": "clara", "label": "Clara" },
-        { "value": "morena-clara", "label": "Morena clara" },
-        { "value": "morena", "label": "Morena" },
-        { "value": "negra", "label": "Negra" },
-        { "value": "amarela", "label": "Amarela" }
+        {
+          "value": "clara",
+          "label": "Clara"
+        },
+        {
+          "value": "morena-clara",
+          "label": "Morena clara"
+        },
+        {
+          "value": "morena",
+          "label": "Morena"
+        },
+        {
+          "value": "negra",
+          "label": "Negra"
+        },
+        {
+          "value": "amarela",
+          "label": "Amarela"
+        }
       ],
       "hairColor": [
-        { "value": "preto", "label": "Preto" },
-        { "value": "castanho", "label": "Castanho" },
-        { "value": "loiro", "label": "Loiro" },
-        { "value": "ruivo", "label": "Ruivo" },
-        { "value": "grisalho", "label": "Grisalho" },
-        { "value": "colorido", "label": "Colorido" }
+        {
+          "value": "preto",
+          "label": "Preto"
+        },
+        {
+          "value": "castanho",
+          "label": "Castanho"
+        },
+        {
+          "value": "loiro",
+          "label": "Loiro"
+        },
+        {
+          "value": "ruivo",
+          "label": "Ruivo"
+        },
+        {
+          "value": "grisalho",
+          "label": "Grisalho"
+        },
+        {
+          "value": "colorido",
+          "label": "Colorido"
+        }
       ],
       "eyeColor": [
-        { "value": "castanho", "label": "Castanho" },
-        { "value": "preto", "label": "Preto" },
-        { "value": "verde", "label": "Verde" },
-        { "value": "azul", "label": "Azul" },
-        { "value": "mel", "label": "Mel" }
+        {
+          "value": "castanho",
+          "label": "Castanho"
+        },
+        {
+          "value": "preto",
+          "label": "Preto"
+        },
+        {
+          "value": "verde",
+          "label": "Verde"
+        },
+        {
+          "value": "azul",
+          "label": "Azul"
+        },
+        {
+          "value": "mel",
+          "label": "Mel"
+        }
       ],
       "hairLength": [
-        { "value": "grande", "label": "Grande" },
-        { "value": "medio", "label": "Médio" },
-        { "value": "pequeno", "label": "Pequeno" },
-        { "value": "careca", "label": "Careca" }
+        {
+          "value": "longo",
+          "label": "Longo"
+        },
+        {
+          "value": "medio",
+          "label": "Médio"
+        },
+        {
+          "value": "curto",
+          "label": "Curto"
+        },
+        {
+          "value": "careca",
+          "label": "Careca"
+        }
       ],
       "hairType": [
-        { "value": "liso", "label": "Liso" },
-        { "value": "cacheado", "label": "Cacheado" },
-        { "value": "na", "label": "Não se aplica" }
+        {
+          "value": "liso",
+          "label": "Liso"
+        },
+        {
+          "value": "cacheado",
+          "label": "Cacheado"
+        },
+        {
+          "value": "na",
+          "label": "Não se aplica"
+        }
       ],
       "glasses": [
-        { "value": "sim", "label": "Sim" },
-        { "value": "nao", "label": "Não" }
+        {
+          "value": "sim",
+          "label": "Sim"
+        },
+        {
+          "value": "nao",
+          "label": "Não"
+        }
+      ],
+      "beard": [
+        {
+          "value": "nenhuma",
+          "label": "Nenhuma"
+        },
+        {
+          "value": "bigode",
+          "label": "Bigode"
+        },
+        {
+          "value": "cavanhaque",
+          "label": "Cavanhaque"
+        },
+        {
+          "value": "rala",
+          "label": "Rala / sombreada"
+        },
+        {
+          "value": "curta",
+          "label": "Curta"
+        },
+        {
+          "value": "cheia",
+          "label": "Cheia"
+        },
+        {
+          "value": "longa",
+          "label": "Longa"
+        }
       ]
     },
     "buttons": {
@@ -1294,15 +1406,13 @@
     "sanguineo": {
       "label": "Otimista",
       "labelSecondary": "Enrolão",
-      "icon": "☀️",
       "name": "Na Minha Máquina",
       "summary": "Relaxa — na minha máquina funciona e o café ainda está quente.",
-      "attention": "Se mostrarem o erro na tela, a fé acaba."
+      "attention": "Sem erro na tela, a fé acaba."
     },
     "colerico": {
       "label": "Explosivo",
       "labelSecondary": "Impaciente",
-      "icon": "💣",
       "name": "Prazo Agora",
       "summary": "Já abri o log em CAPS. Quem mexeu que se explique.",
       "attention": "Sem chamado aberto, o drama esfria."
@@ -1310,7 +1420,6 @@
     "melancholico": {
       "label": "Detalhista",
       "labelSecondary": "Crítico",
-      "icon": "📋",
       "name": "Causa Raiz",
       "summary": "Sem print do cenário eu nem começo a conversa.",
       "attention": "Sem evidência, a conversa não anda."
@@ -1318,84 +1427,71 @@
     "fleumatico": {
       "label": "Preguiçoso",
       "labelSecondary": "Relaxado",
-      "icon": "🌊",
       "name": "Deixa Quieto",
       "summary": "Entra na fila. O urgente do corredor pode esperar.",
-      "attention": "Atender no corredor: perde o café e a fila."
+      "attention": "Atender no corredor: perde o café."
     }
   },
   "combos": {
     "sanguineo-colerico": {
-      "icon": "📣",
       "name": "Correção Blindada",
       "desc": "Sorrio, mas quero dono. Alguém mexeu e a fé tem prazo curto.",
       "attention": "Sem chamado, a fé some."
     },
     "sanguineo-fleumatico": {
-      "icon": "☕",
       "name": "Cinco Minutos",
       "desc": "Cinco minutinhos e um café: o urgente do corredor entra na fila.",
       "attention": "Atender no corredor: perde o café."
     },
     "sanguineo-melancholico": {
-      "icon": "🌙",
       "name": "Feature Disfarçada",
       "desc": "Até o laudo sair, tudo é feature. Ontem funcionava — quase.",
       "attention": "Sem print, a feature vira bug."
     },
     "colerico-sanguineo": {
-      "icon": "🚀",
       "name": "Sobe e Reza",
       "desc": "Sobe agora e reza depois. Urgência com moral alta.",
       "attention": "Sem chamado, a moral cai."
     },
     "colerico-melancholico": {
-      "icon": "🔍",
       "name": "Caça-usuario",
       "desc": "Grito primeiro, print depois. Cadeira e teclado sob suspeita.",
       "attention": "Sem evidência, só sobra o grito."
     },
     "colerico-fleumatico": {
-      "icon": "📐",
       "name": "Checklist Quente",
       "desc": "Checklist quente: cabo, cache e paciência zero com atalho.",
       "attention": "Sem chamado, o checklist trava."
     },
     "melancholico-sanguineo": {
-      "icon": "🎧",
       "name": "Homolog vs Prod",
       "desc": "Homolog mentiu de novo. Laudo primeiro, esperança depois.",
       "attention": "Sem cenário, a esperança some."
     },
     "melancholico-colerico": {
-      "icon": "🧹",
       "name": "Veredito Seco",
       "desc": "Veredito seco: se for usuário, o laudo já veio com carimbo.",
       "attention": "Sem print, o veredito espera."
     },
     "melancholico-fleumatico": {
-      "icon": "🖥️",
       "name": "Bastidores",
       "desc": "Resolve nos bastidores. Silêncio, café e resultado.",
       "attention": "Expor no corredor: perde o mistério."
     },
     "fleumatico-sanguineo": {
-      "icon": "🤝",
       "name": "Depois Documento",
       "desc": "Ajusto agora e documento… talvez depois.",
       "attention": "Sem chamado, depois vira nunca."
     },
     "fleumatico-colerico": {
-      "icon": "📌",
       "name": "Checklist ou Nada",
       "desc": "Calmo por fora, firme por dentro: sem checklist, ninguém sobe.",
       "attention": "Pular a fila: trava geral."
     },
     "fleumatico-melancholico": {
-      "icon": "⏰",
       "name": "Plantão de Ferro",
       "desc": "Plantão de ferro: cabo, cache e erro — sem pressa aparente.",
-      "attention": "Sem evidência, o plantão rende só café."
+      "attention": "Sem evidência, só sobra o café."
     }
   },
   "rarities": [

@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Bangers&family=Outfit:wght@400;500;600;700&family=Press+Start+2P&family=VT323&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=VT323&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -101,6 +101,11 @@
               <select id="glasses" required></select>
               <p class="error" id="glasses-error"></p>
             </div>
+            <div class="field" id="field-beard">
+              <label for="beard"></label>
+              <select id="beard" required></select>
+              <p class="error" id="beard-error"></p>
+            </div>
           </div>
         </div>
 
@@ -153,70 +158,66 @@
               <h3 class="card-name" id="card-name"></h3>
               <div class="card-hp-block">
                 <div class="card-hp"><span>HP</span><span id="card-hp">??</span></div>
-                <div class="card-energy" id="card-energy" title="">☀️</div>
               </div>
             </header>
 
             <div class="card-art-frame">
               <div class="card-art" id="card-art">
                 <img id="card-portrait" class="card-portrait" alt="" hidden />
-                <div class="card-art-icon" id="card-icon">❓</div>
               </div>
             </div>
-
             <div class="card-info-bar" id="card-info-bar"></div>
+            <div class="container-powers">
+              <div class="desc-container">
+                <div class="card-ability">
+                  <div class="card-ability-row">
+                    <span class="card-ability-name" id="card-combo-name">—</span>
+                  </div>
+                  <div class="card-desc" id="card-desc"></div>
+                </div>
+              </div>
+              <div class="atr-container">
+                <div class="card-attrs-bar" id="card-attrs-bar" hidden>
+                  <div class="card-attrs-title" id="card-attrs-title">Atributos Especial</div>
+                  <div class="card-attrs-power" id="card-attrs-power" title="Poder de junção">—/10</div>
+                  <div class="attr">
+                    <span data-attr="paciencia"></span>
+                    <em class="attr-benefit" data-benefit="paciencia"></em>
+                    <strong id="attr-paciencia">—</strong>
+                  </div>
+                  <div class="attr">
+                    <span data-attr="humor"></span>
+                    <em class="attr-benefit" data-benefit="humor"></em>
+                    <strong id="attr-humor">—</strong>
+                  </div>
+                  <div class="attr">
+                    <span data-attr="cafe"></span>
+                    <em class="attr-benefit" data-benefit="cafe"></em>
+                    <strong id="attr-cafe">—</strong>
+                  </div>
+                  <div class="attr">
+                    <span data-attr="nerdisse"></span>
+                    <em class="attr-benefit" data-benefit="nerdisse"></em>
+                    <strong id="attr-nerdisse">—</strong>
+                  </div>
+                </div>
 
-            <div class="card-ability">
-              <div class="card-ability-row">
-                <span class="card-ability-cost" id="card-ability-cost" aria-hidden="true">❓</span>
-                <span class="card-ability-name" id="card-combo-name">—</span>
-              </div>
-              <div class="card-desc" id="card-desc"></div>
-            </div>
-
-            <div class="card-attrs-bar" id="card-attrs-bar" hidden>
-              <div class="card-attrs-title" id="card-attrs-title">Atributos Especial</div>
-              <div class="card-attrs-power" id="card-attrs-power" title="Poder de junção">—/10</div>
-              <div class="attr">
-                <span data-attr="paciencia"></span>
-                <em class="attr-benefit" data-benefit="paciencia"></em>
-                <strong id="attr-paciencia">—</strong>
-              </div>
-              <div class="attr">
-                <span data-attr="humor"></span>
-                <em class="attr-benefit" data-benefit="humor"></em>
-                <strong id="attr-humor">—</strong>
-              </div>
-              <div class="attr">
-                <span data-attr="cafe"></span>
-                <em class="attr-benefit" data-benefit="cafe"></em>
-                <strong id="attr-cafe">—</strong>
-              </div>
-              <div class="attr">
-                <span data-attr="nerdisse"></span>
-                <em class="attr-benefit" data-benefit="nerdisse"></em>
-                <strong id="attr-nerdisse">—</strong>
+                <div class="card-stats-bar">
+                  <div class="item">
+                    <span></span>
+                    <strong id="card-age">—</strong>
+                  </div>
+                  <div class="item">
+                    <span></span>
+                    <strong id="card-health">—</strong>
+                  </div>
+                  <div class="item">
+                    <span></span>
+                    <strong id="card-rarity-stat">—</strong>
+                  </div>
+                </div>
               </div>
             </div>
-
-            <div class="card-stats-bar">
-              <div class="item">
-                <span></span>
-                <strong id="card-age">—</strong>
-              </div>
-              <div class="item">
-                <span></span>
-                <strong id="card-health">—</strong>
-              </div>
-              <div class="item">
-                <span></span>
-                <strong id="card-rarity-stat">—</strong>
-              </div>
-            </div>
-            
-            <footer class="card-footer">
-              <div class="card-energy-label" id="card-energy-label">—</div>
-            </footer>
           </div>
         </article>
       </div>

@@ -86,6 +86,7 @@
     labelFor("hair-length", "hairLength");
     labelFor("hair-type", "hairType");
     labelFor("glasses", "glasses");
+    labelFor("beard", "beard");
 
     const placeholders = F.placeholders || {};
     const name = document.getElementById("name");
@@ -127,6 +128,7 @@
       "hair-length-error",
       "hair-type-error",
       "glasses-error",
+      "beard-error",
     ].forEach((id) => setText(document.getElementById(id), appearanceError));
 
     const buttons = F.buttons || {};
@@ -175,6 +177,7 @@
     fillSelect(document.getElementById("hair-length"), A.hairLength, ph);
     fillSelect(document.getElementById("hair-type"), A.hairType, ph);
     fillSelect(document.getElementById("glasses"), A.glasses, ph);
+    fillSelect(document.getElementById("beard"), A.beard, ph);
   }
 
   function applyProfessions(C) {
@@ -203,8 +206,6 @@
     setText(document.getElementById("card-stage"), card.emptyStage);
     setText(document.getElementById("card-desc"), card.emptyDesc);
     setText(document.getElementById("card-info-bar"), card.infoFallback);
-    const energy = document.getElementById("card-energy");
-    if (energy && card.energyTitle) energy.title = card.energyTitle;
 
     const stats = card.stats || {};
     const items = document.querySelectorAll(".card-stats-bar .item");

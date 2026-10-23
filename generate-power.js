@@ -12,9 +12,9 @@ Responda SOMENTE com um JSON válido numa única linha, sem markdown e sem expli
 {"name":"apelido engraçado","flavor":"frase hilária","attention":"aviso curto"}
 
 Regras:
-- name: 3 a 5 palavras, apelido de colega (ex.: Profissional do Chamado, Rainha do Print). NÃO "PROWEB vendedor Pro". NÃO terminar com Pro.
-- flavor: 1 frase nova e engraçada sobre o jeito da pessoa no cargo (sem Cause, sem +20).
-- attention: 1 linha de fraqueza/zoeira, diferente do flavor (sem números).
+- name: 3 a 4 palavras, no máx. 30 caracteres, apelido de colega (ex.: Profissional do Chamado, Rainha do Print). NÃO "PROWEB vendedor Pro". NÃO terminar com Pro.
+- flavor: descrição da carta — no máx. 48 caracteres, 1 frase engraçada sobre o jeito no cargo (sem Cause, sem +20).
+- attention: fraqueza/zoeira — no máx. 38 caracteres, 1 linha, diferente do flavor (sem números).
 - Gênero: feminino → ela/dela; masculino → ele/dele. No name: Rei/Rainha, Senhor/Senhora.
 - PROIBIDO inglês, colar o quiz, raciocinar em voz alta. Só o JSON.`;
 
@@ -44,9 +44,9 @@ const FUNNY_NAMES_BY_PROFESSION = {
   ],
   "ADVPL Developer": [
     "Senhor do Fonte Legado",
-    "Rainha da Custom de Sexta",
+    "Rainha da Custom",
     "Profissional do Dicionario",
-    "Guardião do Ponto de Entrada",
+    "Guardião do Ponto",
     "Mestre do Patch Surpresa",
   ],
   "Systems Analyst": [
@@ -58,7 +58,7 @@ const FUNNY_NAMES_BY_PROFESSION = {
   ],
   "Systems Coordinator": [
     "Senhor da Daily",
-    "Rainha do Dono do Chamado",
+    "Rainha do Chamado",
     "Profissional do Bloqueio",
     "Mestre da Escala Quente",
     "Guardião do Fluxo",
@@ -74,7 +74,7 @@ const FUNNY_NAMES_BY_PROFESSION = {
     "Senhor da Permissao",
     "Rainha do Servidor Calado",
     "Profissional da Pasta Liberada",
-    "Mestre da Mudanca na Sexta",
+    "Mestre da Mudanca",
     "Guardião do Ping Mentiroso",
   ],
   "Infrastructure Assistant": [
@@ -123,13 +123,13 @@ const BONUS_NUMBER_RE = /\+\s*\d+|−\s*\d+|-\s*\d+|\d+\s*de\s*dano|\bCause\b/i;
 /** Fallback offline — sem números de bônus. */
 const ATTENTION_CATALOG = {
   A1: "Sem chamado aberto, o drama esfria.",
-  A2: "Repetir o mesmo ataque no turno: perde o clima.",
+  A2: "Repetir o ataque: perde o clima.",
   A3: "Trocar a carta no meio: a zoeira some.",
   A4: "Sem print, a conversa nem começa.",
-  A5: "Se mostrarem o erro na tela, a fé acaba.",
-  A6: "Atender no corredor: perde o café e a fila.",
-  A7: "Sem urgência de verdade: o turno vira papo.",
-  A8: "Pular a fila: todo mundo trava — inclusive você.",
+  A5: "Sem erro na tela, a fé acaba.",
+  A6: "Atender no corredor: perde o café.",
+  A7: "Sem urgência real: vira só papo.",
+  A8: "Pular a fila: todo mundo trava.",
 };
 
 const DEFAULT_ATTENTION = {
@@ -194,10 +194,10 @@ const SLOTS = {
 };
 
 const DEFAULT_FLAVORS = {
-  COL: "Já abri o log em CAPS. Quem mexeu que se explique.",
+  COL: "Log em CAPS. Quem mexeu que se explique.",
   MEL: "Sem print do cenário eu nem começo a conversa.",
   SAN: "Relaxa — com fé e um café isso volta sozinho.",
-  FLE: "Entra na fila. O urgente do corredor pode esperar.",
+  FLE: "Entra na fila. O urgente do corredor espera.",
   COL_FLE: "Quero dono no chamado. Sem chamado, sem grito.",
   FLE_COL: "Calmo por fora. Pular a fila? Aí trava tudo.",
   SAN_FLE: "Sorrio, anoto e mando pra fila com carinho.",
@@ -361,8 +361,8 @@ function validateLlmFields(raw) {
     .replace(/\s+/g, " ")
     .trim();
   const words = name.split(" ").filter(Boolean);
-  if (words.length < 3 || words.length > 5 || name.length > 42 || name.includes("\n")) {
-    throw new Error("name inválido (precisa 3–5 palavras).");
+  if (words.length < 3 || words.length > 4 || name.length > 30 || name.includes("\n")) {
+    throw new Error("name inválido (precisa 3–4 palavras, até 30 caracteres).");
   }
 
   let flavor = String(raw.flavor || raw.punchline || raw.cenario || "")
@@ -374,8 +374,12 @@ function validateLlmFields(raw) {
   if (BONUS_NUMBER_RE.test(flavor)) {
     throw new Error("flavor não pode ter bônus/dano numérico.");
   }
-  if (flavor.length < 24 || flavor.length > 160) {
-    throw new Error("flavor tamanho inválido.");
+  if (flavor.length > 48) {
+    const clipped = flavor.slice(0, 48).replace(/\s+\S*$/, "").trim();
+    flavor = clipped.length >= 12 ? clipped : flavor.slice(0, 48).trim();
+  }
+  if (flavor.length < 12 || flavor.length > 48) {
+    throw new Error("flavor deve ter até 48 caracteres.");
   }
 
   let attention = String(raw.attention || "").replace(/\s+/g, " ").trim();
@@ -389,8 +393,12 @@ function validateLlmFields(raw) {
   if (/^[“"'].*[”"']$/.test(attention)) {
     throw new Error("attention não pode ser citação de sabor.");
   }
-  if (attention.length < 16 || attention.length > 120 || attention.includes("\n")) {
-    throw new Error("attention tamanho inválido.");
+  if (attention.length > 38) {
+    const clipped = attention.slice(0, 38).replace(/\s+\S*$/, "").trim();
+    attention = clipped.length >= 16 ? clipped : attention.slice(0, 38).trim();
+  }
+  if (attention.length < 16 || attention.length > 38 || attention.includes("\n")) {
+    throw new Error("attention deve ter até 38 caracteres.");
   }
 
   return { name: words.join(" "), flavor, attention };
@@ -731,7 +739,7 @@ async function generatePower({ token, client, env = process.env, input }) {
               context.profissao +
               ". Dominante " +
               context.dominante +
-              ". name=apelido engraçado 3-5 palavras. flavor=1 frase hilária. attention=aviso curto diferente. Sem Cause, sem +N.\n" +
+              ". name=apelido engraçado 3-4 palavras (até 30 caracteres). flavor=até 48 caracteres, 1 frase hilária. attention=até 38 caracteres, aviso curto diferente. Sem Cause, sem +N.\n" +
               JSON.stringify({
                 respostas: (context.respostas || []).slice(0, 3),
                 keywords: context.keywords,

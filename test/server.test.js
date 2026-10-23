@@ -56,6 +56,7 @@ const APPEARANCE = {
   hairLength: "medio",
   hairType: "liso",
   glasses: "nao",
+  beard: "nenhuma",
 };
 
 function post(base, body) {
@@ -171,6 +172,7 @@ test("SDK envia foto e prompt pelo roteador HF e retorna a arte como data URL", 
       hairLength: "medio",
       hairType: "cacheado",
       glasses: "sim",
+      beard: "nenhuma",
     },
   });
   assert.equal(response.status, 200);
@@ -201,6 +203,7 @@ test("estilo anime widescreen full-body corporativo com attrs", async (t) => {
       assert.match(args.parameters.prompt, /comic|gag|question mark|sweat/i);
       assert.match(args.parameters.prompt, /corporate|office|workplace/i);
       assert.match(args.parameters.prompt, /sky-blue|dark blue denim/i);
+      assert.match(args.parameters.prompt, /goatee|beard/i);
       assert.match(args.parameters.prompt, /Systems Analyst/);
       assert.match(args.parameters.prompt, /Rainha do Print|laudo com sorriso|SPECIAL ATTRS|café/i);
       assert.equal(options.retry_on_error, false);
@@ -223,13 +226,14 @@ test("estilo anime widescreen full-body corporativo com attrs", async (t) => {
       hairLength: "medio",
       hairType: "cacheado",
       glasses: "sim",
+      beard: "cavanhaque",
     },
     mood: {
       dominant: "melancholico",
       attrs: { paciencia: 4, humor: 2, cafe: 8, nerdisse: 50 },
       name: "Rainha do Print",
       flavor: "Ela entrega laudo com sorriso e não leva a culpa.",
-      attention: "Sem evidência, a conversa não anda.",
+      attention: "Sem evidência, a conversa trava.",
     },
   });
   assert.equal(response.status, 200);
