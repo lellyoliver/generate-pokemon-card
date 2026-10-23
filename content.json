@@ -261,7 +261,8 @@
       "download": "⬇️ Baixar carta (PDF)",
       "reset": "Limpar carta",
       "back": "← Voltar",
-      "next": "Próximo →"
+      "next": "Próximo →",
+      "regenPower": "Gerar descrição de novo"
     },
     "photoAlt": "Prévia da foto"
   },

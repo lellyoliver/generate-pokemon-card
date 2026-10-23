@@ -496,6 +496,15 @@ body::after {
   color: var(--paper);
 }
 
+#btn-regen-power {
+  margin-top: 0.35rem;
+  width: 100%;
+}
+
+#btn-regen-power[hidden] {
+  display: none;
+}
+
 .roll-row {
   display: grid;
   grid-template-columns: 1fr 1fr;

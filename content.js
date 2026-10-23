@@ -139,6 +139,7 @@
       ["btn-reset", "reset"],
       ["btn-wizard-back", "back"],
       ["btn-wizard-next", "next"],
+      ["btn-regen-power", "regenPower"],
     ];
     btnMap.forEach(([id, key]) => {
       const el = document.getElementById(id);

@@ -421,6 +421,16 @@
     }
   }
 
+  function regeneratePower() {
+    if (state.powerLoading) return;
+    if (!state.dominant || !state.secondary) return;
+    void requestGeneratedPower(
+      state.dominant,
+      state.secondary,
+      quizState.answers.slice()
+    );
+  }
+
   /** Quiz da profissão selecionada; senão, o quiz geral. */
   function getQuizConfig() {
     const global = content().quiz || {};
@@ -879,6 +889,22 @@
   const WIZARD_LAST = 4;
   let wizardStep = 0;
 
+  function syncRegenPowerButton() {
+    const btn = document.getElementById("btn-regen-power");
+    if (!btn) return;
+    const onQuizDone =
+      wizardStep === 2 &&
+      Boolean(state.dominant) &&
+      Boolean(state.secondary) &&
+      els.quizResult &&
+      !els.quizResult.hidden;
+    btn.hidden = !onQuizDone;
+    btn.disabled = state.powerLoading;
+    btn.textContent = state.powerLoading
+      ? txt("wizard.waitingPower", "Gerando descrição…")
+      : txt("form.buttons.regenPower", "Gerar descrição de novo");
+  }
+
   function syncWizardNextButton() {
     const next = document.getElementById("btn-wizard-next");
     if (!next) return;
@@ -889,6 +915,7 @@
     next.textContent = waitingPower
       ? txt("wizard.waitingPower", "Gerando descrição…")
       : txt("form.buttons.next", "Próximo →");
+    syncRegenPowerButton();
   }
 
   function setWizardStep(step) {
@@ -1007,6 +1034,8 @@
       if (!canLeaveWizardStep(wizardStep)) return;
       setWizardStep(wizardStep + 1);
     });
+    const regen = document.getElementById("btn-regen-power");
+    if (regen) regen.addEventListener("click", () => regeneratePower());
     setWizardStep(0);
   }
 

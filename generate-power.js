@@ -16,7 +16,8 @@ Regras:
 - flavor: descrição da carta — no máx. 48 caracteres, 1 frase engraçada sobre o jeito no cargo (sem Cause, sem +20).
 - attention: fraqueza/zoeira — no máx. 38 caracteres, 1 linha, diferente do flavor (sem números).
 - Gênero: feminino → ela/dela; masculino → ele/dele. No name: Rei/Rainha, Senhor/Senhora.
-- PROIBIDO inglês, colar o quiz, raciocinar em voz alta. Só o JSON.`;
+- PROIBIDO inglês, colar o quiz, raciocinar em voz alta, contar caracteres, explicar.
+- Saída = UMA linha JSON. Nada antes, nada depois.`;
 
 const BANNED_NAME_SNIPPETS = [
   "liberacao com fe cega",
@@ -564,11 +565,19 @@ function routerModelId(env) {
   return `${model}:${provider}`;
 }
 
+function looksLikePowerJson(text) {
+  const t = String(text || "");
+  return /\{[\s\S]*"name"\s*:/.test(t) || /\{[\s\S]*"flavor"\s*:/.test(t);
+}
+
+/** Prefere `content`; só usa `reasoning` se o content não trouxer JSON (modelos com thinking). */
 function messageText(choiceMessage) {
   if (!choiceMessage || typeof choiceMessage !== "object") return "";
   const content = String(choiceMessage.content || "").trim();
   const reasoning = String(choiceMessage.reasoning || "").trim();
-  return [content, reasoning].filter(Boolean).join("\n");
+  if (looksLikePowerJson(content)) return content;
+  if (looksLikePowerJson(reasoning)) return reasoning;
+  return content || reasoning;
 }
 
 async function postChat(token, payload) {
@@ -713,48 +722,57 @@ async function generatePower({ token, client, env = process.env, input }) {
     return power;
   }
 
-  try {
-    return await once(messages, "try", 0.75, true);
-  } catch (firstError) {
-    console.warn("[generate-power] falhou:", firstError.message);
+  const strictRetryMessages = [
+    {
+      role: "system",
+      content:
+        'Output ONLY one JSON line: {"name":"...","flavor":"...","attention":"..."}. No thinking, no counting, no markdown.',
+    },
+    {
+      role: "user",
+      content:
+        "Gênero " +
+        context.genero +
+        ". Profissão " +
+        context.profissao +
+        ". Dominante " +
+        context.dominante +
+        ". name=apelido engraçado 3-4 palavras (até 30 caracteres). flavor=até 48 caracteres, 1 frase hilária. attention=até 38 caracteres, aviso curto diferente. Sem Cause, sem +N.\n" +
+        JSON.stringify({
+          respostas: (context.respostas || []).slice(0, 3),
+          keywords: context.keywords,
+        }),
+    },
+  ];
+
+  const attempts = [
+    { msgs: messages, label: "try", temperature: 0.7, jsonMode: true },
+    { msgs: messages, label: "retry", temperature: 0.4, jsonMode: false },
+    { msgs: strictRetryMessages, label: "retry2", temperature: 0.3, jsonMode: false },
+    { msgs: strictRetryMessages, label: "retry3", temperature: 0.2, jsonMode: true },
+  ];
+
+  let lastError = null;
+  for (const attempt of attempts) {
     try {
-      // Retry sem JSON mode — o modelo às vezes quebra o schema do provedor.
       return await once(
-        [
-          {
-            role: "system",
-            content:
-              "Responda APENAS um JSON numa linha: {\"name\":\"...\",\"flavor\":\"...\",\"attention\":\"...\"}. PT-BR. Sem markdown.",
-          },
-          {
-            role: "user",
-            content:
-              "Gênero " +
-              context.genero +
-              ". Profissão " +
-              context.profissao +
-              ". Dominante " +
-              context.dominante +
-              ". name=apelido engraçado 3-4 palavras (até 30 caracteres). flavor=até 48 caracteres, 1 frase hilária. attention=até 38 caracteres, aviso curto diferente. Sem Cause, sem +N.\n" +
-              JSON.stringify({
-                respostas: (context.respostas || []).slice(0, 3),
-                keywords: context.keywords,
-              }),
-          },
-        ],
-        "retry",
-        0.55,
-        false
+        attempt.msgs,
+        attempt.label,
+        attempt.temperature,
+        attempt.jsonMode
       );
-    } catch (retryError) {
-      const fallback = offlinePower(payload);
-      fallback.source = "fallback";
-      fallback.error =
-        firstError && firstError.message ? firstError.message : "llm_failed";
-      console.warn("[generate-power] fallback:", fallback.error, "/", retryError.message);
-      return fallback;
+    } catch (err) {
+      lastError = err;
+      console.warn(`[generate-power] ${attempt.label} falhou:`, err && err.message);
     }
   }
+
+  const fallback = offlinePower(payload);
+  fallback.source = "fallback";
+  fallback.error =
+    lastError && lastError.message ? lastError.message : "llm_failed";
+  console.warn("[generate-power] fallback:", fallback.error);
+  return fallback;
 }
 
 module.exports = {
