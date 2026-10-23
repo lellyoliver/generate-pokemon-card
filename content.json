@@ -267,7 +267,9 @@
   },
   "wizard": {
     "needQuiz": "Responda todas as perguntas para gerar seu temperamento.",
-    "needPortrait": "Envie a foto e gere o cartoon para continuar."
+    "needPortrait": "Envie a foto e gere o cartoon para continuar.",
+    "waitingPower": "Gerando descrição…",
+    "waitPower": "Aguarde a descrição da carta terminar de gerar."
   },
   "quiz": {
     "intro": "Responda com sinceridade — cada cargo tem o próprio questionário; as escolhas definem dominante e secundário.",

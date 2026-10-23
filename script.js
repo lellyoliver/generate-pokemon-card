@@ -375,7 +375,12 @@
     const appearance = readAppearance();
     state.powerLoading = true;
     state.generatedPower = null;
+    syncWizardNextButton();
     render();
+    const ac = typeof AbortController !== "undefined" ? new AbortController() : null;
+    const timeoutId = ac
+      ? setTimeout(() => ac.abort(), 60_000)
+      : null;
     try {
       const res = await fetch("/api/generate-power", {
         method: "POST",
@@ -388,6 +393,7 @@
           hooks,
           gender: appearance.gender,
         }),
+        signal: ac ? ac.signal : undefined,
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.power) {
@@ -408,7 +414,9 @@
       console.warn("[generate-power] falha no client:", err && err.message);
       state.generatedPower = null;
     } finally {
+      if (timeoutId) clearTimeout(timeoutId);
       state.powerLoading = false;
+      syncWizardNextButton();
       render();
     }
   }
@@ -871,6 +879,18 @@
   const WIZARD_LAST = 4;
   let wizardStep = 0;
 
+  function syncWizardNextButton() {
+    const next = document.getElementById("btn-wizard-next");
+    if (!next) return;
+    const waitingPower = wizardStep === 2 && state.powerLoading;
+    next.hidden = wizardStep === WIZARD_LAST;
+    next.disabled = waitingPower;
+    next.classList.toggle("is-loading", waitingPower);
+    next.textContent = waitingPower
+      ? txt("wizard.waitingPower", "Gerando descrição…")
+      : txt("form.buttons.next", "Próximo →");
+  }
+
   function setWizardStep(step) {
     wizardStep = Math.max(0, Math.min(WIZARD_LAST, step));
     document.querySelectorAll(".wizard-step").forEach((el) => {
@@ -882,12 +902,8 @@
       dot.classList.toggle("done", i < wizardStep);
     });
     const back = document.getElementById("btn-wizard-back");
-    const next = document.getElementById("btn-wizard-next");
     if (back) back.disabled = wizardStep === 0;
-    if (next) {
-      next.hidden = wizardStep === WIZARD_LAST;
-      next.textContent = txt("form.buttons.next", "Próximo →");
-    }
+    syncWizardNextButton();
   }
 
   function validateCorporateEmail(raw) {
@@ -964,6 +980,10 @@
     if (step === 2) {
       if (!state.dominant || !state.secondary) {
         alert(txt("wizard.needQuiz", "Responda todas as perguntas para gerar seu temperamento."));
+        return false;
+      }
+      if (state.powerLoading) {
+        alert(txt("wizard.waitPower", "Aguarde a descrição da carta terminar de gerar."));
         return false;
       }
       return true;
