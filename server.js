@@ -269,24 +269,28 @@ const TEMPERAMENT_TABLE = {
   colerico: {
     acao: "Explosivo",
     tom: "CAPS, urgência, dono do chamado",
+    pose: "standing and pointing firmly at the monitor, fierce determined face, sleeves rolled up",
     scene:
       "chaotic urgent vibe: floating CAPS chat bubbles, red stress marks, papers flying, intense wide eyes",
   },
   melancholico: {
     acao: "Detalhista",
     tom: "Print, laudo, me prova",
+    pose: "inspecting a printed report with a magnifying glass, one eyebrow raised, focused and skeptical",
     scene:
       "detective desk vibe: clipboard, screenshot printouts, sticky notes, magnifying glass, focused expression",
   },
   sanguineo: {
     acao: "Otimista",
     tom: "Fé, café, vai dar",
+    pose: "big confident smile giving a thumbs up next to the computer, relaxed cheerful posture",
     scene:
       "optimistic playful vibe: soft smile, sparkles, it-works-on-my-machine energy, lighthearted props",
   },
   fleumatico: {
     acao: "Preguiçoso",
     tom: "Fila, café, segunda a gente vê",
+    pose: "leaning back calmly in an office chair holding a mug, sleepy unbothered half-smile",
     scene:
       "chill queue vibe: coffee cup, calm posture, ticket queue icons floating slowly, unbothered face",
   },
@@ -379,62 +383,27 @@ function moodSceneLine(mood) {
 
   const bits = [];
 
-  // 1) Flavor manda na ação (prioridade máxima)
-  if (flavor) {
-    bits.push(
-      "MAIN ACTION (highest priority — act this literally at a PC/desk, exaggerated comic anime pose, NOT a calm standing smile): " +
-        flavor
-    );
-  } else {
-    bits.push(
-      "MAIN ACTION: frantic funny IT pose at a computer — hands on head, leaning into the screen, confused/anxious energy"
-    );
-  }
-  if (powerName) bits.push("nickname vibe in the pose: " + powerName);
-
-  // 2) Efeitos cômicos estilo gag panel
   bits.push(
-    "COMIC EFFECTS (cute anime gag panel energy): floating question-mark bubbles, sweat drops, " +
-      "anxiety swirls or tremor lines, exaggerated expression — like a funny manga beat, NOT a serious portrait"
+    "POSE: " +
+      (clipPromptText(mood.pose, 240) ||
+        (dom && dom.pose) ||
+        "working at the desk with a lively expression")
   );
+  if (flavor) bits.push("MAIN ACTION (act this out): " + flavor);
+  if (attention) bits.push("small comic gag in the scene: " + attention);
+  if (sec) bits.push("secondary mood: " + sec.scene);
+  if (combo) bits.push("combo: " + combo);
 
-  // 3) Attention = gag visual
-  if (attention) {
-    bits.push(
-      "WEAKNESS GAG (show this as a visual joke prop/situation, no readable letters): " + attention
-    );
-  }
+  const props = [];
+  if (cafe >= 8) props.push("huge steaming coffee mug");
+  else if (cafe >= 5) props.push("coffee cup");
+  if (nerdisse >= 35) props.push("code and log windows on the monitors");
+  if (paciencia <= 2) props.push("sticky notes flying around");
+  if (humor >= 8) props.push("playful sparkles");
+  if (props.length) bits.push("props (café/nerdisse attrs): " + props.join(", "));
+  if (powerName) bits.push("nickname: " + powerName);
 
-  // 4) Temperamento / combo (energia, não pose principal)
-  if (dom) bits.push("temperament energy only (" + dom.acao + "): " + dom.tom);
-  if (sec) bits.push("secondary accent (" + sec.acao + ")");
-  if (combo) bits.push("combo accent: " + combo);
-
-  // 5) Atributos = props obrigatórios
-  bits.push(
-    "SPECIAL ATTRS as clear props — paciência " +
-      paciencia +
-      "/10, humor " +
-      humor +
-      "/10, café " +
-      cafe +
-      "/10, nerdisse " +
-      nerdisse +
-      "/50"
-  );
-  if (cafe >= 8) bits.push("café: huge steaming mug about to spill on the keyboard");
-  else if (cafe >= 5) bits.push("café: coffee cup on the messy desk");
-  if (humor >= 8) bits.push("humor: goofy/comic grin or wink amid the chaos");
-  else if (humor <= 3) bits.push("humor: deadpan face while everything is absurd");
-  else bits.push("humor: anxious half-smile");
-  if (paciencia >= 8) bits.push("paciência: trying to stay zen while the desk is chaos");
-  else if (paciencia <= 2) bits.push("paciência: sticky notes and papers flying around the head");
-  else bits.push("paciência: cluttered but workable desk");
-  if (nerdisse >= 35) bits.push("nerdisse: floating soft code glyphs, logs, bug icons around the monitor");
-  else if (nerdisse >= 20) bits.push("nerdisse: glowing laptop/monitor with glitchy comedy vibe");
-  else bits.push("nerdisse: simple PC, more people/queue vibe");
-
-  return "Priority storyboard: " + bits.join("; ") + ". ";
+  return bits.join(". ") + ". ";
 }
 
 function parseMood(raw) {
@@ -470,6 +439,7 @@ function parseMood(raw) {
     name: clip(raw.name || raw.powerName, 30),
     flavor: clip(raw.flavor || raw.summary || raw.punchline, 120),
     attention: clip(raw.attention, 60),
+    pose: clip(raw.pose, 240),
     answers: (Array.isArray(raw.answers) ? raw.answers : [])
       .map((a) => clip(a, 80))
       .filter(Boolean)
@@ -478,37 +448,18 @@ function parseMood(raw) {
 }
 
 function buildStylePrompt(profession, appearance, mood) {
-  const ambient = profession
-    ? PROFESSIONS.get(profession)
-    : "a cozy IT office with desks and monitors";
-  const roleLine = profession
-    ? "They work as a " + profession + " in " + ambient + ". "
-    : "";
-  const lookLine = appearancePromptLine(appearance);
-  const sceneLine = moodSceneLine(mood);
-  const backgroundLine =
-    "BACKGROUND (fully replace the original photo background, unique to this person): " +
-    buildBackground(profession, mood) +
-    ". ";
-  const hasFlavor = Boolean(mood && mood.flavor);
+  const roleLine = profession ? "The person works as a " + profession + ". " : "";
   return (
-    "Transform the photo into a funny Pokémon-trainer TCG anime illustration (Ken Sugimori + cute comic gag panel energy): " +
-    "big expressive eyes, bold cel-shading, exaggerated emotion — like a hilarious manga beat at work. " +
-    "WIDESCREEN 2:1, FULL BODY (head to shoes) centered, often AT A DESK/PC interacting with the computer — " +
-    "leaning in, hands on head, confused/anxious/obsessed pose when the card text calls for it. " +
-    "Uniform: light sky-blue collared shirt + dark blue denim jeans. " +
-    "PRIORITY: (1) act the card flavor as the main pose, (2) comic effects (question marks, sweat drops, swirl lines), " +
-    "(3) attention as a visual gag, (4) background matching their profession, temperament and answers, (5) attr props. " +
-    "NOT a calm LinkedIn smile standing stiff, NOT generic yellow superhero explosion burst, NOT empty gradient. " +
-    "NOT pixel art, NOT photorealistic, NOT 3D. Keep facial likeness from the photo. " +
-    lookLine +
+    "Transform the photo into a Pokémon TCG anime illustration (Ken Sugimori style, bold cel-shading, light comic tone), " +
+    "keeping the facial likeness. WIDESCREEN 2:1, FULL BODY, character centered. " +
+    "SETTING (replace the photo background with a detailed scene): " +
+    buildBackground(profession, mood) +
+    ". " +
     roleLine +
-    sceneLine +
-    backgroundLine +
-    (hasFlavor
-      ? "If the flavor mentions bugs/anxiety/love letters/saving/etc., show that joke physically at the monitor. "
-      : "") +
-    "No readable text, no logos, no watermark, no UI chrome."
+    moodSceneLine(mood) +
+    appearancePromptLine(appearance) +
+    "Uniform: light sky-blue collared shirt and dark blue denim jeans. " +
+    "Clean anime art, no readable text, no logos, no watermark."
   );
 }
 

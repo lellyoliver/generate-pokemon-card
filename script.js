@@ -405,6 +405,7 @@
         name: data.power.name,
         summary,
         attention,
+        pose: String(data.power.pose || "").trim(),
         source: data.power.source,
       };
       if (!summary) {
@@ -1131,6 +1132,7 @@
       name: (gen && gen.name) || "",
       flavor: (gen && gen.summary) || "",
       attention: (gen && gen.attention) || "",
+      pose: (gen && gen.pose) || "",
       answers: hookLabelsFromAnswers(quizState.answers),
     };
   };

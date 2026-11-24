@@ -9,7 +9,7 @@
 const SYSTEM_PROMPT = `Você escreve o texto de uma carta estilo Pokémon sobre um colega de TI, em PT-BR natural, com humor leve de escritório que qualquer colega entenderia.
 
 Responda SOMENTE com um JSON válido numa única linha, sem markdown e sem explicação:
-{"name":"apelido","flavor":"descrição","attention":"fraqueza"}
+{"name":"apelido","flavor":"descrição","attention":"fraqueza","pose":"visual pose in English"}
 
 Como escrever:
 - Baseie TUDO nas "respostas" do quiz: elas mostram como a pessoa age no trabalho. Descubra o padrão de comportamento e descreva-o com suas palavras (não copie as frases).
@@ -18,12 +18,13 @@ Como escrever:
 - flavor: 1 frase completa de 25 a 90 caracteres descrevendo o jeito da pessoa no cargo, com uma piada clara.
 - attention: 1 frase de 16 a 50 caracteres com a fraqueza engraçada, ligada ao mesmo comportamento, diferente do flavor.
 - Gênero: feminino → ela/dela e Rainha/Senhora/Mestra; masculino → ele/dele e Rei/Senhor/Mestre.
-- Sem números, sem "Cause", sem inglês, sem explicar.
+- pose: EM INGLÊS, 12 a 35 palavras, descrevendo a pose corporal, expressão facial e o que a pessoa está fazendo/segurando, para um ilustrador desenhar. Deve encenar o comportamento das respostas (ex.: quem pede print → "holding up a printed screenshot to the camera, squinting suspiciously"). Seja específico e original; evite "hands on head" e "confused".
+- Sem números, sem "Cause", sem explicar. Só o campo pose é em inglês.
 
 Exemplos bons:
-{"name":"Rainha do Print","flavor":"Ela só começa a investigar depois que alguém manda o print do erro.","attention":"Sem evidência, ela nem abre o chamado."}
-{"name":"Senhor do Vai Dar","flavor":"Ele promete resolver antes das seis e jura que o deploy de sexta é tranquilo.","attention":"Quando o erro aparece, a fé dele some."}
-{"name":"Guardiã da Fila","flavor":"Ela atende todo mundo com calma, mas o urgente do corredor vai pro fim da fila.","attention":"Pedido sem chamado fica para segunda."}
+{"name":"Rainha do Print","flavor":"Ela só começa a investigar depois que alguém manda o print do erro.","attention":"Sem evidência, ela nem abre o chamado.","pose":"holding a printed screenshot up close to her glasses, squinting suspiciously, other hand on hip"}
+{"name":"Senhor do Vai Dar","flavor":"Ele promete resolver antes das seis e jura que o deploy de sexta é tranquilo.","attention":"Quando o erro aparece, a fé dele some.","pose":"pressing the deploy button with one finger while winking and giving a confident thumbs up, backpack already on"}
+{"name":"Guardiã da Fila","flavor":"Ela atende todo mundo com calma, mas o urgente do corredor vai pro fim da fila.","attention":"Pedido sem chamado fica para segunda.","pose":"sipping tea serenely while gently pointing a colleague toward a long ticket queue sign"}
 
 Exemplos ruins (não faça): "PROWEB vendedor fé cache", "Log CAPS dono chamado já", frases sem verbo ou que misturam palavras-chave sem sentido.`;
 
@@ -405,7 +406,9 @@ function validateLlmFields(raw) {
     throw new Error("attention deve ter entre 12 e 60 caracteres.");
   }
 
-  return { name: words.join(" "), flavor, attention };
+  const pose = String(raw.pose || "").replace(/\s+/g, " ").trim().slice(0, 240);
+
+  return { name: words.join(" "), flavor, attention, pose };
 }
 
 function validateAgainstQuiz(parsed, payload) {
@@ -413,7 +416,7 @@ function validateAgainstQuiz(parsed, payload) {
   return parsed;
 }
 
-function assemblePower({ name, flavor, punchline, attention, attention_id, slot }) {
+function assemblePower({ name, flavor, punchline, attention, attention_id, pose, slot }) {
   const text = String(flavor || punchline || "").trim();
   const attentionText =
     (attention && String(attention).trim()) ||
@@ -425,6 +428,7 @@ function assemblePower({ name, flavor, punchline, attention, attention_id, slot 
     summary: text,
     flavor: text,
     attention: attentionText,
+    pose: String(pose || "").trim(),
     slot_id: slot.id,
     dano: slot.dano,
     source: "llm",
@@ -701,7 +705,7 @@ async function generatePower({ token, client, env = process.env, input }) {
     "Contexto do cargo: " + context.vibe + "\n" +
     "Respostas da pessoa no quiz (como ela age):\n" +
     (context.respostas || []).map((r) => "- " + r).join("\n") +
-    "\n\nEscreva o JSON {name, flavor, attention} descrevendo ESTA pessoa a partir dessas respostas.";
+    "\n\nEscreva o JSON {name, flavor, attention, pose} descrevendo ESTA pessoa a partir dessas respostas.";
 
   const messages = [
     { role: "system", content: SYSTEM_PROMPT },
@@ -734,7 +738,7 @@ async function generatePower({ token, client, env = process.env, input }) {
     {
       role: "system",
       content:
-        'Output ONLY one JSON line: {"name":"...","flavor":"...","attention":"..."}. No thinking, no counting, no markdown.',
+        'Output ONLY one JSON line: {"name":"...","flavor":"...","attention":"...","pose":"..."}. name/flavor/attention in Portuguese; pose in English describing body pose, facial expression and action based on the answers. No thinking, no markdown.',
     },
     {
       role: "user",
