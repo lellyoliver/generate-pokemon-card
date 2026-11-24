@@ -15,7 +15,7 @@ Como escrever:
 - Baseie TUDO nas "respostas" do quiz: elas mostram como a pessoa age no trabalho. Descubra o padrão de comportamento e descreva-o com suas palavras (não copie as frases).
 - A frase precisa fazer sentido sozinha, com sujeito e verbo, gramática correta e uma situação real do cargo. Nada de palavras soltas, jargão inventado ou frases sem nexo.
 - name: CURTO, 2 a 3 palavras, no máximo 22 caracteres, apelido carinhoso de colega (ex.: Rainha do Print, Rei do Hotfix, Dama da Fila). Não terminar com "Pro".
-- flavor: 1 frase completa de 25 a 90 caracteres descrevendo o jeito da pessoa no cargo, com uma piada clara.
+- flavor: 1 frase CURTA (6 a 12 palavras) e completa sobre o jeito da pessoa no cargo, com uma piada clara. Sem vírgulas encadeadas, sem "porque", sem explicar.
 - attention: a PIADA da carta. Curtíssima (2 a 7 palavras), seca, estilo punchline de meme, sobre a fraqueza da pessoa. Nada de explicar. Ex.: "Sem print, sem amor." · "Deploy de sexta? Sempre." · "Segunda ela vê." · "Café acabou, TI caiu." · "Chamado? Nunca ouvi falar."
 - Gênero: feminino → ela/dela e Rainha/Senhora/Mestra; masculino → ele/dele e Rei/Senhor/Mestre.
 - pose: EM INGLÊS, 12 a 35 palavras, descrevendo a pose corporal, expressão facial e o que a pessoa está fazendo/segurando, para um ilustrador desenhar. Deve encenar o comportamento das respostas (ex.: quem pede print → "holding up a printed screenshot to the camera, squinting suspiciously"). Seja específico e original; evite "hands on head" e "confused".
@@ -23,9 +23,9 @@ Como escrever:
 - Os tamanhos são aproximados: NÃO conte caracteres nem palavras, apenas escreva frases curtas e responda direto com o JSON.
 
 Exemplos bons:
-{"name":"Rainha do Print","flavor":"Ela só começa a investigar depois que alguém manda o print do erro.","attention":"Sem print, sem amor.","pose":"holding a printed screenshot up close to her glasses, squinting suspiciously, other hand on hip"}
-{"name":"Senhor do Vai Dar","flavor":"Ele promete resolver antes das seis e jura que o deploy de sexta é tranquilo.","attention":"Deploy de sexta? Sempre.","pose":"pressing the deploy button with one finger while winking and giving a confident thumbs up, backpack already on"}
-{"name":"Guardiã da Fila","flavor":"Ela atende todo mundo com calma, mas o urgente do corredor vai pro fim da fila.","attention":"Urgente? Segunda ela vê.","pose":"sipping tea serenely while gently pointing a colleague toward a long ticket queue sign"}
+{"name":"Rainha do Print","flavor":"Ela só investiga depois de ver o print.","attention":"Sem print, sem amor.","pose":"holding a printed screenshot up close to her glasses, squinting suspiciously, other hand on hip"}
+{"name":"Senhor do Vai Dar","flavor":"Ele jura que o deploy de sexta é tranquilo.","attention":"Deploy de sexta? Sempre.","pose":"pressing the deploy button with one finger while winking and giving a confident thumbs up, backpack already on"}
+{"name":"Guardiã da Fila","flavor":"Ela manda todo urgente pro fim da fila.","attention":"Urgente? Segunda ela vê.","pose":"sipping tea serenely while gently pointing a colleague toward a long ticket queue sign"}
 
 Exemplos ruins (não faça): "PROWEB vendedor fé cache", "Log CAPS dono chamado já", frases sem verbo ou que misturam palavras-chave sem sentido.`;
 
@@ -390,8 +390,8 @@ function validateLlmFields(raw) {
   if (BONUS_NUMBER_RE.test(flavor)) {
     throw new Error("flavor não pode ter bônus/dano numérico.");
   }
-  if (flavor.length < 20 || flavor.length > 140) {
-    throw new Error("flavor deve ter entre 20 e 140 caracteres (sem cortar).");
+  if (flavor.length < 20 || flavor.length > 75) {
+    throw new Error("flavor deve ter entre 20 e 75 caracteres (sem cortar).");
   }
   if (flavor.split(" ").length < 5) {
     throw new Error("flavor precisa ser uma frase completa.");
@@ -760,7 +760,7 @@ async function generatePower({ token, client, env = process.env, input }) {
         context.profissao +
         ". Dominante " +
         context.dominante +
-        ". name=apelido curto de 2-3 palavras (até 22 caracteres). flavor=1 frase completa e coerente de 25-90 caracteres sobre como a pessoa age, baseada nas respostas. attention=piada curtíssima de 2 a 7 palavras, estilo punchline (ex.: 'Sem print, sem amor.'). Sem números.\n" +
+        ". name=apelido curto de 2-3 palavras (até 22 caracteres). flavor=1 frase curta (6-12 palavras) e coerente sobre como a pessoa age, baseada nas respostas. attention=piada curtíssima de 2 a 7 palavras, estilo punchline (ex.: 'Sem print, sem amor.'). Sem números.\n" +
         JSON.stringify({
           respostas: (context.respostas || []).slice(0, 3),
           keywords: context.keywords,
