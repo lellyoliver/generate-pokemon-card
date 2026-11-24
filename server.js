@@ -907,6 +907,7 @@ async function handleGeneratePower(req, res, config, inference) {
     }
     const professionLabel = String(body.professionLabel || "").trim() || professionValue;
     const hooks = Array.isArray(body.hooks) ? body.hooks : [];
+    const questions = Array.isArray(body.questions) ? body.questions : [];
     const genderRaw = String(body.gender || "").trim().toLowerCase();
     const gender =
       genderRaw === "feminino" || genderRaw === "masculino" ? genderRaw : null;
@@ -930,6 +931,7 @@ async function handleGeneratePower(req, res, config, inference) {
         dominant,
         secondary,
         hooks,
+        questions,
         gender,
       },
     });

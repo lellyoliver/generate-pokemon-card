@@ -103,7 +103,7 @@ Na carta: `name` + **flavor** (`summary`) + `attention` + caixinha `Poder X/10`.
 
 | Temperamento | Exemplo (≤ 48) |
 |---|---|
-| Colérico | `Log em CAPS. Quem mexeu que se explique.` |
+| Colérico | `O log não mente. Quem mexeu que lute.` |
 | Melancólico | `Sem print do cenário eu nem começo a conversa.` |
 | Sanguíneo | `Relaxa — com fé e um café isso volta sozinho.` |
 | Fleumático | `Entra na fila. O urgente do corredor espera.` |

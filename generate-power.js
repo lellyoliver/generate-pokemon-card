@@ -132,11 +132,11 @@ const BONUS_NUMBER_RE = /\+\s*\d+|−\s*\d+|-\s*\d+|\d+\s*de\s*dano|\bCause\b/i;
 
 /** Fallback offline — sem números de bônus. */
 const ATTENTION_CATALOG = {
-  A1: "Sem chamado aberto, o drama esfria.",
+  A1: "A bola de cristal do TI está em manutenção. Abra um chamado!",
   A2: "Repetir o ataque: perde o clima.",
   A3: "Trocar a carta no meio: a zoeira some.",
   A4: "Sem print, a conversa nem começa.",
-  A5: "Sem erro na tela, a fé acaba.",
+  A5: "Sem evidências, o bug é uma lenda urbana.",
   A6: "Atender no corredor: perde o café.",
   A7: "Sem urgência real: vira só papo.",
   A8: "Pular a fila: todo mundo trava.",
@@ -204,7 +204,7 @@ const SLOTS = {
 };
 
 const DEFAULT_FLAVORS = {
-  COL: "Log em CAPS. Quem mexeu que se explique.",
+  COL: "O log não mente. Quem mexeu que lute.",
   MEL: "Sem print do cenário eu nem começo a conversa.",
   SAN: "Relaxa — com fé e um café isso volta sozinho.",
   FLE: "Entra na fila. O urgente do corredor espera.",
@@ -277,7 +277,7 @@ function pickHooks(hooks) {
   return hooks
     .map((h) => String(h || "").trim())
     .filter(Boolean)
-    .slice(0, 5);
+    .slice(0, 8);
 }
 
 function normalizeForBan(text) {
@@ -336,10 +336,14 @@ function buildUserPayload({
   dominant,
   secondary,
   hooks,
+  questions,
   gender,
 }) {
   const slot = resolveSlot(dominant, secondary);
   const respostas = pickHooks(hooks);
+  const perguntas = Array.isArray(questions)
+    ? questions.slice(0, respostas.length).map((q) => String(q || "").trim().slice(0, 160))
+    : [];
   const genero = normalizeGender(gender);
   return {
     profissao: professionLabel || professionValue || "TI",
@@ -355,6 +359,7 @@ function buildUserPayload({
     dano: slot.dano,
     efeito_hint: slot.hint,
     respostas,
+    perguntas,
     hooks: respostas,
     keywords: keywordsFor(professionValue),
     vibe: vibeFor(professionValue),
@@ -703,8 +708,12 @@ async function generatePower({ token, client, env = process.env, input }) {
     (context.secundario ? " com toque de " + context.secundario : "") +
     ". Tom sugerido: " + context.tom + "\n" +
     "Contexto do cargo: " + context.vibe + "\n" +
-    "Respostas da pessoa no quiz (como ela age):\n" +
-    (context.respostas || []).map((r) => "- " + r).join("\n") +
+    "Quiz da pessoa (situação → como ela age):\n" +
+    (payload.respostas || [])
+      .map((r, i) =>
+        payload.perguntas[i] ? "- " + payload.perguntas[i] + " → " + r : "- " + r
+      )
+      .join("\n") +
     "\n\nEscreva o JSON {name, flavor, attention, pose} descrevendo ESTA pessoa a partir dessas respostas.";
 
   const messages = [

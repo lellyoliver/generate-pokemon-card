@@ -329,7 +329,7 @@
           },
           {
             "id": "colerico",
-            "label": "Abre chamado. Sem fichada."
+            "label": "Abre chamado."
           },
           {
             "id": "melancholico",
@@ -716,7 +716,7 @@
               },
               {
                 "id": "colerico",
-                "label": "Abre chamado. Sem fichada."
+                "label": "Abre chamado."
               },
               {
                 "id": "melancholico",
@@ -729,7 +729,7 @@
             ]
           },
           {
-            "text": "Help Desk sobre Proweb (algum módulo específico). Você:",
+            "text": "Chamado sobre Proweb(algum módulo específico). Você:",
             "options": [
               {
                 "id": "sanguineo",
@@ -1411,14 +1411,14 @@
       "labelSecondary": "Enrolão",
       "name": "Na Minha Máquina",
       "summary": "Relaxa — na minha máquina funciona e o café ainda está quente.",
-      "attention": "Sem erro na tela, a fé acaba."
+      "attention": "Sem evidências, o bug é uma lenda urbana."
     },
     "colerico": {
       "label": "Explosivo",
       "labelSecondary": "Impaciente",
       "name": "Prazo Agora",
-      "summary": "Já abri o log em CAPS. Quem mexeu que se explique.",
-      "attention": "Sem chamado aberto, o drama esfria."
+      "summary": "Já abri o O log não mente. Quem mexeu que lute.",
+      "attention": "A bola de cristal do TI está em manutenção. Abra um chamado!"
     },
     "melancholico": {
       "label": "Detalhista",
@@ -1438,7 +1438,7 @@
   "combos": {
     "sanguineo-colerico": {
       "name": "Correção Blindada",
-      "desc": "Sorrio, mas quero dono. Alguém mexeu e a fé tem prazo curto.",
+      "desc": "A fé move montanhas, mas não corrige código.",
       "attention": "Sem chamado, a fé some."
     },
     "sanguineo-fleumatico": {

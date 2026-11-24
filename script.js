@@ -367,6 +367,17 @@
     return Boolean(a.hairType && a.hairType !== "");
   }
 
+  function questionTextsFromAnswers(answers) {
+    const questions = getQuiz();
+    const texts = [];
+    answers.forEach((id, i) => {
+      const q = questions[i];
+      if (!q || !Array.isArray(q.options)) return;
+      if (q.options.some((o) => o && o.id === id && o.label)) texts.push(q.text || "");
+    });
+    return texts;
+  }
+
   async function requestGeneratedPower(dominant, secondary, answers) {
     const pack = professionPack();
     const profession = selectedProfessionValue();
@@ -391,6 +402,7 @@
           dominant,
           secondary,
           hooks,
+          questions: questionTextsFromAnswers(answers),
           gender: appearance.gender,
         }),
         signal: ac ? ac.signal : undefined,
