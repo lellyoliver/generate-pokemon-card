@@ -199,7 +199,7 @@ test("estilo anime widescreen full-body corporativo com attrs", async (t) => {
       assert.equal(args.parameters.height, 720);
       assert.match(args.parameters.prompt, /Pokémon|anime|Sugimori/i);
       assert.match(args.parameters.prompt, /head to knees/i);
-      assert.match(args.parameters.prompt, /MAIN ACTION|Priority storyboard/i);
+      assert.match(args.parameters.prompt, /MAIN ACTION|joke being illustrated/i);
       assert.match(args.parameters.prompt, /comic|gag|question mark|sweat/i);
       assert.match(args.parameters.prompt, /corporate|office|workplace/i);
       assert.match(args.parameters.prompt, /sky-blue|dark blue denim/i);

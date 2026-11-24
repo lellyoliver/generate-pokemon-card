@@ -1,4 +1,4 @@
-"use strict";
+﻿"use strict";
 
 const http = require("node:http");
 const fs = require("node:fs");
@@ -113,34 +113,6 @@ const PROFESSIONS = new Map([
   ["Infrastructure Assistant", "support bench with PCs, cables and peripherals"],
   ["Process Analyst", "kanban wall with flowcharts and a laptop"],
 ]);
-
-/** Clima/luz do fundo por temperamento dominante (prompt.md: ☀️ ⚡ 🍂 🌊). */
-const TEMPERAMENT_BACKGROUND = {
-  sanguineo:
-    "sunny office with confetti, a party balloon tied to the monitor, a smiling cactus, a coworker in the distance proudly holding a golden trophy",
-  colerico:
-    "office on comic red alert: blinking siren on the desk, a printer smoking, a little storm cloud raining over the keyboard, papers flying",
-  melancholico:
-    "foggy autumn corner with a detective corkboard full of red strings linking printouts, a magnifying glass, a tiny cartoon bug escaping",
-  fleumatico:
-    "ultra-chill corner: hammock between server racks, a sleepy cat on the keyboard, slow snail delivering a ticket, steaming mug",
-};
-
-/** Clima do combo dominante→secundário (prompt.md). */
-const COMBO_WEATHER = {
-  "sanguineo-colerico": "sunshine with sudden summer rain and lightning outside",
-  "sanguineo-fleumatico": "sunny beach-like calm light, relaxed vibe",
-  "sanguineo-melancholico": "warm sunset glow through the window",
-  "colerico-sanguineo": "fiery orange light, wildfire energy",
-  "colerico-melancholico": "dark severe storm, tornado clouds outside",
-  "colerico-fleumatico": "steam and geyser vapor, cold controlled intensity",
-  "melancholico-sanguineo": "morning mist slowly lit by the sun",
-  "melancholico-colerico": "cold cutting wind, papers blowing",
-  "melancholico-fleumatico": "isolated quiet pine-forest view, silent backstage mood",
-  "fleumatico-sanguineo": "oasis vibe, fresh water and cheerful greenery",
-  "fleumatico-colerico": "river with strong current seen through the window",
-  "fleumatico-melancholico": "frosty icy blue tones, very orderly room",
-};
 
 function parseProfession(value) {
   if (value === undefined || value === null || value === "") return null;
@@ -264,54 +236,6 @@ function appearancePromptLine(appearance) {
   );
 }
 
-/** Tabela oficial (ação / tom / fraqueza) → cena visual. */
-const TEMPERAMENT_TABLE = {
-  colerico: {
-    acao: "Explosivo",
-    tom: "CAPS, urgência, dono do chamado",
-    pose: "standing and pointing firmly at the monitor, fierce determined face, sleeves rolled up",
-    scene:
-      "chaotic urgent vibe: floating CAPS chat bubbles, red stress marks, papers flying, intense wide eyes",
-  },
-  melancholico: {
-    acao: "Detalhista",
-    tom: "Print, laudo, me prova",
-    pose: "inspecting a printed report with a magnifying glass, one eyebrow raised, focused and skeptical",
-    scene:
-      "detective desk vibe: clipboard, screenshot printouts, sticky notes, magnifying glass, focused expression",
-  },
-  sanguineo: {
-    acao: "Otimista",
-    tom: "Fé, café, vai dar",
-    pose: "big confident smile giving a thumbs up next to the computer, relaxed cheerful posture",
-    scene:
-      "optimistic playful vibe: soft smile, sparkles, it-works-on-my-machine energy, lighthearted props",
-  },
-  fleumatico: {
-    acao: "Preguiçoso",
-    tom: "Fila, café, segunda a gente vê",
-    pose: "leaning back calmly in an office chair holding a mug, sleepy unbothered half-smile",
-    scene:
-      "chill queue vibe: coffee cup, calm posture, ticket queue icons floating slowly, unbothered face",
-  },
-};
-
-/** Combos dominante→secundário → humor/cena. */
-const COMBO_SCENE = {
-  "colerico-fleumatico": "rage with a stamp/queue stamp; high impact only when a ticket is open",
-  "fleumatico-colerico": "calm outside, sharp glare at queue-jumpers",
-  "sanguineo-fleumatico": "light optimism; corridor urgencies drift into a soft ticket queue",
-  "melancholico-sanguineo": "smiling audit vibe; clipboard plus sparkles, no blame face",
-  "colerico-melancholico": "pressure plus proof: shout bubbles with evidence stickers",
-  "fleumatico-melancholico": "documented waiting; slow queue until a print appears",
-  "sanguineo-colerico": "faith with a short deadline; urgent but cheerful energy",
-  "sanguineo-melancholico": "feature disguised as hope until the report lands",
-  "colerico-sanguineo": "ship-and-pray urgency with optimistic sparks",
-  "melancholico-colerico": "dry verdict desk; laudo without filter, stern focus",
-  "melancholico-fleumatico": "backstage silence; evidence props, quiet posture",
-  "fleumatico-sanguineo": "fix now, paperwork later; coffee and a half-smile",
-};
-
 /** Base de atributos por dominante (regras) — fallback se o client não enviar attrs. */
 const ATTR_BASE = {
   colerico: { paciencia: 0, humor: 3, cafe: 10, nerdisse: 25 },
@@ -334,84 +258,10 @@ function resolveAttrsFromBase(dominant, secondary) {
   };
 }
 
-function buildBackground(profession, mood) {
-  const parts = ["corporate IT office — " + (PROFESSIONS.get(profession) || "desks and monitors")];
-  const dominant = mood && mood.dominant;
-  const secondary = mood && mood.secondary;
-  if (dominant && TEMPERAMENT_BACKGROUND[dominant]) parts.push(TEMPERAMENT_BACKGROUND[dominant]);
-  if (dominant && secondary && secondary !== dominant) {
-    const weather = COMBO_WEATHER[dominant + "-" + secondary];
-    if (weather) parts.push(weather);
-  }
-  if (mood && mood.attention) {
-    parts.push("a visual sight-gag in the background acting out this joke as a situation, never written: " + mood.attention);
-  }
-  const answers = (mood && Array.isArray(mood.answers) ? mood.answers : []).slice(0, 4);
-  if (answers.length) {
-    parts.push(
-      "background props and situations that illustrate these work habits (ideas only, draw them as objects, never write them): " +
-        answers.join("; ")
-    );
-  }
-  parts.push("playful cartoon office, exaggerated funny props, light-hearted comedy mood");
-  return parts.join("; ");
-}
-
 function clipPromptText(value, max) {
   const t = String(value || "").replace(/\s+/g, " ").trim();
   if (!t) return "";
   return t.length > max ? t.slice(0, max - 1).trim() + "…" : t;
-}
-
-/** Roteiro: flavor = pose; attention/efeitos = gag; attrs = props; escritório = fundo. */
-function moodSceneLine(mood) {
-  if (!mood || typeof mood !== "object") return "";
-  const dominant = String(mood.dominant || "").toLowerCase();
-  const secondary = String(mood.secondary || "").toLowerCase();
-  const attrs =
-    mood.attrs && typeof mood.attrs === "object"
-      ? mood.attrs
-      : resolveAttrsFromBase(dominant, secondary);
-  const cafe = Number(attrs.cafe) || 0;
-  const humor = Number(attrs.humor) || 0;
-  const paciencia = Number(attrs.paciencia) || 0;
-  const nerdisse = Number(attrs.nerdisse) || 0;
-
-  const dom = TEMPERAMENT_TABLE[dominant];
-  const sec = secondary && secondary !== dominant ? TEMPERAMENT_TABLE[secondary] : null;
-  const comboKey = sec ? `${dominant}-${secondary}` : "";
-  const combo = comboKey ? COMBO_SCENE[comboKey] : "";
-  const powerName = clipPromptText(mood.name, 30);
-  const flavor = clipPromptText(mood.flavor, 140);
-  const attention = clipPromptText(mood.attention, 38);
-
-  const bits = [];
-
-  bits.push(
-    "POSE: " +
-      (clipPromptText(mood.pose, 240) ||
-        (dom && dom.pose) ||
-        "working at the desk with a lively expression")
-  );
-  if (flavor) bits.push("MAIN ACTION (act this out): " + flavor);
-  if (mood.pokemon) {
-    bits.push(
-      "PARTNER POKÉMON: a cute, clearly recognizable " +
-        mood.pokemon +
-        " (official Pokémon design) right next to the person, mimicking their pose and expression"
-    );
-  }
-  if (sec) bits.push("secondary mood: " + sec.scene);
-  if (combo) bits.push("combo: " + combo);
-
-  const props = [];
-  if (cafe >= 8) props.push("huge steaming coffee mug");
-  else if (cafe >= 5) props.push("coffee cup");
-  if (nerdisse >= 35) props.push("code and log windows on the monitors");
-  if (paciencia <= 2) props.push("sticky notes flying around");
-  if (humor >= 8) props.push("playful sparkles");
-  if (props.length) bits.push("props (café/nerdisse attrs): " + props.join(", "));
-  return bits.join(". ") + ". ";
 }
 
 function parseMood(raw) {
@@ -457,16 +307,25 @@ function parseMood(raw) {
 }
 
 function buildStylePrompt(profession, appearance, mood) {
-  const roleLine = profession ? "The person works as a " + profession + ". " : "";
+  const setting = PROFESSIONS.get(profession) || "desks and monitors";
+  const scene = mood ? clipPromptText(mood.pose, 260) : "";
+  const flavor = mood ? clipPromptText(mood.flavor, 140) : "";
+  const pokemon = mood && mood.pokemon ? mood.pokemon : "";
   return (
-    "Transform the photo into a Pokémon TCG anime illustration (Ken Sugimori style, bold cel-shading, light comic tone), " +
-    "keeping the facial likeness. WIDESCREEN 2:1, character framed from head to knees and centered so the face is large and detailed. " +
-    "Clean, symmetrical, well-drawn anime eyes: both pupils aligned and looking in the same direction, crisp eye highlights, sharp detailed face. " +
-    "SETTING (replace the photo background with a detailed scene): " +
-    buildBackground(profession, mood) +
-    ". " +
-    roleLine +
-    moodSceneLine(mood) +
+    "Transform the photo into a FUN, playful Pokémon anime comic illustration (Ken Sugimori style, vibrant saturated colors, bold cel-shading), " +
+    "like a hilarious cartoon strip panel: exaggerated expressions, dynamic pose, motion lines, cartoon physics. " +
+    "Keep the facial likeness. WIDESCREEN 2:1, character framed from head to knees and centered so the face is large and detailed. " +
+    "Clean, symmetrical, well-drawn anime eyes: both pupils aligned and looking in the same direction, sharp detailed face. " +
+    (scene ? "MAIN ACTION (the funny scene, top priority): " + scene + ". " : "") +
+    (flavor ? "The joke being illustrated: " + flavor + ". " : "") +
+    "SETTING (replace the photo background): a colorful, slightly chaotic cartoon IT office of a " +
+    (profession || "IT professional") +
+    " — " +
+    setting +
+    ", with silly exaggerated props that support the joke. " +
+    (pokemon
+      ? "A cute, clearly recognizable " + pokemon + " (official design) reacts comically next to the person. "
+      : "") +
     appearancePromptLine(appearance) +
     "Uniform: plain light sky-blue collared shirt with no print, no name, no badge, no lettering, and plain dark blue denim jeans. " +
     "Clean anime art with no words anywhere: no text on clothes, no captions, no signs, no logos, no watermark. " +
