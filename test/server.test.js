@@ -205,7 +205,8 @@ test("estilo anime widescreen full-body corporativo com attrs", async (t) => {
       assert.match(args.parameters.prompt, /sky-blue|dark blue denim/i);
       assert.match(args.parameters.prompt, /goatee|beard/i);
       assert.match(args.parameters.prompt, /Systems Analyst/);
-      assert.match(args.parameters.prompt, /Rainha do Print|laudo com sorriso|SPECIAL ATTRS|café/i);
+      assert.match(args.parameters.prompt, /report with a smile/i);
+      assert.doesNotMatch(args.parameters.prompt, /laudo com sorriso/i);
       assert.equal(options.retry_on_error, false);
       assert.ok(options.signal instanceof AbortSignal);
       const png = Buffer.from(
@@ -233,6 +234,7 @@ test("estilo anime widescreen full-body corporativo com attrs", async (t) => {
       attrs: { paciencia: 4, humor: 2, cafe: 8, nerdisse: 50 },
       name: "Rainha do Print",
       flavor: "Ela entrega laudo com sorriso e não leva a culpa.",
+      flavor_en: "She delivers the report with a smile and never takes the blame.",
       attention: "Sem evidência, a conversa trava.",
     },
   });

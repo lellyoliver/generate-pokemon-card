@@ -298,6 +298,7 @@ function parseMood(raw) {
     flavor: clip(raw.flavor || raw.summary || raw.punchline, 120),
     attention: clip(raw.attention, 60),
     pose: clip(raw.pose, 240),
+    flavor_en: clip(String(raw.flavor_en || "").replace(/["“”]/g, ""), 160),
     pokemon: clip(String(raw.pokemon || "").replace(/[^A-Za-zÀ-ÿ .'\-♀♂]/g, ""), 24),
     answers: (Array.isArray(raw.answers) ? raw.answers : [])
       .map((a) => clip(a, 80))
@@ -309,15 +310,15 @@ function parseMood(raw) {
 function buildStylePrompt(profession, appearance, mood) {
   const setting = PROFESSIONS.get(profession) || "desks and monitors";
   const scene = mood ? clipPromptText(mood.pose, 260) : "";
-  const flavor = mood ? clipPromptText(mood.flavor, 140) : "";
+  const flavor = mood ? mood.flavor_en : "";
   const pokemon = mood && mood.pokemon ? mood.pokemon : "";
   return (
     "Transform the photo into a FUN, playful Pokémon anime comic illustration (Ken Sugimori style, vibrant saturated colors, bold cel-shading), " +
-    "like a hilarious cartoon strip panel: exaggerated expressions, dynamic pose, motion lines, cartoon physics. " +
+    "a single wordless funny illustration: exaggerated expressions, dynamic pose, motion lines, cartoon physics. " +
     "Keep the facial likeness. WIDESCREEN 2:1, character framed from head to knees and centered so the face is large and detailed. " +
     "Clean, symmetrical, well-drawn anime eyes: both pupils aligned and looking in the same direction, sharp detailed face. " +
     (scene ? "MAIN ACTION (the funny scene, top priority): " + scene + ". " : "") +
-    (flavor ? "The joke being illustrated: " + flavor + ". " : "") +
+    (flavor ? "The joke being illustrated (show it visually, never write it): " + flavor + ". " : "") +
     "SETTING (replace the photo background): a colorful, slightly chaotic cartoon IT office of a " +
     (profession || "IT professional") +
     " — " +
@@ -328,8 +329,10 @@ function buildStylePrompt(profession, appearance, mood) {
       : "") +
     appearancePromptLine(appearance) +
     "Uniform: plain light sky-blue collared shirt with no print, no name, no badge, no lettering, and plain dark blue denim jeans. " +
-    "Clean anime art with no words anywhere: no text on clothes, no captions, no signs, no logos, no watermark. " +
-    "If a tiny word is unavoidable on a screen or paper, it must be a short, correctly spelled Portuguese word."
+    "Tell the story only through pose, facial expression, props and body language. " +
+    "DON'T: don't add speech bubbles or thought balloons; don't write any text, letters, words, captions, labels or numbers anywhere; " +
+    "don't put text, names, logos or badges on clothes; don't add signs or screens with writing (screens show only abstract shapes and colors); " +
+    "don't add watermarks."
   );
 }
 

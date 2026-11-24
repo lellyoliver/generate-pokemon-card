@@ -9,7 +9,7 @@
 const SYSTEM_PROMPT = `Você escreve o texto de uma carta estilo Pokémon sobre um colega de TI, em PT-BR natural, com humor leve de escritório que qualquer colega entenderia.
 
 Responda SOMENTE com um JSON válido numa única linha, sem markdown e sem explicação:
-{"name":"apelido","flavor":"descrição","attention":"fraqueza","pose":"visual pose in English","pokemon":"Nome"}
+{"name":"apelido","flavor":"descrição","flavor_en":"exact English translation of flavor","attention":"fraqueza","pose":"visual scene in English","pokemon":"Nome"}
 
 Como escrever:
 - Baseie TUDO nas "respostas" do quiz: elas mostram como a pessoa age no trabalho. Descubra o padrão de comportamento e descreva-o com suas palavras (não copie as frases).
@@ -18,15 +18,16 @@ Como escrever:
 - flavor: 1 frase CURTA (6 a 12 palavras) e completa sobre o jeito da pessoa no cargo, com uma piada clara. Sem vírgulas encadeadas, sem "porque", sem explicar.
 - attention: a PIADA da carta. Curtíssima (2 a 7 palavras), seca, estilo punchline de meme, sobre a fraqueza da pessoa. Nada de explicar. Ex.: "Sem print, sem amor." · "Deploy de sexta? Sempre." · "Segunda ela vê." · "Café acabou, TI caiu." · "Chamado? Nunca ouvi falar."
 - Gênero: feminino → ela/dela e Rainha/Senhora/Mestra; masculino → ele/dele e Rei/Senhor/Mestre.
-- pose: EM INGLÊS, 15 a 40 palavras: uma cena de cartoon EXAGERADA e engraçada que encena exatamente o flavor (o que a pessoa faz, expressão, objetos absurdos, consequência cômica ao redor). Pense em tirinha/meme visual, não em foto de LinkedIn. Ex.: flavor "Ela só investiga depois de ver o print" → "squinting through a giant magnifying glass at a tiny printed screenshot while a mountain of unopened tickets towers behind her, smug expression". Sem texto escrito na cena.
+- flavor_en: tradução FIEL e PRECISA do flavor para o inglês, mesmo sentido, sem acrescentar nem remover nada. Revise antes de responder: flavor e flavor_en precisam dizer exatamente a mesma coisa.
+- pose: EM INGLÊS, 15 a 40 palavras: uma cena de cartoon EXAGERADA e engraçada que encena exatamente o flavor_en (sem inventar outra história) (o que a pessoa faz, expressão, objetos absurdos, consequência cômica ao redor). Pense em tirinha/meme visual, não em foto de LinkedIn. Ex.: flavor "Ela só investiga depois de ver o print" → "squinting through a giant magnifying glass at a tiny printed screenshot while a mountain of unopened tickets towers behind her, smug expression". Sem texto escrito na cena.
 - pokemon: nome oficial (em inglês) de UM Pokémon conhecido cuja personalidade mais combina com o comportamento das respostas (ex.: ansioso que caça bug → Psyduck; calmo que empurra pra segunda → Snorlax; explosivo → Charmander; otimista → Pikachu; detalhista → Alakazam). Varie, não repita sempre os exemplos.
-- Sem números, sem "Cause", sem explicar. Só os campos pose e pokemon são em inglês.
+- Sem números, sem "Cause", sem explicar. Só os campos flavor_en, pose e pokemon são em inglês.
 - Os tamanhos são aproximados: NÃO conte caracteres nem palavras, apenas escreva frases curtas e responda direto com o JSON.
 
 Exemplos bons:
-{"name":"Rainha do Print","flavor":"Ela só investiga depois de ver o print.","attention":"Sem print, sem amor.","pose":"holding a printed screenshot up close to her glasses, squinting suspiciously, other hand on hip"}
-{"name":"Senhor do Vai Dar","flavor":"Ele jura que o deploy de sexta é tranquilo.","attention":"Deploy de sexta? Sempre.","pose":"pressing the deploy button with one finger while winking and giving a confident thumbs up, backpack already on"}
-{"name":"Guardiã da Fila","flavor":"Ela manda todo urgente pro fim da fila.","attention":"Urgente? Segunda ela vê.","pose":"sipping tea serenely while gently pointing a colleague toward a long ticket queue sign"}
+{"name":"Rainha do Print","flavor":"Ela só investiga depois de ver o print.","flavor_en":"She only investigates after seeing the screenshot.","attention":"Sem print, sem amor.","pose":"holding a printed screenshot up close to her glasses, squinting suspiciously, other hand on hip"}
+{"name":"Senhor do Vai Dar","flavor":"Ele jura que o deploy de sexta é tranquilo.","flavor_en":"He swears the Friday deploy is totally fine.","attention":"Deploy de sexta? Sempre.","pose":"pressing the deploy button with one finger while winking and giving a confident thumbs up, backpack already on"}
+{"name":"Guardiã da Fila","flavor":"Ela manda todo urgente pro fim da fila.","flavor_en":"She sends every urgent request to the end of the queue.","attention":"Urgente? Segunda ela vê.","pose":"sipping tea serenely while gently pointing a colleague toward a long ticket queue sign"}
 
 Exemplos ruins (não faça): "PROWEB vendedor fé cache", "Log CAPS dono chamado já", frases sem verbo ou que misturam palavras-chave sem sentido.`;
 
@@ -427,7 +428,12 @@ function validateLlmFields(raw) {
     .trim()
     .slice(0, 24);
 
-  return { name: words.join(" "), flavor, attention, pose, pokemon };
+  const flavorEn = String(raw.flavor_en || "").replace(/["“”]/g, "").replace(/\s+/g, " ").trim().slice(0, 160);
+  if (flavorEn.split(" ").length < 4) {
+    throw new Error("flavor_en ausente ou incompleto (tradução obrigatória).");
+  }
+
+  return { name: words.join(" "), flavor, flavor_en: flavorEn, attention, pose, pokemon };
 }
 
 function validateAgainstQuiz(parsed, payload) {
@@ -435,7 +441,7 @@ function validateAgainstQuiz(parsed, payload) {
   return parsed;
 }
 
-function assemblePower({ name, flavor, punchline, attention, attention_id, pose, pokemon, slot }) {
+function assemblePower({ name, flavor, flavor_en, punchline, attention, attention_id, pose, pokemon, slot }) {
   const text = String(flavor || punchline || "").trim();
   const attentionText =
     (attention && String(attention).trim()) ||
@@ -447,6 +453,7 @@ function assemblePower({ name, flavor, punchline, attention, attention_id, pose,
     summary: text,
     flavor: text,
     attention: attentionText,
+    flavor_en: String(flavor_en || "").trim(),
     pose: String(pose || "").trim(),
     pokemon: String(pokemon || "").trim() || DEFAULT_POKEMON[slot.id.split("_")[0]] || "Pikachu",
     slot_id: slot.id,
@@ -730,7 +737,7 @@ async function generatePower({ token, client, env = process.env, input }) {
         payload.perguntas[i] ? "- " + payload.perguntas[i] + " → " + r : "- " + r
       )
       .join("\n") +
-    "\n\nEscreva o JSON {name, flavor, attention, pose, pokemon} descrevendo ESTA pessoa a partir dessas respostas.";
+    "\n\nEscreva o JSON {name, flavor, flavor_en, attention, pose, pokemon} descrevendo ESTA pessoa a partir dessas respostas.";
 
   const messages = [
     { role: "system", content: SYSTEM_PROMPT },
@@ -763,7 +770,7 @@ async function generatePower({ token, client, env = process.env, input }) {
     {
       role: "system",
       content:
-        'Output ONLY one JSON line: {"name":"...","flavor":"...","attention":"...","pose":"...","pokemon":"..."}. name/flavor/attention in Portuguese; pokemon = official English name of the Pokémon whose personality best matches; pose in English describing body pose, facial expression and action based on the answers. No thinking, no markdown.',
+        'Output ONLY one JSON line: {"name":"...","flavor":"...","flavor_en":"...","attention":"...","pose":"...","pokemon":"..."}. name/flavor/attention in Portuguese; flavor_en = exact faithful English translation of flavor; pose must illustrate flavor_en exactly; pokemon = official English name of the Pokémon whose personality best matches; pose in English describing body pose, facial expression and action based on the answers. No thinking, no markdown.',
     },
     {
       role: "user",
