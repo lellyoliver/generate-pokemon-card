@@ -132,7 +132,7 @@ test("SDK envia foto e prompt pelo roteador HF e retorna a arte como data URL", 
       const payload = JSON.parse(init.body);
       assert.equal(payload.image_url, IMAGE);
       assert.match(payload.prompt, /Pokémon|anime|Sugimori/i);
-      assert.match(payload.prompt, /FULL BODY|full body/i);
+      assert.match(payload.prompt, /head to knees/i);
       assert.match(payload.prompt, /comic|gag|question mark|sweat/i);
       assert.match(payload.prompt, /corporate|office|workplace/i);
       assert.match(payload.prompt, /sky-blue|dark blue denim/i);
@@ -141,7 +141,7 @@ test("SDK envia foto e prompt pelo roteador HF e retorna a arte como data URL", 
       assert.match(payload.prompt, /woman/i);
       assert.match(payload.prompt, /fair light skin/i);
       assert.equal(payload.guidance_scale, 3.5);
-      assert.equal(payload.num_inference_steps, 28);
+      assert.equal(payload.num_inference_steps, 40);
       assert.equal(payload.width, 1456);
       assert.equal(payload.height, 720);
       return Response.json({
@@ -198,7 +198,7 @@ test("estilo anime widescreen full-body corporativo com attrs", async (t) => {
       assert.equal(args.parameters.width, 1456);
       assert.equal(args.parameters.height, 720);
       assert.match(args.parameters.prompt, /Pokémon|anime|Sugimori/i);
-      assert.match(args.parameters.prompt, /FULL BODY|full body/i);
+      assert.match(args.parameters.prompt, /head to knees/i);
       assert.match(args.parameters.prompt, /MAIN ACTION|Priority storyboard/i);
       assert.match(args.parameters.prompt, /comic|gag|question mark|sweat/i);
       assert.match(args.parameters.prompt, /corporate|office|workplace/i);

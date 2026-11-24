@@ -451,7 +451,8 @@ function buildStylePrompt(profession, appearance, mood) {
   const roleLine = profession ? "The person works as a " + profession + ". " : "";
   return (
     "Transform the photo into a Pokémon TCG anime illustration (Ken Sugimori style, bold cel-shading, light comic tone), " +
-    "keeping the facial likeness. WIDESCREEN 2:1, FULL BODY, character centered. " +
+    "keeping the facial likeness. WIDESCREEN 2:1, character framed from head to knees and centered so the face is large and detailed. " +
+    "Clean, symmetrical, well-drawn anime eyes: both pupils aligned and looking in the same direction, crisp eye highlights, sharp detailed face. " +
     "SETTING (replace the photo background with a detailed scene): " +
     buildBackground(profession, mood) +
     ". " +
@@ -689,7 +690,7 @@ async function handleStylize(req, res, config, client) {
       parameters: {
         prompt: buildStylePrompt(profession, appearance, mood),
         guidance_scale: STYLE_GUIDANCE,
-        num_inference_steps: 28,
+        num_inference_steps: 40,
         width: OUTPUT_SIZE.width,
         height: OUTPUT_SIZE.height,
         target_size: { width: OUTPUT_SIZE.width, height: OUTPUT_SIZE.height },
