@@ -9,7 +9,7 @@
 const SYSTEM_PROMPT = `Você escreve o texto de uma carta estilo Pokémon sobre um colega de TI, em PT-BR natural, com humor leve de escritório que qualquer colega entenderia.
 
 Responda SOMENTE com um JSON válido numa única linha, sem markdown e sem explicação:
-{"name":"apelido","flavor":"descrição","attention":"fraqueza","pose":"visual pose in English"}
+{"name":"apelido","flavor":"descrição","attention":"fraqueza","pose":"visual pose in English","pokemon":"Nome"}
 
 Como escrever:
 - Baseie TUDO nas "respostas" do quiz: elas mostram como a pessoa age no trabalho. Descubra o padrão de comportamento e descreva-o com suas palavras (não copie as frases).
@@ -19,7 +19,8 @@ Como escrever:
 - attention: a PIADA da carta. Curtíssima (2 a 7 palavras), seca, estilo punchline de meme, sobre a fraqueza da pessoa. Nada de explicar. Ex.: "Sem print, sem amor." · "Deploy de sexta? Sempre." · "Segunda ela vê." · "Café acabou, TI caiu." · "Chamado? Nunca ouvi falar."
 - Gênero: feminino → ela/dela e Rainha/Senhora/Mestra; masculino → ele/dele e Rei/Senhor/Mestre.
 - pose: EM INGLÊS, 12 a 35 palavras, descrevendo a pose corporal, expressão facial e o que a pessoa está fazendo/segurando, para um ilustrador desenhar. Deve encenar o comportamento das respostas (ex.: quem pede print → "holding up a printed screenshot to the camera, squinting suspiciously"). Seja específico e original; evite "hands on head" e "confused".
-- Sem números, sem "Cause", sem explicar. Só o campo pose é em inglês.
+- pokemon: nome oficial (em inglês) de UM Pokémon conhecido cuja personalidade mais combina com o comportamento das respostas (ex.: ansioso que caça bug → Psyduck; calmo que empurra pra segunda → Snorlax; explosivo → Charmander; otimista → Pikachu; detalhista → Alakazam). Varie, não repita sempre os exemplos.
+- Sem números, sem "Cause", sem explicar. Só os campos pose e pokemon são em inglês.
 - Os tamanhos são aproximados: NÃO conte caracteres nem palavras, apenas escreva frases curtas e responda direto com o JSON.
 
 Exemplos bons:
@@ -215,6 +216,13 @@ const DEFAULT_FLAVORS = {
   MEL_SAN: "Monto o laudo sorrindo e não levo a culpa.",
   COL_MEL: "Protocolo furado? Grito primeiro, print depois.",
   FLE_MEL: "Espero com café até alguém mandar o print.",
+};
+
+const DEFAULT_POKEMON = {
+  COL: "Charmander",
+  MEL: "Psyduck",
+  SAN: "Pikachu",
+  FLE: "Snorlax",
 };
 
 const SLOT_BY_COMBO = {
@@ -414,7 +422,12 @@ function validateLlmFields(raw) {
 
   const pose = String(raw.pose || "").replace(/\s+/g, " ").trim().slice(0, 240);
 
-  return { name: words.join(" "), flavor, attention, pose };
+  const pokemon = String(raw.pokemon || "")
+    .replace(/[^A-Za-zÀ-ÿ .'\-♀♂]/g, "")
+    .trim()
+    .slice(0, 24);
+
+  return { name: words.join(" "), flavor, attention, pose, pokemon };
 }
 
 function validateAgainstQuiz(parsed, payload) {
@@ -422,7 +435,7 @@ function validateAgainstQuiz(parsed, payload) {
   return parsed;
 }
 
-function assemblePower({ name, flavor, punchline, attention, attention_id, pose, slot }) {
+function assemblePower({ name, flavor, punchline, attention, attention_id, pose, pokemon, slot }) {
   const text = String(flavor || punchline || "").trim();
   const attentionText =
     (attention && String(attention).trim()) ||
@@ -435,6 +448,7 @@ function assemblePower({ name, flavor, punchline, attention, attention_id, pose,
     flavor: text,
     attention: attentionText,
     pose: String(pose || "").trim(),
+    pokemon: String(pokemon || "").trim() || DEFAULT_POKEMON[slot.id.split("_")[0]] || "Pikachu",
     slot_id: slot.id,
     dano: slot.dano,
     source: "llm",
@@ -716,7 +730,7 @@ async function generatePower({ token, client, env = process.env, input }) {
         payload.perguntas[i] ? "- " + payload.perguntas[i] + " → " + r : "- " + r
       )
       .join("\n") +
-    "\n\nEscreva o JSON {name, flavor, attention, pose} descrevendo ESTA pessoa a partir dessas respostas.";
+    "\n\nEscreva o JSON {name, flavor, attention, pose, pokemon} descrevendo ESTA pessoa a partir dessas respostas.";
 
   const messages = [
     { role: "system", content: SYSTEM_PROMPT },
@@ -749,7 +763,7 @@ async function generatePower({ token, client, env = process.env, input }) {
     {
       role: "system",
       content:
-        'Output ONLY one JSON line: {"name":"...","flavor":"...","attention":"...","pose":"..."}. name/flavor/attention in Portuguese; pose in English describing body pose, facial expression and action based on the answers. No thinking, no markdown.',
+        'Output ONLY one JSON line: {"name":"...","flavor":"...","attention":"...","pose":"...","pokemon":"..."}. name/flavor/attention in Portuguese; pokemon = official English name of the Pokémon whose personality best matches; pose in English describing body pose, facial expression and action based on the answers. No thinking, no markdown.',
     },
     {
       role: "user",

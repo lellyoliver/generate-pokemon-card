@@ -117,13 +117,13 @@ const PROFESSIONS = new Map([
 /** Clima/luz do fundo por temperamento dominante (prompt.md: ☀️ ⚡ 🍂 🌊). */
 const TEMPERAMENT_BACKGROUND = {
   sanguineo:
-    "bright sunny office, warm golden sunlight through big windows, plants, colorful sticky notes, lively coworkers in the distance",
+    "sunny office with confetti, a party balloon tied to the monitor, a smiling cactus, a coworker in the distance holding a 'works on my machine' trophy",
   colerico:
-    "tense war-room: red alert lights, dashboards flashing errors, stormy sky with lightning outside the window",
+    "office on comic red alert: blinking siren on the desk, a printer smoking, a little storm cloud raining over the keyboard, papers flying",
   melancholico:
-    "quiet late-afternoon corner, foggy autumn window, cool blue monitor glow, neat stacks of printed logs and reports",
+    "foggy autumn corner with a detective corkboard full of red strings linking printouts, a magnifying glass, a tiny cartoon bug escaping",
   fleumatico:
-    "calm cozy corner, soft pastel light, a still lake view through the window, comfy chair, steaming mug, tidy desk",
+    "ultra-chill corner: hammock between server racks, a sleepy cat on the keyboard, slow snail delivering a ticket, steaming mug",
 };
 
 /** Clima do combo dominante→secundário (prompt.md). */
@@ -343,6 +343,12 @@ function buildBackground(profession, mood) {
     const weather = COMBO_WEATHER[dominant + "-" + secondary];
     if (weather) parts.push(weather);
   }
+  if (mood && mood.attention) {
+    parts.push("a visual sight-gag in the background showing this joke (no text): " + mood.attention);
+  }
+  if (mood && mood.name) {
+    parts.push("background details that fit the nickname " + mood.name);
+  }
   const answers = (mood && Array.isArray(mood.answers) ? mood.answers : []).slice(0, 4);
   if (answers.length) {
     parts.push(
@@ -350,6 +356,7 @@ function buildBackground(profession, mood) {
         answers.map((a) => "“" + a + "”").join(", ")
     );
   }
+  parts.push("playful cartoon office, exaggerated funny props, light-hearted comedy mood");
   return parts.join("; ");
 }
 
@@ -390,7 +397,13 @@ function moodSceneLine(mood) {
         "working at the desk with a lively expression")
   );
   if (flavor) bits.push("MAIN ACTION (act this out): " + flavor);
-  if (attention) bits.push("small comic gag in the scene: " + attention);
+  if (mood.pokemon) {
+    bits.push(
+      "PARTNER POKÉMON: a cute, clearly recognizable " +
+        mood.pokemon +
+        " (official Pokémon design) right next to the person, mimicking their pose and expression"
+    );
+  }
   if (sec) bits.push("secondary mood: " + sec.scene);
   if (combo) bits.push("combo: " + combo);
 
@@ -401,8 +414,6 @@ function moodSceneLine(mood) {
   if (paciencia <= 2) props.push("sticky notes flying around");
   if (humor >= 8) props.push("playful sparkles");
   if (props.length) bits.push("props (café/nerdisse attrs): " + props.join(", "));
-  if (powerName) bits.push("nickname: " + powerName);
-
   return bits.join(". ") + ". ";
 }
 
@@ -440,6 +451,7 @@ function parseMood(raw) {
     flavor: clip(raw.flavor || raw.summary || raw.punchline, 120),
     attention: clip(raw.attention, 60),
     pose: clip(raw.pose, 240),
+    pokemon: clip(String(raw.pokemon || "").replace(/[^A-Za-zÀ-ÿ .'\-♀♂]/g, ""), 24),
     answers: (Array.isArray(raw.answers) ? raw.answers : [])
       .map((a) => clip(a, 80))
       .filter(Boolean)

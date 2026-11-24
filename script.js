@@ -418,6 +418,7 @@
         summary,
         attention,
         pose: String(data.power.pose || "").trim(),
+        pokemon: String(data.power.pokemon || "").trim(),
         source: data.power.source,
       };
       if (!summary) {
@@ -1145,6 +1146,7 @@
       flavor: (gen && gen.summary) || "",
       attention: (gen && gen.attention) || "",
       pose: (gen && gen.pose) || "",
+      pokemon: (gen && gen.pokemon) || "",
       answers: hookLabelsFromAnswers(quizState.answers),
     };
   };
