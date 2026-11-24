@@ -20,6 +20,7 @@ Como escrever:
 - Gênero: feminino → ela/dela e Rainha/Senhora/Mestra; masculino → ele/dele e Rei/Senhor/Mestre.
 - pose: EM INGLÊS, 12 a 35 palavras, descrevendo a pose corporal, expressão facial e o que a pessoa está fazendo/segurando, para um ilustrador desenhar. Deve encenar o comportamento das respostas (ex.: quem pede print → "holding up a printed screenshot to the camera, squinting suspiciously"). Seja específico e original; evite "hands on head" e "confused".
 - Sem números, sem "Cause", sem explicar. Só o campo pose é em inglês.
+- Os tamanhos são aproximados: NÃO conte caracteres nem palavras, apenas escreva frases curtas e responda direto com o JSON.
 
 Exemplos bons:
 {"name":"Rainha do Print","flavor":"Ela só começa a investigar depois que alguém manda o print do erro.","attention":"Sem evidência, ela nem abre o chamado.","pose":"holding a printed screenshot up close to her glasses, squinting suspiciously, other hand on hip"}
@@ -376,8 +377,8 @@ function validateLlmFields(raw) {
     .replace(/\s+/g, " ")
     .trim();
   const words = name.split(" ").filter(Boolean);
-  if (words.length < 3 || words.length > 4 || name.length > 30 || name.includes("\n")) {
-    throw new Error("name inválido (precisa 3–4 palavras, até 30 caracteres).");
+  if (words.length < 2 || words.length > 5 || name.length > 36 || name.includes("\n")) {
+    throw new Error("name inválido (precisa 2–5 palavras, até 36 caracteres).");
   }
 
   let flavor = String(raw.flavor || raw.punchline || raw.cenario || "")
@@ -389,8 +390,8 @@ function validateLlmFields(raw) {
   if (BONUS_NUMBER_RE.test(flavor)) {
     throw new Error("flavor não pode ter bônus/dano numérico.");
   }
-  if (flavor.length < 20 || flavor.length > 100) {
-    throw new Error("flavor deve ter entre 20 e 100 caracteres (sem cortar).");
+  if (flavor.length < 20 || flavor.length > 140) {
+    throw new Error("flavor deve ter entre 20 e 140 caracteres (sem cortar).");
   }
   if (flavor.split(" ").length < 5) {
     throw new Error("flavor precisa ser uma frase completa.");
@@ -407,8 +408,8 @@ function validateLlmFields(raw) {
   if (/^[“"'].*[”"']$/.test(attention)) {
     throw new Error("attention não pode ser citação de sabor.");
   }
-  if (attention.length < 12 || attention.length > 60 || attention.includes("\n")) {
-    throw new Error("attention deve ter entre 12 e 60 caracteres.");
+  if (attention.length < 12 || attention.length > 80 || attention.includes("\n")) {
+    throw new Error("attention deve ter entre 12 e 80 caracteres.");
   }
 
   const pose = String(raw.pose || "").replace(/\s+/g, " ").trim().slice(0, 240);
@@ -640,9 +641,10 @@ async function chatViaHfRouter({
   const payload = {
     model,
     messages,
-    max_tokens: 500,
+    max_tokens: 2000,
     temperature,
   };
+  if (/gpt-oss/i.test(model)) payload.reasoning_effort = "low";
   if (wantJson) {
     payload.response_format = { type: "json_object" };
   }
