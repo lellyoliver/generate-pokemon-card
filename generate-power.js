@@ -14,7 +14,7 @@ Responda SOMENTE com um JSON válido numa única linha, sem markdown e sem expli
 Como escrever:
 - Baseie TUDO nas "respostas" do quiz: elas mostram como a pessoa age no trabalho. Descubra o padrão de comportamento e descreva-o com suas palavras (não copie as frases).
 - A frase precisa fazer sentido sozinha, com sujeito e verbo, gramática correta e uma situação real do cargo. Nada de palavras soltas, jargão inventado ou frases sem nexo.
-- name: 3 a 4 palavras, até 30 caracteres, apelido carinhoso de colega (ex.: Rainha do Print, Senhor do Rollback, Guardião da Fila). Não terminar com "Pro".
+- name: CURTO, 2 a 3 palavras, no máximo 22 caracteres, apelido carinhoso de colega (ex.: Rainha do Print, Rei do Hotfix, Dama da Fila). Não terminar com "Pro".
 - flavor: 1 frase completa de 25 a 90 caracteres descrevendo o jeito da pessoa no cargo, com uma piada clara.
 - attention: a PIADA da carta. Curtíssima (2 a 7 palavras), seca, estilo punchline de meme, sobre a fraqueza da pessoa. Nada de explicar. Ex.: "Sem print, sem amor." · "Deploy de sexta? Sempre." · "Segunda ela vê." · "Café acabou, TI caiu." · "Chamado? Nunca ouvi falar."
 - Gênero: feminino → ela/dela e Rainha/Senhora/Mestra; masculino → ele/dele e Rei/Senhor/Mestre.
@@ -377,8 +377,8 @@ function validateLlmFields(raw) {
     .replace(/\s+/g, " ")
     .trim();
   const words = name.split(" ").filter(Boolean);
-  if (words.length < 2 || words.length > 5 || name.length > 36 || name.includes("\n")) {
-    throw new Error("name inválido (precisa 2–5 palavras, até 36 caracteres).");
+  if (words.length < 2 || words.length > 3 || name.length > 22 || name.includes("\n")) {
+    throw new Error("name inválido (precisa 2–3 palavras, até 22 caracteres).");
   }
 
   let flavor = String(raw.flavor || raw.punchline || raw.cenario || "")
@@ -476,8 +476,8 @@ function offlineName(payload) {
   const pool = [
     ...(Array.isArray(byProf) ? byProf : []),
     ...(Array.isArray(bySlot) ? bySlot : []),
-    "Profissional do Chamado",
-  ];
+  ].filter((n) => n.length <= 22);
+  if (!pool.length) pool.push("Mestre do Chamado");
   const salt =
     (payload.respostas && payload.respostas[0]) ||
     payload.profissao ||
@@ -760,7 +760,7 @@ async function generatePower({ token, client, env = process.env, input }) {
         context.profissao +
         ". Dominante " +
         context.dominante +
-        ". name=apelido de colega 3-4 palavras (até 30 caracteres). flavor=1 frase completa e coerente de 25-90 caracteres sobre como a pessoa age, baseada nas respostas. attention=piada curtíssima de 2 a 7 palavras, estilo punchline (ex.: 'Sem print, sem amor.'). Sem números.\n" +
+        ". name=apelido curto de 2-3 palavras (até 22 caracteres). flavor=1 frase completa e coerente de 25-90 caracteres sobre como a pessoa age, baseada nas respostas. attention=piada curtíssima de 2 a 7 palavras, estilo punchline (ex.: 'Sem print, sem amor.'). Sem números.\n" +
         JSON.stringify({
           respostas: (context.respostas || []).slice(0, 3),
           keywords: context.keywords,
