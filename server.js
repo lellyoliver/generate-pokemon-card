@@ -117,7 +117,7 @@ const PROFESSIONS = new Map([
 /** Clima/luz do fundo por temperamento dominante (prompt.md: ☀️ ⚡ 🍂 🌊). */
 const TEMPERAMENT_BACKGROUND = {
   sanguineo:
-    "sunny office with confetti, a party balloon tied to the monitor, a smiling cactus, a coworker in the distance holding a 'works on my machine' trophy",
+    "sunny office with confetti, a party balloon tied to the monitor, a smiling cactus, a coworker in the distance proudly holding a golden trophy",
   colerico:
     "office on comic red alert: blinking siren on the desk, a printer smoking, a little storm cloud raining over the keyboard, papers flying",
   melancholico:
@@ -344,16 +344,13 @@ function buildBackground(profession, mood) {
     if (weather) parts.push(weather);
   }
   if (mood && mood.attention) {
-    parts.push("a visual sight-gag in the background showing this joke (no text): " + mood.attention);
-  }
-  if (mood && mood.name) {
-    parts.push("background details that fit the nickname " + mood.name);
+    parts.push("a visual sight-gag in the background acting out this joke as a situation, never written: " + mood.attention);
   }
   const answers = (mood && Array.isArray(mood.answers) ? mood.answers : []).slice(0, 4);
   if (answers.length) {
     parts.push(
-      "background props and situations that illustrate these work habits (Portuguese, show visually, no text): " +
-        answers.map((a) => "“" + a + "”").join(", ")
+      "background props and situations that illustrate these work habits (ideas only, draw them as objects, never write them): " +
+        answers.join("; ")
     );
   }
   parts.push("playful cartoon office, exaggerated funny props, light-hearted comedy mood");
@@ -471,8 +468,9 @@ function buildStylePrompt(profession, appearance, mood) {
     roleLine +
     moodSceneLine(mood) +
     appearancePromptLine(appearance) +
-    "Uniform: light sky-blue collared shirt and dark blue denim jeans. " +
-    "Clean anime art, no readable text, no logos, no watermark."
+    "Uniform: plain light sky-blue collared shirt with no print, no name, no badge, no lettering, and plain dark blue denim jeans. " +
+    "Clean anime art with no words anywhere: no text on clothes, no captions, no signs, no logos, no watermark. " +
+    "If a tiny word is unavoidable on a screen or paper, it must be a short, correctly spelled Portuguese word."
   );
 }
 
