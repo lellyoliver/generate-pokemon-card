@@ -114,17 +114,33 @@ const PROFESSIONS = new Map([
   ["Process Analyst", "kanban wall with flowcharts and a laptop"],
 ]);
 
-/** Cenários corporativos de TI (comédia leve — ainda é escritório). */
-const CORPORATE_SCENES = [
-  "open-plan IT office with desks, dual monitors and a ticket board on the wall",
-  "helpdesk counter with a queue display and a coffee machine in the corner",
-  "meeting room with glass walls covered in sticky notes and a TV with charts",
-  "server-room aisle with blinking rack LEDs behind the character",
-  "dev bay with standing desks, plants and a printer spewing paper",
-  "corridor next to the IT support booth with cable reels and a whiteboard",
-  "war-room table with laptops, coffee cups and a big screen of dashboards",
-  "near a tall office window: desks, plants, monitors glowing softly",
-];
+/** Clima/luz do fundo por temperamento dominante (prompt.md: ☀️ ⚡ 🍂 🌊). */
+const TEMPERAMENT_BACKGROUND = {
+  sanguineo:
+    "bright sunny office, warm golden sunlight through big windows, plants, colorful sticky notes, lively coworkers in the distance",
+  colerico:
+    "tense war-room: red alert lights, dashboards flashing errors, stormy sky with lightning outside the window",
+  melancholico:
+    "quiet late-afternoon corner, foggy autumn window, cool blue monitor glow, neat stacks of printed logs and reports",
+  fleumatico:
+    "calm cozy corner, soft pastel light, a still lake view through the window, comfy chair, steaming mug, tidy desk",
+};
+
+/** Clima do combo dominante→secundário (prompt.md). */
+const COMBO_WEATHER = {
+  "sanguineo-colerico": "sunshine with sudden summer rain and lightning outside",
+  "sanguineo-fleumatico": "sunny beach-like calm light, relaxed vibe",
+  "sanguineo-melancholico": "warm sunset glow through the window",
+  "colerico-sanguineo": "fiery orange light, wildfire energy",
+  "colerico-melancholico": "dark severe storm, tornado clouds outside",
+  "colerico-fleumatico": "steam and geyser vapor, cold controlled intensity",
+  "melancholico-sanguineo": "morning mist slowly lit by the sun",
+  "melancholico-colerico": "cold cutting wind, papers blowing",
+  "melancholico-fleumatico": "isolated quiet pine-forest view, silent backstage mood",
+  "fleumatico-sanguineo": "oasis vibe, fresh water and cheerful greenery",
+  "fleumatico-colerico": "river with strong current seen through the window",
+  "fleumatico-melancholico": "frosty icy blue tones, very orderly room",
+};
 
 function parseProfession(value) {
   if (value === undefined || value === null || value === "") return null;
@@ -314,16 +330,23 @@ function resolveAttrsFromBase(dominant, secondary) {
   };
 }
 
-function pickCorporateScene(mood) {
-  const key =
-    String((mood && mood.flavor) || "") +
-    String((mood && mood.name) || "") +
-    String((mood && mood.dominant) || "") +
-    String((mood && mood.attrs && mood.attrs.cafe) || 0) +
-    String((mood && mood.attrs && mood.attrs.nerdisse) || 0);
-  let h = 0;
-  for (let i = 0; i < key.length; i += 1) h = (h * 31 + key.charCodeAt(i)) >>> 0;
-  return CORPORATE_SCENES[h % CORPORATE_SCENES.length];
+function buildBackground(profession, mood) {
+  const parts = ["corporate IT office — " + (PROFESSIONS.get(profession) || "desks and monitors")];
+  const dominant = mood && mood.dominant;
+  const secondary = mood && mood.secondary;
+  if (dominant && TEMPERAMENT_BACKGROUND[dominant]) parts.push(TEMPERAMENT_BACKGROUND[dominant]);
+  if (dominant && secondary && secondary !== dominant) {
+    const weather = COMBO_WEATHER[dominant + "-" + secondary];
+    if (weather) parts.push(weather);
+  }
+  const answers = (mood && Array.isArray(mood.answers) ? mood.answers : []).slice(0, 4);
+  if (answers.length) {
+    parts.push(
+      "background props and situations that illustrate these work habits (Portuguese, show visually, no text): " +
+        answers.map((a) => "“" + a + "”").join(", ")
+    );
+  }
+  return parts.join("; ");
 }
 
 function clipPromptText(value, max) {
@@ -411,13 +434,6 @@ function moodSceneLine(mood) {
   else if (nerdisse >= 20) bits.push("nerdisse: glowing laptop/monitor with glitchy comedy vibe");
   else bits.push("nerdisse: simple PC, more people/queue vibe");
 
-  // 6) Fundo corporativo por último
-  bits.push(
-    "BACKGROUND (secondary): real corporate IT office — " +
-      pickCorporateScene(mood) +
-      " — desks/monitors visible behind the gag"
-  );
-
   return "Priority storyboard: " + bits.join("; ") + ". ";
 }
 
@@ -453,7 +469,11 @@ function parseMood(raw) {
     },
     name: clip(raw.name || raw.powerName, 30),
     flavor: clip(raw.flavor || raw.summary || raw.punchline, 120),
-    attention: clip(raw.attention, 38),
+    attention: clip(raw.attention, 60),
+    answers: (Array.isArray(raw.answers) ? raw.answers : [])
+      .map((a) => clip(a, 80))
+      .filter(Boolean)
+      .slice(0, 6),
   };
 }
 
@@ -466,6 +486,10 @@ function buildStylePrompt(profession, appearance, mood) {
     : "";
   const lookLine = appearancePromptLine(appearance);
   const sceneLine = moodSceneLine(mood);
+  const backgroundLine =
+    "BACKGROUND (fully replace the original photo background, unique to this person): " +
+    buildBackground(profession, mood) +
+    ". ";
   const hasFlavor = Boolean(mood && mood.flavor);
   return (
     "Transform the photo into a funny Pokémon-trainer TCG anime illustration (Ken Sugimori + cute comic gag panel energy): " +
@@ -474,12 +498,13 @@ function buildStylePrompt(profession, appearance, mood) {
     "leaning in, hands on head, confused/anxious/obsessed pose when the card text calls for it. " +
     "Uniform: light sky-blue collared shirt + dark blue denim jeans. " +
     "PRIORITY: (1) act the card flavor as the main pose, (2) comic effects (question marks, sweat drops, swirl lines), " +
-    "(3) attention as a visual gag, (4) attr props, (5) corporate office background. " +
+    "(3) attention as a visual gag, (4) background matching their profession, temperament and answers, (5) attr props. " +
     "NOT a calm LinkedIn smile standing stiff, NOT generic yellow superhero explosion burst, NOT empty gradient. " +
     "NOT pixel art, NOT photorealistic, NOT 3D. Keep facial likeness from the photo. " +
     lookLine +
     roleLine +
     sceneLine +
+    backgroundLine +
     (hasFlavor
       ? "If the flavor mentions bugs/anxiety/love letters/saving/etc., show that joke physically at the monitor. "
       : "") +

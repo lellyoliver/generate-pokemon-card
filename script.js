@@ -1131,6 +1131,7 @@
       name: (gen && gen.name) || "",
       flavor: (gen && gen.summary) || "",
       attention: (gen && gen.attention) || "",
+      answers: hookLabelsFromAnswers(quizState.answers),
     };
   };
 

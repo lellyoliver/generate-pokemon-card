@@ -6,18 +6,26 @@
  * Temperamento/atributos para cena visual ficam em /api/stylize (não aqui).
  */
 
-const SYSTEM_PROMPT = `Você cria poderes de carta de TI em PT-BR (humor de escritório).
+const SYSTEM_PROMPT = `Você escreve o texto de uma carta estilo Pokémon sobre um colega de TI, em PT-BR natural, com humor leve de escritório que qualquer colega entenderia.
 
 Responda SOMENTE com um JSON válido numa única linha, sem markdown e sem explicação:
-{"name":"apelido engraçado","flavor":"frase hilária","attention":"aviso curto"}
+{"name":"apelido","flavor":"descrição","attention":"fraqueza"}
 
-Regras:
-- name: 3 a 4 palavras, no máx. 30 caracteres, apelido de colega (ex.: Profissional do Chamado, Rainha do Print). NÃO "PROWEB vendedor Pro". NÃO terminar com Pro.
-- flavor: descrição da carta — no máx. 48 caracteres, 1 frase engraçada sobre o jeito no cargo (sem Cause, sem +20).
-- attention: fraqueza/zoeira — no máx. 38 caracteres, 1 linha, diferente do flavor (sem números).
-- Gênero: feminino → ela/dela; masculino → ele/dele. No name: Rei/Rainha, Senhor/Senhora.
-- PROIBIDO inglês, colar o quiz, raciocinar em voz alta, contar caracteres, explicar.
-- Saída = UMA linha JSON. Nada antes, nada depois.`;
+Como escrever:
+- Baseie TUDO nas "respostas" do quiz: elas mostram como a pessoa age no trabalho. Descubra o padrão de comportamento e descreva-o com suas palavras (não copie as frases).
+- A frase precisa fazer sentido sozinha, com sujeito e verbo, gramática correta e uma situação real do cargo. Nada de palavras soltas, jargão inventado ou frases sem nexo.
+- name: 3 a 4 palavras, até 30 caracteres, apelido carinhoso de colega (ex.: Rainha do Print, Senhor do Rollback, Guardião da Fila). Não terminar com "Pro".
+- flavor: 1 frase completa de 25 a 90 caracteres descrevendo o jeito da pessoa no cargo, com uma piada clara.
+- attention: 1 frase de 16 a 50 caracteres com a fraqueza engraçada, ligada ao mesmo comportamento, diferente do flavor.
+- Gênero: feminino → ela/dela e Rainha/Senhora/Mestra; masculino → ele/dele e Rei/Senhor/Mestre.
+- Sem números, sem "Cause", sem inglês, sem explicar.
+
+Exemplos bons:
+{"name":"Rainha do Print","flavor":"Ela só começa a investigar depois que alguém manda o print do erro.","attention":"Sem evidência, ela nem abre o chamado."}
+{"name":"Senhor do Vai Dar","flavor":"Ele promete resolver antes das seis e jura que o deploy de sexta é tranquilo.","attention":"Quando o erro aparece, a fé dele some."}
+{"name":"Guardiã da Fila","flavor":"Ela atende todo mundo com calma, mas o urgente do corredor vai pro fim da fila.","attention":"Pedido sem chamado fica para segunda."}
+
+Exemplos ruins (não faça): "PROWEB vendedor fé cache", "Log CAPS dono chamado já", frases sem verbo ou que misturam palavras-chave sem sentido.`;
 
 const BANNED_NAME_SNIPPETS = [
   "liberacao com fe cega",
@@ -375,8 +383,11 @@ function validateLlmFields(raw) {
   if (BONUS_NUMBER_RE.test(flavor)) {
     throw new Error("flavor não pode ter bônus/dano numérico.");
   }
-  if (flavor.length < 12 || flavor.length > 48) {
-    throw new Error("flavor deve ter entre 12 e 48 caracteres (sem cortar).");
+  if (flavor.length < 20 || flavor.length > 100) {
+    throw new Error("flavor deve ter entre 20 e 100 caracteres (sem cortar).");
+  }
+  if (flavor.split(" ").length < 5) {
+    throw new Error("flavor precisa ser uma frase completa.");
   }
 
   let attention = String(raw.attention || "").replace(/\s+/g, " ").trim();
@@ -390,12 +401,8 @@ function validateLlmFields(raw) {
   if (/^[“"'].*[”"']$/.test(attention)) {
     throw new Error("attention não pode ser citação de sabor.");
   }
-  if (attention.length > 38) {
-    const clipped = attention.slice(0, 38).replace(/\s+\S*$/, "").trim();
-    attention = clipped.length >= 16 ? clipped : attention.slice(0, 38).trim();
-  }
-  if (attention.length < 16 || attention.length > 38 || attention.includes("\n")) {
-    throw new Error("attention deve ter até 38 caracteres.");
+  if (attention.length < 12 || attention.length > 60 || attention.includes("\n")) {
+    throw new Error("attention deve ter entre 12 e 60 caracteres.");
   }
 
   return { name: words.join(" "), flavor, attention };
@@ -686,14 +693,15 @@ async function generatePower({ token, client, env = process.env, input }) {
   };
 
   const userPayload =
-    "Dados:\n" +
-    JSON.stringify(context) +
-    "\n\nEscreva SOMENTE o JSON {name, flavor, attention}. " +
-    context.genero_gramatica +
-    " Tom: " +
-    context.dominante +
-    ". Inspire-se (não cole): " +
-    JSON.stringify((context.respostas || []).slice(0, 3));
+    "Cargo: " + context.profissao + ".\n" +
+    "Gênero: " + context.genero + " (" + context.genero_gramatica + ")\n" +
+    "Temperamento: " + context.dominante +
+    (context.secundario ? " com toque de " + context.secundario : "") +
+    ". Tom sugerido: " + context.tom + "\n" +
+    "Contexto do cargo: " + context.vibe + "\n" +
+    "Respostas da pessoa no quiz (como ela age):\n" +
+    (context.respostas || []).map((r) => "- " + r).join("\n") +
+    "\n\nEscreva o JSON {name, flavor, attention} descrevendo ESTA pessoa a partir dessas respostas.";
 
   const messages = [
     { role: "system", content: SYSTEM_PROMPT },
@@ -737,7 +745,7 @@ async function generatePower({ token, client, env = process.env, input }) {
         context.profissao +
         ". Dominante " +
         context.dominante +
-        ". name=apelido engraçado 3-4 palavras (até 30 caracteres). flavor=até 48 caracteres, 1 frase hilária. attention=até 38 caracteres, aviso curto diferente. Sem Cause, sem +N.\n" +
+        ". name=apelido de colega 3-4 palavras (até 30 caracteres). flavor=1 frase completa e coerente de 25-90 caracteres sobre como a pessoa age, baseada nas respostas. attention=fraqueza engraçada de 16-50 caracteres. Sem números.\n" +
         JSON.stringify({
           respostas: (context.respostas || []).slice(0, 3),
           keywords: context.keywords,
@@ -746,8 +754,8 @@ async function generatePower({ token, client, env = process.env, input }) {
   ];
 
   const attempts = [
-    { msgs: messages, label: "try", temperature: 0.7, jsonMode: true },
-    { msgs: messages, label: "retry", temperature: 0.4, jsonMode: false },
+    { msgs: messages, label: "try", temperature: 0.5, jsonMode: true },
+    { msgs: messages, label: "retry", temperature: 0.3, jsonMode: false },
     { msgs: strictRetryMessages, label: "retry2", temperature: 0.3, jsonMode: false },
     { msgs: strictRetryMessages, label: "retry3", temperature: 0.2, jsonMode: true },
   ];
