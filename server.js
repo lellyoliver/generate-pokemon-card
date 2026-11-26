@@ -299,7 +299,6 @@ function parseMood(raw) {
     attention: clip(raw.attention, 60),
     pose: clip(raw.pose, 240),
     flavor_en: clip(String(raw.flavor_en || "").replace(/["“”]/g, ""), 160),
-    pokemon: clip(String(raw.pokemon || "").replace(/[^A-Za-zÀ-ÿ .'\-♀♂]/g, ""), 24),
     answers: (Array.isArray(raw.answers) ? raw.answers : [])
       .map((a) => clip(a, 80))
       .filter(Boolean)
@@ -311,9 +310,8 @@ function buildStylePrompt(profession, appearance, mood) {
   const setting = PROFESSIONS.get(profession) || "desks and monitors";
   const scene = mood ? clipPromptText(mood.pose, 260) : "";
   const flavor = mood ? mood.flavor_en : "";
-  const pokemon = mood && mood.pokemon ? mood.pokemon : "";
   return (
-    "Transform the photo into a FUN, playful Pokémon anime comic illustration (Ken Sugimori style, vibrant saturated colors, bold cel-shading), " +
+    "Transform the photo into a FUN, playful comic anime illustration (Ken Sugimori style, vibrant saturated colors, bold cel-shading), " +
     "a single wordless funny illustration: exaggerated expressions, dynamic pose, motion lines, cartoon physics. " +
     "Keep the facial likeness. WIDESCREEN 2:1, character framed from head to knees and centered so the face is large and detailed. " +
     "Clean, symmetrical, well-drawn anime eyes: both pupils aligned and looking in the same direction, sharp detailed face. " +
@@ -324,14 +322,12 @@ function buildStylePrompt(profession, appearance, mood) {
     " — " +
     setting +
     ", with silly exaggerated props that support the joke. " +
-    (pokemon
-      ? "A cute, clearly recognizable " + pokemon + " (official design) reacts comically next to the person. "
-      : "") +
     appearancePromptLine(appearance) +
     "Uniform: plain light sky-blue collared shirt with no print, no name, no badge, no lettering, and plain dark blue denim jeans. " +
     "Tell the story only through pose, facial expression, props and body language. " +
     "DON'T: don't add speech bubbles or thought balloons; don't write any text, letters, words, captions, labels or numbers anywhere; " +
     "don't put text, names, logos or badges on clothes; don't add signs or screens with writing (screens show only abstract shapes and colors); " +
+    "don't add Pokémon, creatures, mascots or animals; the person is the only character in focus; " +
     "don't add watermarks."
   );
 }
